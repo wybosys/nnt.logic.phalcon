@@ -145,9 +145,10 @@
           params[input.name] = this.form[input.index];
         }      
         // 请求数据
+        let url = location.href.replace('/apidoc', '/' + this.action.name);
         $.ajax({
           'type': 'GET',
-          'url': location.href.replace('/apidoc', '/' + this.action.name),
+          'url': url,
           'cache': false,
           'data': params,
           'dataType': 'none',
@@ -170,8 +171,10 @@
 
       },
       actPlayAudio() {
-
+        alert();
       }
     }
   });
+
+  // apidoc.js
 </script>

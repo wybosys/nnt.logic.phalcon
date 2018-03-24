@@ -281,11 +281,7 @@ class Proto
         }
     }
 
-    /**
-     *
-     * @param $request \Phalcon\Http\Request|\Phalcon\Http\RequestInterface
-     */
-    protected static function CollectParameters($request)
+    protected static function CollectParameters(\Phalcon\Http\RequestInterface $request)
     {
         switch ($request->getMethod()) {
             case 'POST':
@@ -347,6 +343,9 @@ class Proto
                         break;
                     case 'boolean':
                         $decl->boolean = true;
+                        break;
+                    case 'file':
+                        $decl->file = true;
                         break;
                     case 'array':
                         $decl->array = true;

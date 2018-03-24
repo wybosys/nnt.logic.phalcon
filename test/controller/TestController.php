@@ -19,4 +19,12 @@ class TestController extends Api
     {
         $mdl->info = gethostbyname($mdl->name);
     }
+
+    /**
+     * @Action(\Test\Model\UploadImage)
+     */
+    function uploadimage(\Test\Model\UploadImage $mdl)
+    {
+
+    }
 }
