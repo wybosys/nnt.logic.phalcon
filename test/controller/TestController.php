@@ -5,14 +5,6 @@ use App\Controller\Api;
 class TestController extends Api
 {
     /**
-     * @Action(\Test\Model\Output)
-     */
-    function lasterror(\Test\Model\Output $mdl)
-    {
-        $mdl->output = error_get_last();
-    }
-
-    /**
      * @Action(\Test\Model\Echoo)
      */
     function echoo(\Test\Model\Echoo $mdl)
