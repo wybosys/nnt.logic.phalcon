@@ -11,4 +11,12 @@ class TestController extends Api
     {
         $mdl->output = $mdl->input;
     }
+
+    /**
+     * @Action(\Test\Model\HostInfo)
+     */
+    function hostinfo(\Test\Model\HostInfo $mdl)
+    {
+        $mdl->info = gethostbyname($mdl->name);
+    }
 }
