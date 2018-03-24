@@ -168,13 +168,13 @@
         })
       },
       actRecordAudio() {
-
+        alert();
       },
       actPlayAudio() {
-        alert();
+
       }
     }
   });
 
-  // apidoc.js
+  //# sourceURL=apidoc.js
 </script>

@@ -168,7 +168,7 @@
         })
       },
       actRecordAudio() {
-
+        alert();
       },
       actPlayAudio() {
 
@@ -176,5 +176,5 @@
     }
   });
 
-  // apidoc.js
+  //# sourceURL=apidoc.js
 </script>
