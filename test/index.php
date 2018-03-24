@@ -14,10 +14,8 @@ $loader->registerNamespaces([
     'App' => APP_DIR . 'app',
     'App\Model' => APP_DIR . 'app/model',
     'App\Controller' => APP_DIR . 'app/controller',
-    'Manager' => MODULE_DIR,
-    'Manager\Model' => MODULE_DIR . 'model',
-    'Manager\Db' => MODULE_DIR . 'db',
-    'phpseclib' => APP_DIR . 'phpseclib'
+    'Test' => MODULE_DIR,
+    'Test\Model' => MODULE_DIR . 'model'
 ]);
 
 $loader->registerDirs([
