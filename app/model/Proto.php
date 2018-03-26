@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Model;
 
 // todo 使用APC
 use Phalcon\Annotations\Adapter\Memory;
 use Phalcon\Factory;
+use Phalcon\Http\Request\File;
 
 class MemberDeclaration
 {
@@ -43,7 +45,7 @@ class MemberDeclaration
      * @var boolean
      */
     public $file;
-    
+
     /**
      * @var boolean
      */
@@ -122,21 +124,21 @@ class Proto
     static function Check($request, $model)
     {
         $params = self::CollectParameters($request);
-        
+
         // 填充，如果遇到不符合的，返回错误
         $reader = new Memory();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
-                if (! $prop->has('Api'))
+                if (!$prop->has('Api'))
                     continue;
                 $api = $prop->get('Api');
                 if ($api) {
                     $ops = $api->getArgument(2);
                     if (array_search('input', $ops) === false)
                         continue;
-                    if (! isset($params[$name])) {
+                    if (!isset($params[$name])) {
                         if (array_search('optional', $ops) !== false)
                             continue;
                         return Code::PARAMETERS;
@@ -147,7 +149,7 @@ class Proto
                 }
             }
         }
-        
+
         return Code::OK;
     }
 
@@ -161,11 +163,11 @@ class Proto
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
-                if (! $prop->has('Api'))
+                if (!$prop->has('Api'))
                     continue;
                 $api = $prop->get('Api');
                 if ($api) {
-                    if (! isset($params[$name]))
+                    if (!isset($params[$name]))
                         continue;
                     // 根据设置，提取输入数据
                     $typs = $api->getArgument(1);
@@ -190,7 +192,7 @@ class Proto
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
-                if (! $prop->has('Api'))
+                if (!$prop->has('Api'))
                     continue;
                 $api = $prop->get('Api');
                 if ($api) {
@@ -214,13 +216,15 @@ class Proto
         // 定义为[type, subtype, subtype]
         switch ($typ) {
             case 'string':
-                return (string) $val;
+                return (string)$val;
             case 'integer':
-                return (int) $val;
+                return (int)$val;
             case 'double':
-                return (double) $val;
+                return (double)$val;
             case 'boolean':
                 return $val ? true : false;
+            case 'file':
+                return $val instanceof File ? $val : null;
             case 'array':
                 $ret = [];
                 $valtyp = $styp0;
@@ -252,11 +256,11 @@ class Proto
     {
         switch ($typ) {
             case 'string':
-                return (string) $val;
+                return (string)$val;
             case 'integer':
-                return (int) $val;
+                return (int)$val;
             case 'double':
-                return (double) $val;
+                return (double)$val;
             case 'boolean':
                 return $val ? true : false;
             case 'array':
@@ -288,7 +292,7 @@ class Proto
         $files = $request->getUploadedFiles();
 
         // 合并到同一个集合
-        $ret = array_merge(posts, gets);
+        $ret = array_merge($posts, $gets);
         foreach ($files as $file) {
             if (!$file->getKey())
                 continue;
@@ -297,7 +301,7 @@ class Proto
 
         // 去除phalcon默认的_url参数
         unset($ret['_url']);
-        
+
         return $ret;
     }
 
@@ -314,17 +318,17 @@ class Proto
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
-                if (! $prop->has('Api'))
+                if (!$prop->has('Api'))
                     continue;
                 $api = $prop->get('Api');
-                if (! $api)
+                if (!$api)
                     continue;
                 $idx = $api->getArgument(0);
                 $typs = $api->getArgument(1);
                 $ops = $api->getArgument(2);
                 $decl = new MemberDeclaration();
                 $decl->name = $name;
-                $decl->index = (int) $idx;
+                $decl->index = (int)$idx;
                 $decl->input = in_array('input', $ops);
                 $decl->output = in_array('output', $ops);
                 $decl->optional = in_array('optional', $ops);

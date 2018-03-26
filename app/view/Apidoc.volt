@@ -221,10 +221,13 @@
                       });
                       return;
                   }
-                  cb(null, {
-                      "status": hdl.status,
-                      "data": JSON.parse(hdl.responseText)
-                  });
+                  try {
+                    var jsd = JSON.parse(hdl.responseText);
+                    cb(null, {'status':hdl.status, 'data':jsd});
+                  }
+                  catch (e) {
+                    cb(new Error(hdl.responseText));
+                  }
               }
               break;
       }

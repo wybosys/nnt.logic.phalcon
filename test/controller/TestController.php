@@ -25,6 +25,6 @@ class TestController extends Api
      */
     function uploadimage(\Test\Model\UploadImage $mdl)
     {
-
+        
     }
 }
