@@ -191,7 +191,10 @@
     hdl.open("GET", url, true);
     hdl.send(null);
   }
-  function Post(url, data, cb) {
+  function Post(url, files, cb) {
+      var data = new FormData();
+      for (var k in files)
+        data.append(k, files[k]);
       var hdl = new XMLHttpRequest();
       hdl.onreadystatechange = function (e) {
           ProcessRequest(hdl, e, cb);

@@ -283,24 +283,21 @@ class Proto
 
     protected static function CollectParameters(\Phalcon\Http\RequestInterface $request)
     {
-        switch ($request->getMethod()) {
-            case 'POST':
-                {
-                    $ret = $request->getPost();
-                }
-                break;
-            case 'GET':
-                {
-                    $ret = $request->getQuery();
-                }
-                break;
-            default:
-                {
-                    $ret = [];
-                }
-                break;
+        $posts = $request->getPost();
+        $gets = $request->getQuery();
+        $files = $request->getUploadedFiles();
+
+        // 合并到同一个集合
+        $ret = array_merge(posts, gets);
+        foreach ($files as $file) {
+            if (!$file->getKey())
+                continue;
+            $ret[$file->getKey()] = $file;
         }
+
+        // 去除phalcon默认的_url参数
         unset($ret['_url']);
+        
         return $ret;
     }
 
