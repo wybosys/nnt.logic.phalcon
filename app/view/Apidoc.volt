@@ -130,8 +130,9 @@
 
       },
       actSubmit() {        
-        this.log = null;
-        let params = {};
+        this.log = null;        
+        let params = {}; // 普通参数
+        let files = {}; // 文件参数
         for (let idx in this.inputs) {
           let input = this.inputs[idx];
           if (!(input.index in this.form)) {
@@ -142,30 +143,38 @@
             else
               continue;
           }
-          params[input.name] = this.form[input.index];
+          if (input.file)
+            files[input.name] = this.form[input.index];
+          else
+            params[input.name] = this.form[input.index];
         }      
         // 请求数据
         let url = location.href.replace('/apidoc', '/' + this.action.name);
-        $.ajax({
-          'type': 'GET',
-          'url': url,
-          'cache': false,
-          'data': params,
-          'dataType': 'none',
-          success: (data)=>{
-            try {
-              let jsd = JSON.parse(data);              
-              this.outputs = jsd;
-            } catch (ex) {
+        if (Object.keys(params).length)
+          url += '?' + $.param(params);
+        // 如果存在文件，则强制为post
+        if (Object.keys(files).length) {
+          Post(url, files, (err, resp)=>{
+            if (err) {
               this.outputs = null;
-              this.log = data;
-            }            
-          },
-          error: (xhr, code, err)=>{
-            this.outputs = null;
-            this.log = "请求失败";
-          }
-        })
+              this.log = err.message;
+            }
+            else {
+                this.outputs = resp.data;
+            }
+          });
+        }
+        else {
+          Get(url, (err, resp)=>{
+            if (err) {
+              this.outputs = null;
+              this.log = err.message;
+            }
+            else {
+                this.outputs = resp.data;
+            }
+          });
+        }
       },
       actRecordAudio() {
       },
@@ -173,6 +182,50 @@
       }
     }
   });
+
+  function Get(url, cb) {
+    var hdl = new XMLHttpRequest();
+    hdl.onreadystatechange = function (e) {
+        ProcessRequest(hdl, e, cb);
+    };
+    hdl.open("GET", url, true);
+    hdl.send(null);
+  }
+  function Post(url, data, cb) {
+      var hdl = new XMLHttpRequest();
+      hdl.onreadystatechange = function (e) {
+          ProcessRequest(hdl, e, cb);
+      };
+      hdl.open("POST", url, true);
+      hdl.send(data);
+  }
+  var SUCCESS = [200];
+  function ProcessRequest(hdl, ev, cb) {
+      switch (hdl.readyState) {
+          case XMLHttpRequest.DONE:
+              {
+                  if (SUCCESS.indexOf(hdl.status) == -1) {
+                      cb(new Error("请求失败 " + hdl.status), null);
+                      return;
+                  }
+                  var ct = hdl.getResponseHeader("content-type");
+                  if (ct != "application/json") {
+                      // 返回responseText提供给非api的调用
+                      cb(new Error("返回了一个不支持的类型"), {
+                          'code': hdl.status,
+                          'data': hdl.responseText,
+                          'type': ct
+                      });
+                      return;
+                  }
+                  cb(null, {
+                      "status": hdl.status,
+                      "data": JSON.parse(hdl.responseText)
+                  });
+              }
+              break;
+      }
+  }
 
   //# sourceURL=apidoc.js
 </script>
