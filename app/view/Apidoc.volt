@@ -168,10 +168,8 @@
         })
       },
       actRecordAudio() {
-        alert();
       },
       actPlayAudio() {
-
       }
     }
   });
