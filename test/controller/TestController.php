@@ -33,7 +33,7 @@ class TestController extends Api
     /**
      * @Action(\Test\Model\Output)
      */
-    function phpinfos(\Test\Model\Output $mdl)
+    function phpinfo(\Test\Model\Output $mdl)
     {
         $mdl->output = phpinfo();
     }
