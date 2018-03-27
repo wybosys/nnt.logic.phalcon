@@ -213,12 +213,7 @@
                   }
                   var ct = hdl.getResponseHeader("content-type");
                   if (ct != "application/json") {
-                      // 返回responseText提供给非api的调用
-                      cb(new Error("返回了一个不支持的类型"), {
-                          'code': hdl.status,
-                          'data': hdl.responseText,
-                          'type': ct
-                      });
+                      cb(new Error(hdl.responseText));
                       return;
                   }
                   try {
