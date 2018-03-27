@@ -9,8 +9,8 @@ class Service
     static function Call(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        //$host = $_SERVER['HTTP_ORIGIN'];
-        $host = 'http://develop.91egame.com';
+        $host = $_SERVER['HTTP_ORIGIN'];
+        //$host = 'http://develop.91egame.com';
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
         curl_setopt($ch, CURLOPT_URL, $url);
