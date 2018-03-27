@@ -29,4 +29,12 @@ class TestController extends Api
         $ret = Service::Call("devops/image", ["action" => "imagestore.upload"], ["file" => $mdl->file]);
         $mdl->path = $ret->data->path;
     }
+
+    /**
+     * @Action(\Test\Model\Output)
+     */
+    function phpinfo(\Test\Model\Output $mdl)
+    {
+        $mdl->output = phpinfo();
+    }
 }
