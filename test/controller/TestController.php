@@ -1,6 +1,7 @@
 <?php
 
 use App\Controller\Api;
+use App\Controller\Service;
 
 class TestController extends Api
 {
@@ -25,6 +26,7 @@ class TestController extends Api
      */
     function uploadimage(\Test\Model\UploadImage $mdl)
     {
-        
+        $ret = Service::Call("devops/image", null, ["file" => $mdl->file]);
+        echo $ret;
     }
 }
