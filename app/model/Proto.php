@@ -359,7 +359,7 @@ class Proto
                         break;
                     default:
                         $decl->object = true;
-                        $decl->valtyp = $typs[1];
+                        $decl->valtyp = $typs[0];
                         break;
                 }
                 $ret[] = $decl;
