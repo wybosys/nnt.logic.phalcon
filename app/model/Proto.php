@@ -229,7 +229,7 @@ class Proto
                 $ret = [];
                 $valtyp = $styp0;
                 foreach (explode(',', $val) as $each) {
-                    array_push($ret, self::GetValue($each, $valtyp));
+                    array_push($ret, self::GetValue($each, $valtyp, null, null));
                 }
                 return $ret;
             case 'map':
@@ -238,8 +238,8 @@ class Proto
                 $valtyp = $styp1;
                 $obj = json_decode($val);
                 foreach ($obj as $k => $v) {
-                    $k = self::GetValue($k, $keytyp);
-                    $v = self::GetValue($v, $valtyp);
+                    $k = self::GetValue($k, $keytyp, null, null);
+                    $v = self::GetValue($v, $valtyp, null, null);
                     $ret[$k] = $v;
                 }
                 return $ret;
