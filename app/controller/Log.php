@@ -7,6 +7,8 @@ use \Phalcon\Logger\Adapter\File;
 use \Phalcon\Logger\FormatterInterface;
 
 define('LOG_DIR', APP_DIR . '/logs/');
+if (!is_dir(LOG_DIR))
+    mkdir(LOG_DIR);
 
 class Log
 {
