@@ -119,9 +119,14 @@ class DailyFile extends File
 
 class SeaslogAdapter implements AdapterInterface
 {
+    public function __construct()
+    {
+        \SeasLog::setBasePath(LOG_DIR . 'seaslog');
+    }
+
     static function IsValid()
     {
-        return false;
+        return class_exists('\SeasLog');
     }
 
     private $_formatter;
@@ -178,7 +183,7 @@ class SeaslogAdapter implements AdapterInterface
         if ($type > $this->_level)
             return $this;
         $slevel = self::PLevel2SLevel($type);
-        Seaslog::log($slevel, $message);
+        \Seaslog::log($slevel, $message);
         return $this;
     }
 
@@ -189,7 +194,7 @@ class SeaslogAdapter implements AdapterInterface
 
     function commit(): AdapterInterface
     {
-        Seaslog::flushBuffer();
+        \Seaslog::flushBuffer();
         return $this;
     }
 
@@ -205,43 +210,43 @@ class SeaslogAdapter implements AdapterInterface
 
     function debug($message, array $context = null): AdapterInterface
     {
-        Seaslog::debug($message);
+        \Seaslog::debug($message);
         return $this;
     }
 
     function error($message, array $context = null): AdapterInterface
     {
-        Seaslog::error($message);
+        \Seaslog::error($message);
         return $this;
     }
 
     function info($message, array $context = null): AdapterInterface
     {
-        Seaslog::info($message);
+        \Seaslog::info($message);
         return $this;
     }
 
     function notice($message, array $context = null): AdapterInterface
     {
-        Seaslog::notice($message);
+        \Seaslog::notice($message);
         return $this;
     }
 
     function warning($message, array $context = null): AdapterInterface
     {
-        Seaslog::warning($message);
+        \Seaslog::warning($message);
         return $this;
     }
 
     function alert($message, array $context = null): AdapterInterface
     {
-        Seaslog::alert($message);
+        \Seaslog::alert($message);
         return $this;
     }
 
     function emergency($message, array $context = null): AdapterInterface
     {
-        Seaslog::emergency($message);
+        \Seaslog::emergency($message);
         return $this;
     }
 }

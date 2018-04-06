@@ -117,7 +117,7 @@ class Api extends Controller
             }
         } catch (\Exception $ex) {
             $code = $ex->getCode(); // 逻辑主动抛出的code不可能为0
-            if (get_class($ex) !== \Exception::class || $code == 0) {
+            if (!($ex instanceof \Exception) || $code == 0) {
                 echo json_encode([
                     'code' => Code::EXCEPTION,
                     'error' => $ex->getMessage()
@@ -125,7 +125,8 @@ class Api extends Controller
                 throw $ex;
             } else {
                 echo json_encode([
-                    'code' => $code
+                    'code' => $code,
+                    'error' => $ex->getMessage()
                 ]);
             }
         }
