@@ -13,7 +13,7 @@ class Api extends Controller
 {
     private $_actions = [];
 
-    public function initialize()
+    function initialize()
     {
         $actnm = $this->router->getActionName();
 
@@ -38,12 +38,12 @@ class Api extends Controller
         $this->response->setContentType('application/json');
     }
 
-    public function indexAction()
+    function indexAction()
     {
         // pass
     }
 
-    public function __call($name, $arguments)
+    function __call($name, $arguments)
     {
         if (!isset($this->_actions[$name])) {
             throw new \Exception("没有找到名为 ${name} 的Action");
@@ -68,6 +68,7 @@ class Api extends Controller
                         if (in_array('auth', $ops)) {
                             // 判断当前有没有用户信息
                             if (!$this->di->has("user")) {
+                                $this->log(Code::NEED_AUTH);
                                 echo json_encode([
                                     'code' => Code::NEED_AUTH
                                 ]);
@@ -82,6 +83,7 @@ class Api extends Controller
             // 检查数据是否满足模型的定义
             $sta = Proto::Check($this->request, $model);
             if ($sta != Code::OK) {
+                $this->log($sta);
                 echo json_encode([
                     'code' => $sta
                 ]);
@@ -102,6 +104,7 @@ class Api extends Controller
                     $info['name']
                 ], $arguments);
             if ($sta != Code::OK) {
+                $this->log($sta);
                 echo json_encode([
                     'code' => $sta
                 ]);
@@ -109,21 +112,24 @@ class Api extends Controller
                 $headers = $this->response->getHeaders();
                 if ($headers->get('Content-Type') === 'application/json') {
                     $out = Proto::Output($model);
+                    $this->log(Code::OK);
                     echo json_encode([
                         'code' => Code::OK,
                         'message' => count($out) ? $out : '{}'
                     ]);
                 }
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $code = $ex->getCode(); // 逻辑主动抛出的code不可能为0
-            if (!($ex instanceof \Exception) || $code == 0) {
+            if ($code == 0) {
+                $this->log(Code::EXCEPTION, $ex);
                 echo json_encode([
                     'code' => Code::EXCEPTION,
                     'error' => $ex->getMessage()
                 ]);
                 throw $ex;
             } else {
+                $this->log($code, $ex);
                 echo json_encode([
                     'code' => $code,
                     'error' => $ex->getMessage()
@@ -135,15 +141,55 @@ class Api extends Controller
     /**
      * @Action
      */
-    public function description()
+    function description()
     {
         // pass
     }
 
     /**
+     * @param string|\Exception $msg
+     */
+    function log(int $code, $msg = null)
+    {
+        if (is_string($msg)) {
+            $typ = \Phalcon\Logger::INFO;
+            $data = $msg;
+        } else if ($msg instanceof \Exception) {
+            $typ = \Phalcon\Logger::CRITICAL;
+            $data = [
+                "f" => $msg->getFile(),
+                "m" => $msg->getMessage(),
+                "l" => $msg->getLine(),
+                "c" => $msg->getCode(),
+                "t" => $msg->getTraceAsString()
+            ];
+        } else if ($msg instanceof \Error) {
+            $typ = \Phalcon\Logger::ERROR;
+            $data = [
+                "f" => $msg->getFile(),
+                "m" => $msg->getMessage(),
+                "l" => $msg->getLine(),
+                "c" => $msg->getCode(),
+                "t" => $msg->getTraceAsString()
+            ];
+        } else {
+            $typ = \Phalcon\Logger::INFO;
+            $data = $msg;
+        }
+
+        $data = [
+            'client' => $this->request->getClientAddress(),
+            'code' => $code,
+            'msg' => $data
+        ];
+
+        Log::log($typ, json_encode($data));
+    }
+
+    /**
      * @Action
      */
-    public function apidoc()
+    function apidoc()
     {
         $this->response->setContentType('text/html');
         $this->view->setViewsDir(dirname(__DIR__) . '/view');
@@ -162,7 +208,7 @@ class Api extends Controller
      * 导出api给客户端
      * @Action
      */
-    public function apiexport()
+    function apiexport()
     {
         $this->response->setContentType('text/html');
         $this->view->setViewsDir(dirname(__DIR__) . '/view');
@@ -176,5 +222,4 @@ class Api extends Controller
         $this->view->router = json_encode($data);
         $this->view->start()->finish();
     }
-
 }

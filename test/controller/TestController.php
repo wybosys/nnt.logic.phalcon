@@ -42,7 +42,7 @@ class TestController extends Api
     /**
      * @Action(\Test\Model\Log)
      */
-    function log(\Test\Model\Log $mdl)
+    function mklog(\Test\Model\Log $mdl)
     {
         Log::log($mdl->type, $mdl->msg);
     }

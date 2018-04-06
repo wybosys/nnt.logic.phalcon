@@ -4,7 +4,6 @@ namespace App\Model;
 
 // todo 使用APC
 use Phalcon\Annotations\Adapter\Memory;
-use Phalcon\Factory;
 use Phalcon\Http\Request\File;
 
 class MemberDeclaration
