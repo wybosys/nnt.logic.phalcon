@@ -129,10 +129,9 @@ class Api extends Controller
                 ]);
                 throw $ex;
             } else {
-                $this->log($code, $ex);
+                $this->log($code);
                 echo json_encode([
-                    'code' => $code,
-                    'error' => $ex->getMessage()
+                    'code' => $code
                 ]);
             }
         }
@@ -147,34 +146,42 @@ class Api extends Controller
     }
 
     /**
+     * @param string|int $codeOrMsg
      * @param string|\Exception $msg
      */
-    function log(int $code, $msg = null)
+    function log($codeOrMsg, $msg = null)
     {
-        if (is_string($msg)) {
+        if (is_string($codeOrMsg)) {
             $typ = \Phalcon\Logger::INFO;
-            $data = $msg;
-        } else if ($msg instanceof \Exception) {
-            $typ = \Phalcon\Logger::CRITICAL;
-            $data = [
-                "f" => $msg->getFile(),
-                "m" => $msg->getMessage(),
-                "l" => $msg->getLine(),
-                "c" => $msg->getCode(),
-                "t" => $msg->getTraceAsString()
-            ];
-        } else if ($msg instanceof \Error) {
-            $typ = \Phalcon\Logger::ERROR;
-            $data = [
-                "f" => $msg->getFile(),
-                "m" => $msg->getMessage(),
-                "l" => $msg->getLine(),
-                "c" => $msg->getCode(),
-                "t" => $msg->getTraceAsString()
-            ];
+            $code = \App\Model\Code::OK;
+            $data = $codeOrMsg;
         } else {
-            $typ = \Phalcon\Logger::INFO;
-            $data = $msg;
+            $code = $codeOrMsg;
+            if (is_string($msg)) {
+                $typ = \Phalcon\Logger::INFO;
+                $data = $msg;
+            } else if ($msg instanceof \Exception) {
+                $typ = \Phalcon\Logger::CRITICAL;
+                $data = [
+                    "f" => $msg->getFile(),
+                    "m" => $msg->getMessage(),
+                    "l" => $msg->getLine(),
+                    "c" => $msg->getCode(),
+                    "t" => $msg->getTraceAsString()
+                ];
+            } else if ($msg instanceof \Error) {
+                $typ = \Phalcon\Logger::ERROR;
+                $data = [
+                    "f" => $msg->getFile(),
+                    "m" => $msg->getMessage(),
+                    "l" => $msg->getLine(),
+                    "c" => $msg->getCode(),
+                    "t" => $msg->getTraceAsString()
+                ];
+            } else {
+                $typ = \Phalcon\Logger::INFO;
+                $data = $msg;
+            }
         }
 
         $data = [

@@ -2,7 +2,6 @@
 
 use App\Controller\Api;
 use App\Controller\Service;
-use App\Controller\Log;
 
 class TestController extends Api
 {
@@ -44,6 +43,8 @@ class TestController extends Api
      */
     function mklog(\Test\Model\Log $mdl)
     {
-        Log::log($mdl->type, $mdl->msg);
+        $this->log("mklog");
+        $this->log(\App\Model\Code::OK, $mdl->msg);
+        \App\Controller\Log::log($mdl->type, $mdl->msg);
     }
 }
