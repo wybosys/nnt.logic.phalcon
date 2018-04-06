@@ -37,4 +37,12 @@ class TestController extends Api
     {
         $mdl->output = phpinfo();
     }
+
+    /**
+     * @Action(\Test\Model\Log)
+     */
+    function log(\Test\Model\Log $mdl)
+    {
+        \App\Controller\Log::log($mdl->type, $mdl->msg);
+    }
 }

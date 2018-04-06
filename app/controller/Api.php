@@ -11,7 +11,6 @@ use Phalcon\Annotations\Adapter\Memory;
 
 class Api extends Controller
 {
-
     private $_actions = [];
 
     public function initialize()

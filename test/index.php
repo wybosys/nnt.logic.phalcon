@@ -25,6 +25,7 @@ $loader->registerDirs([
 $loader->register();
 
 $di = new FactoryDefault();
+$logger = "fdafas";
 
 $di->setShared('config', function () {
     return include 'config/config.php';
@@ -32,6 +33,10 @@ $di->setShared('config', function () {
 
 $di->setShared('url', function () {
     return null;
+});
+
+$di->setShared('logger', function () {
+    return "fafdsafads";
 });
 
 $di->setShared('view', function () {
