@@ -15,6 +15,8 @@ class Api extends Controller
 
     function initialize()
     {
+        header('Access-Control-Allow-Origin:*');
+
         $actnm = $this->router->getActionName();
 
         // 把简化的action恢复成框架需要的actionAction
@@ -24,19 +26,37 @@ class Api extends Controller
         if ($methods) {
             if (array_key_exists($actnm, $methods)) {
                 $method = $methods[$actnm];
+
                 if ($method->has('Action')) {
                     $act = $method->get('Action');
                     $this->_actions[$actnm . 'Action'] = [
                         'name' => $actnm,
-                        'model' => $act->getArgument(0)
+                        'model' => $act->getArgument(0),
                     ];
                 }
+                $api = false;
+                if($method->has('Api')){
+                    $api = $method->get('Api');
+                    $ops = $api->getArgument(0);
+                }
+                if($api !== false && $ops && in_array("noAuth", $ops)){
+
+                }else{
+                    if (!$this->di->has("user")) {
+                        echo json_encode([
+                            'code' => Code::NEED_AUTH
+                        ]);
+                        exit;
+                    }
+                }
+
             }
         }
 
         // 默认输出为json
         $this->response->setContentType('application/json');
     }
+
 
     function indexAction()
     {
@@ -63,19 +83,19 @@ class Api extends Controller
                 if ($anns->has('Api')) {
                     $api = $anns->get('Api');
                     $ops = $api->getArgument(0);
-                    if ($ops) {
-                        // 判断是否已经登陆
-                        if (in_array('auth', $ops)) {
-                            // 判断当前有没有用户信息
-                            if (!$this->di->has("user")) {
-                                $this->log(Code::NEED_AUTH);
-                                echo json_encode([
-                                    'code' => Code::NEED_AUTH
-                                ]);
-                                return;
-                            }
-                        }
-                    }
+//                    if ($ops) {
+//                        // 判断是否已经登陆
+//                        if (in_array('auth', $ops)) {
+//                            // 判断当前有没有用户信息
+//                            if (!$this->di->has("user")) {
+//                                $this->log(Code::NEED_AUTH);
+//                                echo json_encode([
+//                                    'code' => Code::NEED_AUTH
+//                                ]);
+//                                return;
+//                            }
+//                        }
+//                    }
                 }
             }
 
@@ -138,6 +158,7 @@ class Api extends Controller
     }
 
     /**
+     * @Api([noAuth, noExport])
      * @Action
      */
     function description()
@@ -146,6 +167,7 @@ class Api extends Controller
     }
 
     /**
+     * @Api([noAuth, noExport])
      * @param string|int $codeOrMsg
      * @param string|\Exception $msg
      */
@@ -194,6 +216,7 @@ class Api extends Controller
     }
 
     /**
+     * @Api([noAuth, noExport])
      * @Action
      */
     function apidoc()
@@ -212,21 +235,12 @@ class Api extends Controller
     }
 
     /**
-     * 导出api给客户端
+     * @Api([noAuth, noExport])
+     * 导出api
      * @Action
      */
-    function apiexport()
+    public function apiexport()
     {
-        $this->response->setContentType('text/html');
-        $this->view->setViewsDir(dirname(__DIR__) . '/view');
-        $this->view->pick('Apidoc');
-
-        // 组装volt页面需要的数据
-        $data = [
-            "name" => $this->router->getControllerName(),
-            "actions" => Doc::Actions($this)
-        ];
-        $this->view->router = json_encode($data);
-        $this->view->start()->finish();
+        ApiBuilder::export($this);exit;
     }
 }
