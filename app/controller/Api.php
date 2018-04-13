@@ -9,8 +9,32 @@ use App\Model\Code;
 // todo 使用APC
 use Phalcon\Annotations\Adapter\Memory;
 
+class ActionInfo
+{
+    public $name;
+    public $model;
+    public $comment;
+    public $needauth = true;
+
+    function __construct(\Phalcon\Annotations\Annotation $ann)
+    {
+        $this->name = $ann->getName();
+        $this->model = $ann->getArgument(0);
+        $tmp = $ann->getArgument(1);
+        if (is_string($tmp)) {
+            $this->comment = $tmp;
+        } else {
+            $this->needauth = in_array('noauth', $tmp);
+            $this->comment = $ann->getArgument(2);
+        }
+    }
+}
+
 class Api extends Controller
 {
+    /**
+     * @var ActionInfo[]
+     */
     private $_actions = [];
 
     function initialize()
@@ -26,30 +50,10 @@ class Api extends Controller
         if ($methods) {
             if (array_key_exists($actnm, $methods)) {
                 $method = $methods[$actnm];
-
                 if ($method->has('Action')) {
                     $act = $method->get('Action');
-                    $this->_actions[$actnm . 'Action'] = [
-                        'name' => $actnm,
-                        'model' => $act->getArgument(0),
-                    ];
+                    $this->_actions[$actnm . 'Action'] = new ActionInfo($act);
                 }
-                $api = false;
-                if($method->has('Api')){
-                    $api = $method->get('Api');
-                    $ops = $api->getArgument(0);
-                }
-                if($api !== false && $ops && in_array("noAuth", $ops)){
-
-                }else{
-                    if (!$this->di->has("user")) {
-                        echo json_encode([
-                            'code' => Code::NEED_AUTH
-                        ]);
-                        exit;
-                    }
-                }
-
             }
         }
 
@@ -63,42 +67,28 @@ class Api extends Controller
         // pass
     }
 
+    /**
+     * @throws \Throwable
+     */
     function __call($name, $arguments)
     {
         if (!isset($this->_actions[$name])) {
             throw new \Exception("没有找到名为 ${name} 的Action");
         }
-
         $info = $this->_actions[$name];
-        $model = null;
+
+        // 判断有没有登陆
+        if ($info->needauth) {
+            echo json_encode([
+                'code' => Code::NEED_AUTH
+            ]);
+            return;
+        }
 
         // 初始化访问的模型
-        $modelclz = $info['model'];
+        $model = null;
+        $modelclz = $info->model;
         if ($modelclz) {
-            // 判断类型有无特殊定义
-            $reader = new Memory();
-            $reflect = $reader->get($modelclz);
-            $anns = $reflect->getClassAnnotations();
-            if ($anns) {
-                if ($anns->has('Api')) {
-                    $api = $anns->get('Api');
-                    $ops = $api->getArgument(0);
-//                    if ($ops) {
-//                        // 判断是否已经登陆
-//                        if (in_array('auth', $ops)) {
-//                            // 判断当前有没有用户信息
-//                            if (!$this->di->has("user")) {
-//                                $this->log(Code::NEED_AUTH);
-//                                echo json_encode([
-//                                    'code' => Code::NEED_AUTH
-//                                ]);
-//                                return;
-//                            }
-//                        }
-//                    }
-                }
-            }
-
             $model = new $modelclz();
             // 检查数据是否满足模型的定义
             $sta = Proto::Check($this->request, $model);
@@ -116,12 +106,12 @@ class Api extends Controller
             if ($model)
                 $sta = call_user_func([
                     $this,
-                    $info['name']
+                    $info->name
                 ], $model);
             else
                 $sta = call_user_func_array([
                     $this,
-                    $info['name']
+                    $info->name
                 ], $arguments);
             if ($sta != Code::OK) {
                 $this->log($sta);
@@ -241,6 +231,7 @@ class Api extends Controller
      */
     public function apiexport()
     {
-        ApiBuilder::export($this);exit;
+        ApiBuilder::export($this);
+        exit;
     }
 }
