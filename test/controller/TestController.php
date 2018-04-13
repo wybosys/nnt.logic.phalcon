@@ -47,4 +47,21 @@ class TestController extends Api
         $this->log(\App\Model\Code::OK, $mdl->msg);
         \App\Controller\Log::log($mdl->type, $mdl->msg);
     }
+
+    /**
+     * @Action(\Test\Model\Kv, [noauth], "测试redis")
+     */
+    function redis(\Test\Model\Kv $mdl)
+    {
+        $this->di->setShared('redis', function () {
+            $cfg = new \Phalcon\Cache\Frontend\Data([]);
+            $r = new \Phalcon\Cache\Backend\Redis($cfg, $this->getConfig()->redis);
+            return $r;
+        });
+        if ($mdl->value) {
+            $this->di->getRedis()->set($mdl->key, $mdl->value);
+        } else {
+            $mdl->value = $this->di->getRedis()->get($mdl->key);
+        }
+    }
 }

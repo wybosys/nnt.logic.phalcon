@@ -17,6 +17,14 @@ $cfg['database'] = [
     "charset" => "utf8"
 ];
 
+$cfg['redis'] = [
+    "host" => "redis",
+    "port" => 6379,
+    "index" => 0,
+    "auth" => "root",
+    "prefix" => "fp_"
+];
+
 $cfg['application'] = [
     "controllersDir" => MODULE_DIR . "controller",
     "modelsDir" => MODULE_DIR . "model",
