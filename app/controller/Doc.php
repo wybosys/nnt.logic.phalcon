@@ -7,6 +7,7 @@ use App\Model\Proto;
 
 // todo 使用APC
 use Phalcon\Annotations\Adapter\Memory;
+use Phalcon\Annotations\Annotation;
 
 class Doc
 {
@@ -17,17 +18,16 @@ class Doc
     static public function Actions(Controller $obj)
     {
         $ret = [];
-        $names = self::ActionNames($obj);
-        foreach ($names as $name) {
-            $ret[] = [
-                "name" => $name,
-                "params" => self::ActionParameters($name, $obj)
-            ];
+        $infos = self::ActionInfos($obj);
+        foreach ($infos as $info) {
+            $ret[] = array_merge($info, [
+                "params" => self::ActionParameters($info['name'], $obj)
+            ]);
         }
         return $ret;
     }
 
-    static public function ActionNames(Controller $obj)
+    static public function ActionInfos(Controller $obj)
     {
         $reader = new Memory();
         $reflect = $reader->get($obj);
@@ -38,7 +38,22 @@ class Doc
         foreach ($methods as $nm => $method) {
             if (!$method->has('Action'))
                 continue;
-            $ret[] = $nm;
+            $ret[] = self::ActionInfo($nm, $method->get('Action'));
+        }
+        return $ret;
+    }
+
+    static public function ActionInfo($name, Annotation $ann) {
+        $ret = [
+            "name" => $name
+        ];
+        $ops = $ann->getArgument(1);
+        if (is_string($ops)) {
+            $ret["comment"] = $ops;
+        }
+        else if (is_array($ops)) {
+            $ret["needauth"] = !in_array('noauth', $ops);
+            $ret["comment"] = $ann->getArgument(2);
         }
         return $ret;
     }

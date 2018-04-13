@@ -6,6 +6,9 @@ use Phalcon\Http\Request\File;
 
 class Service
 {
+    /**
+     * @throws \Exception
+     */
     static function Call(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();

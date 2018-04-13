@@ -6,7 +6,7 @@ use App\Controller\Service;
 class TestController extends Api
 {
     /**
-     * @Action(\Test\Model\Echoo, [noauth])
+     * @Action(\Test\Model\Echoo, [noauth], "输出")
      */
     function echoo(\Test\Model\Echoo $mdl)
     {
@@ -14,7 +14,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\HostInfo)
+     * @Action(\Test\Model\HostInfo, [noauth], "主机信息")
      */
     function hostinfo(\Test\Model\HostInfo $mdl)
     {
@@ -22,7 +22,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\UploadImage)
+     * @Action(\Test\Model\UploadImage, [noauth], "上传图片")
      */
     function uploadimage(\Test\Model\UploadImage $mdl)
     {
@@ -31,7 +31,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\Output)
+     * @Action(\Test\Model\Output, [noauth], "php信息")
      */
     function phpinfo(\Test\Model\Output $mdl)
     {
@@ -39,7 +39,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\Log)
+     * @Action(\Test\Model\Log, [noauth], "输出日志")
      */
     function mklog(\Test\Model\Log $mdl)
     {
