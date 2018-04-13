@@ -54,7 +54,7 @@ class TestController extends Api
     function redis(\Test\Model\Kv $mdl)
     {
         $this->di->setShared('redis', function () {
-            $cfg = new \Phalcon\Cache\Frontend\Data(["lifetime" => -1]);
+            $cfg = new \Phalcon\Cache\Frontend\Data(["lifetime" => 10]);
             $v = $this->getConfig()->redis;
             $r = new \Phalcon\Cache\Backend\Redis($cfg, $this->getConfig()->redis->toArray());
             return $r;
