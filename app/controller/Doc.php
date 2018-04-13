@@ -50,6 +50,7 @@ class Doc
         $ops = $ann->getArgument(1);
         if (is_string($ops)) {
             $ret["comment"] = $ops;
+            $ret["needauth"] = true;
         }
         else if (is_array($ops)) {
             $ret["needauth"] = !in_array('noauth', $ops);

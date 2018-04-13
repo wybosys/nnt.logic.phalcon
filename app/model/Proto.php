@@ -331,6 +331,7 @@ class Proto
                 $decl->input = in_array('input', $ops);
                 $decl->output = in_array('output', $ops);
                 $decl->optional = in_array('optional', $ops);
+                $decl->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
                 switch ($typs[0]) {
                     case 'string':
                         $decl->string = true;

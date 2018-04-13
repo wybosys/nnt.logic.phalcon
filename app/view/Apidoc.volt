@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-2">
       <div>${current}</div>
-      <div v-if="action" style="text-align:right">${action.comment}</div>
+      <div v-if="action" style="text-align:right">${action.comment}<span style="color:red" v-if="action.needauth">登录</span></div>
       <b-form @submit.prevent="actSubmit" v-if="current">
         <b-form-group v-for="param in inputs" :key="param.index" :label="param.name + ' ' + param.comment" :description="param.desc">
           <div v-if="param.file">
