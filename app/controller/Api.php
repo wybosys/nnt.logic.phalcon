@@ -15,16 +15,18 @@ class ActionInfo
     public $model;
     public $comment;
     public $needauth = true;
+    public $export = true;
 
-    function __construct(\Phalcon\Annotations\Annotation $ann)
+    function __construct(string $mthnm, \Phalcon\Annotations\Annotation $ann)
     {
-        $this->name = $ann->getName();
+        $this->name = $mthnm;
         $this->model = $ann->getArgument(0);
         $tmp = $ann->getArgument(1);
         if (is_string($tmp)) {
             $this->comment = $tmp;
-        } else {
-            $this->needauth = in_array('noauth', $tmp);
+        } else if (is_array($tmp)) {
+            $this->needauth = !in_array('noauth', $tmp);
+            $this->export = !in_array('noexport', $tmp);
             $this->comment = $ann->getArgument(2);
         }
     }
@@ -52,7 +54,7 @@ class Api extends Controller
                 $method = $methods[$actnm];
                 if ($method->has('Action')) {
                     $act = $method->get('Action');
-                    $this->_actions[$actnm . 'Action'] = new ActionInfo($act);
+                    $this->_actions[$actnm . 'Action'] = new ActionInfo($actnm, $act);
                 }
             }
         }
@@ -148,8 +150,7 @@ class Api extends Controller
     }
 
     /**
-     * @Api([noAuth, noExport])
-     * @Action
+     * @Action(null, [noauth, noexport])
      */
     function description()
     {
@@ -157,7 +158,6 @@ class Api extends Controller
     }
 
     /**
-     * @Api([noAuth, noExport])
      * @param string|int $codeOrMsg
      * @param string|\Exception $msg
      */
@@ -206,8 +206,7 @@ class Api extends Controller
     }
 
     /**
-     * @Api([noAuth, noExport])
-     * @Action
+     * @Action(null, [noauth, noexport])
      */
     function apidoc()
     {
@@ -225,9 +224,7 @@ class Api extends Controller
     }
 
     /**
-     * @Api([noAuth, noExport])
-     * 导出api
-     * @Action
+     * @Action(null, [noauth, noexport])
      */
     public function apiexport()
     {

@@ -6,7 +6,7 @@ use App\Controller\Service;
 class TestController extends Api
 {
     /**
-     * @Action(\Test\Model\Echoo)
+     * @Action(\Test\Model\Echoo, [noauth])
      */
     function echoo(\Test\Model\Echoo $mdl)
     {
