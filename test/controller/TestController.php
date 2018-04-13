@@ -59,7 +59,7 @@ class TestController extends Api
             return $r;
         });
         if ($mdl->value) {
-            $this->di->getRedis()->set($mdl->key, $mdl->value);
+            $this->di->getRedis()->save($mdl->key, $mdl->value);
         } else {
             $mdl->value = $this->di->getRedis()->get($mdl->key);
         }
