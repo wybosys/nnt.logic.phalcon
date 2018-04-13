@@ -20,7 +20,7 @@ class ApiBuilder
         $actions = Doc::Actions($t);
 
         $apinames = [];
-        $file = fopen("jsApi/$cn" . "Api.js", "w");
+        $file = fopen("tmp/$cn" . "Api.js", "w");
         fwrite($file, "import {ApiBase, ApiOutBase} from './ApiBase'\n");
         foreach ($actions as $v){
             $an = $v['name'];
@@ -97,7 +97,7 @@ class ApiBuilder
         );
         fclose($file);
 
-        $filename = "jsApi/"."$cn" . "Api.js";
+        $filename = "tmp/"."$cn" . "Api.js";
         $outname = "$cn" . "Api.js";
         header("Content-type:application/x-javascript");
         header('Content-Disposition: attachment; filename="'.$outname .'"'); //指定下载文件的描述
