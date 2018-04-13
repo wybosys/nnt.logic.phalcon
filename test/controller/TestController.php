@@ -55,7 +55,8 @@ class TestController extends Api
     {
         $this->di->setShared('redis', function () {
             $cfg = new \Phalcon\Cache\Frontend\Data([]);
-            $r = new \Phalcon\Cache\Backend\Redis($cfg, $this->getConfig()->redis);
+            $v = $this->getConfig()->redis;
+            $r = new \Phalcon\Cache\Backend\Redis($cfg, $this->getConfig()->redis->toArray());
             return $r;
         });
         if ($mdl->value) {
