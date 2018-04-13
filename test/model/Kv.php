@@ -9,7 +9,7 @@ class Kv
     public $key;
 
     /**
-     * @Api(2, [string], [input, output, optional]
+     * @Api(2, [string], [input, output, optional])
      */
     public $value;
 }
