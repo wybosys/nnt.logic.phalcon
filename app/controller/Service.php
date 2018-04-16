@@ -20,7 +20,7 @@ class Service
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        if (count($files)) {
+        if ($files && count($files)) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 "Content-Type: multipart/form-data"
