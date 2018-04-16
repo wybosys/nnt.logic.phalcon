@@ -37,9 +37,9 @@ class Service
         $msg = curl_exec($ch);
         curl_close($ch);
 
-        $ret = json_decode($msg);
-        if ($ret->code !== 0)
-            throw new \Exception("执行失败", $ret->code);
+        $ret = json_decode($msg, true);
+        if (!$ret || $ret["code"] !== 0)
+            throw new \Exception("执行失败", $ret["code"]);
         return $ret;
     }
 }

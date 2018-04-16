@@ -14,6 +14,15 @@ class TestController extends Api
     }
 
     /**
+     * @Action(\Test\Model\Call, [noauth], "远程调用")
+     */
+    function svccall(\Test\Model\Call $mdl)
+    {
+        $ret = Service::Call($mdl->name, $mdl->args);
+        $mdl->output = $ret;
+    }
+
+    /**
      * @Action(\Test\Model\HostInfo, [noauth], "主机信息")
      */
     function hostinfo(\Test\Model\HostInfo $mdl)

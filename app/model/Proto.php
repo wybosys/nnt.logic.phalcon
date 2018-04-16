@@ -224,6 +224,8 @@ class Proto
                 return $val ? true : false;
             case 'file':
                 return $val instanceof File ? $val : null;
+            case 'object':
+                return json_decode($val, true);
             case 'array':
                 $ret = [];
                 $valtyp = $styp0;
@@ -235,7 +237,7 @@ class Proto
                 $ret = [];
                 $keytyp = $styp0;
                 $valtyp = $styp1;
-                $obj = json_decode($val);
+                $obj = json_decode($val, true);
                 foreach ($obj as $k => $v) {
                     $k = self::GetValue($k, $keytyp, null, null);
                     $v = self::GetValue($v, $valtyp, null, null);
@@ -245,7 +247,7 @@ class Proto
             default:
                 // 传入了对象
                 $tgt = new $typ();
-                $obj = json_decode($val);
+                $obj = json_decode($val, true);
                 self::Decode($tgt, $obj);
                 return $tgt;
         }
@@ -279,6 +281,8 @@ class Proto
                     $arr[$k] = $v;
                 }
                 return $arr;
+            case 'object':
+                return json_encode($val);
             default:
                 return self::Output($val);
         }
