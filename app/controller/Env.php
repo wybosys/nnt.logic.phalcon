@@ -6,13 +6,8 @@ define('IS_LOCAL', Config::IsLocal());
 define('IS_DEVOPS', Config::IsDevops());
 define('IS_DEVOPSRELEASE', Config::IsDevopsRelease());
 
-class Config extends \Phalcon\Config
+class Env
 {
-    public function __construct(array $arrayConfig = null)
-    {
-        parent::__construct($arrayConfig);
-    }
-
     static function Use($local, $devops, $devopsrelease)
     {
         if (IS_LOCAL)
@@ -36,4 +31,5 @@ class Config extends \Phalcon\Config
     {
         return !self::IsDevopsRelease() && getenv('DEVOPS') != null;
     }
+
 }
