@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use Phalcon\Mvc\Controller;
-use App\Model\Proto;
 use App\Model\Code;
+use App\Model\Proto;
+use Phalcon\Annotations\Adapter\Memory;
+use Phalcon\Mvc\Controller;
 
 // todo 使用APC
-use Phalcon\Annotations\Adapter\Memory;
 
 class ActionInfo
 {
@@ -154,7 +154,10 @@ class Api extends Controller
      */
     function description()
     {
-        // pass
+        $output = [
+            "env" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE")];
+        echo json_encode($output);
+        exit();
     }
 
     /**
