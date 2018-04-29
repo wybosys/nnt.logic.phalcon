@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-define('IS_LOCAL', Config::IsLocal());
-define('IS_DEVOPS', Config::IsDevops());
-define('IS_DEVOPSRELEASE', Config::IsDevopsRelease());
+define('IS_LOCAL', Env::IsLocal());
+define('IS_DEVOPS', Env::IsDevops());
+define('IS_DEVOPSRELEASE', Env::IsDevopsRelease());
 
 class Env
 {
