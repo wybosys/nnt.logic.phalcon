@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-define('IS_LOCAL', Env::IsLocal());
-define('IS_DEVOPS', Env::IsDevops());
-define('IS_DEVOPSRELEASE', Env::IsDevopsRelease());
+define('IS_LOCAL', Config::IsLocal());
+define('IS_DEVOPS', Config::IsDevops());
+define('IS_DEVOPSRELEASE', Config::IsDevopsRelease());
 
-class Env
+class Config extends \Phalcon\Config
 {
     static function Use($local, $devops, $devopsrelease)
     {

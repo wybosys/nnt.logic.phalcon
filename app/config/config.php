@@ -1,6 +1,6 @@
 <?php
 
-use Phalcon\Config;
+use App\Controller\Config;
 
 defined('MODULE_DIR') || define('MODULE_DIR', dirname(__DIR__) . '/');
 defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
