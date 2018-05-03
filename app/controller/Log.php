@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use \Phalcon\Logger\AdapterInterface;
-use \Phalcon\Logger\Adapter\File;
-use \Phalcon\Logger\FormatterInterface;
+use Phalcon\Logger\Adapter\File;
+use Phalcon\Logger\AdapterInterface;
+use Phalcon\Logger\FormatterInterface;
 
 define('LOG_DIR', APP_DIR . '/logs/');
 if (!is_dir(LOG_DIR))
@@ -16,6 +16,9 @@ class Log
     {
         if (SeaslogAdapter::IsValid()) {
             $this->_log = new SeaslogAdapter();
+            $this->_batch = true;
+        } else if (RedislogAdapter::IsValid()) {
+            $this->_log = new RedislogAdapter();
             $this->_batch = true;
         } else {
             $this->_log = new DailyFile();
@@ -249,6 +252,154 @@ class SeaslogAdapter implements AdapterInterface
     function emergency($message, array $context = null): AdapterInterface
     {
         \Seaslog::emergency($message);
+        return $this;
+    }
+}
+
+class RedislogAdapter implements AdapterInterface
+{
+    public function __construct()
+    {
+        $this->_key = gethostname();
+        $this->_db = new \Redis();
+        $this->_db->pconnect('logs', 6379);
+    }
+
+    static function IsValid()
+    {
+        return !Config::IsLocal();
+    }
+
+    private $_formatter;
+
+    function setFormatter(FormatterInterface $formatter)
+    {
+        $this->_formatter = $formatter;
+    }
+
+    function getFormatter(): FormatterInterface
+    {
+        return $this->_formatter;
+    }
+
+    private $_level = \Phalcon\Logger::SPECIAL;
+
+    function setLogLevel($level): AdapterInterface
+    {
+        $this->_level = $level;
+        return $this;
+    }
+
+    function getLogLevel(): int
+    {
+        return $this->_level;
+    }
+
+    private static function PLevel2SLevel(int $level): string
+    {
+        switch ($level) {
+            case \Phalcon\Logger::DEBUG:
+                return 'DEBUG';
+            case \Phalcon\Logger::INFO:
+                return 'INFO';
+            case \Phalcon\Logger::NOTICE:
+                return 'NOTICE';
+            case \Phalcon\Logger::WARNING:
+                return 'WARNING';
+            case \Phalcon\Logger::ERROR:
+                return 'ERROR';
+            case \Phalcon\Logger::ALERT:
+                return 'ALERT';
+            case \Phalcon\Logger::CRITICAL:
+                return 'CRITICAL';
+            case \Phalcon\Logger::EMERGENCY:
+                return 'EMERGENCY';
+            default:
+                return 'ALL';
+        }
+    }
+
+    /**
+     * @var \Redis
+     */
+    private $_db;
+    private $_key;
+
+    function log($type, $message = null, array $context = null): AdapterInterface
+    {
+        if ($type > $this->_level)
+            return $this;
+        $slevel = self::PLevel2SLevel($type);
+        return $this;
+    }
+
+    function begin(): AdapterInterface
+    {
+        return $this;
+    }
+
+    function commit(): AdapterInterface
+    {
+        $this->_db->flushAll();
+        return $this;
+    }
+
+    function rollback(): AdapterInterface
+    {
+        return $this;
+    }
+
+    function close()
+    {
+        return true;
+    }
+
+    function debug($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::DEBUG);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function error($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::ERROR);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function info($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::INFO);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function notice($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::NOTICE);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function warning($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::WARNING);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function alert($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::ALERT);
+        $this->_db->rPush($this->_key, $message);
+        return $this;
+    }
+
+    function emergency($message, array $context = null): AdapterInterface
+    {
+        $this->_db->select(\Phalcon\Logger::EMERGENCY);
+        $this->_db->rPush($this->_key, $message);
         return $this;
     }
 }
