@@ -295,30 +295,6 @@ class RedislogAdapter implements AdapterInterface
         return $this->_level;
     }
 
-    private static function PLevel2SLevel(int $level): string
-    {
-        switch ($level) {
-            case \Phalcon\Logger::DEBUG:
-                return 'DEBUG';
-            case \Phalcon\Logger::INFO:
-                return 'INFO';
-            case \Phalcon\Logger::NOTICE:
-                return 'NOTICE';
-            case \Phalcon\Logger::WARNING:
-                return 'WARNING';
-            case \Phalcon\Logger::ERROR:
-                return 'ERROR';
-            case \Phalcon\Logger::ALERT:
-                return 'ALERT';
-            case \Phalcon\Logger::CRITICAL:
-                return 'CRITICAL';
-            case \Phalcon\Logger::EMERGENCY:
-                return 'EMERGENCY';
-            default:
-                return 'ALL';
-        }
-    }
-
     /**
      * @var \Redis
      */
@@ -329,7 +305,8 @@ class RedislogAdapter implements AdapterInterface
     {
         if ($type > $this->_level)
             return $this;
-        $slevel = self::PLevel2SLevel($type);
+        $this->_db->select($type);
+        $this->_db->rPush($this->_key, $message);
         return $this;
     }
 
