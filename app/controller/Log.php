@@ -263,7 +263,6 @@ class RedislogAdapter implements AdapterInterface
         $this->_key = gethostname();
         $this->_db = new \Redis();
         $this->_db->pconnect('logs', 6379);
-        $this->_db->select(0);
     }
 
     static function IsValid()
@@ -318,7 +317,6 @@ class RedislogAdapter implements AdapterInterface
 
     function commit(): AdapterInterface
     {
-        $this->_db->flushAll();
         return $this;
     }
 
