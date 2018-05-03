@@ -262,7 +262,7 @@ class RedislogAdapter implements AdapterInterface
     {
         $this->_key = gethostname();
         $this->_db = new \Redis();
-        $this->_db->pconnect('logs', 6379);
+        $this->_db->pconnect('logs', 6379, 1, "::phalcon::logs");
     }
 
     static function IsValid()
