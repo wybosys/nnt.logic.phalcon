@@ -14,11 +14,11 @@ class Log
 {
     public function __construct()
     {
-        if (SeaslogAdapter::IsValid()) {
-            $this->_log = new SeaslogAdapter();
-            $this->_batch = true;
-        } else if (RedislogAdapter::IsValid()) {
+        if (RedislogAdapter::IsValid()) {
             $this->_log = new RedislogAdapter();
+            $this->_batch = true;
+        } else if (SeaslogAdapter::IsValid()) {
+            $this->_log = new SeaslogAdapter();
             $this->_batch = true;
         } else {
             $this->_log = new DailyFile();
