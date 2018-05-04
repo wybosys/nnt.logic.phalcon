@@ -141,9 +141,10 @@ class Api extends Controller
                 ]);
                 throw $ex;
             } else {
-                $this->log($code);
+                $this->log($code, $ex->getMessage());
                 echo json_encode([
-                    'code' => $code
+                    'code' => $code,
+                    'error' => $ex->getMessage()
                 ]);
             }
         }
