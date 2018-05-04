@@ -80,7 +80,7 @@ class Api extends Controller
         $info = $this->_actions[$name];
 
         // 判断有没有登陆
-        if ($info->needauth) {
+        if ($info->needauth && !$this->di->has('user')) {
             echo json_encode([
                 'code' => Code::NEED_AUTH
             ]);
