@@ -267,7 +267,7 @@ class RedislogAdapter implements AdapterInterface
 
     static function IsValid()
     {
-        return !Config::IsLocal();
+        return !Config::$IS_LOCAL;
     }
 
     private $_formatter;
