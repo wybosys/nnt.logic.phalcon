@@ -158,6 +158,7 @@ class Api extends Controller
         $output = [
             "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
             "env" => $_ENV,
+            "server" => $_SERVER,
             "request" => $_REQUEST
         ];
         var_dump($_ENV);
