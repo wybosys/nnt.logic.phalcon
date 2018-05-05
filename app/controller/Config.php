@@ -2,17 +2,17 @@
 
 namespace App\Controller;
 
+define("CONFIG_IS_LOCAL", Config::IsLocal());
+define("CONFIG_IS_DEVOPS", Config::IsDevops());
+define("CONFIG_IS_DEVOPSRELEASE", Config::IsDevopsRelease());
+
 class Config extends \Phalcon\Config
 {
-    static $IS_LOCAL;
-    static $IS_DEVOPS;
-    static $IS_DEVOPSRELEASE;
-
     static function Use($local, $devops, $devopsrelease)
     {
-        if (self::$IS_LOCAL)
+        if (CONFIG_IS_DEVOPS)
             return $local;
-        if (self::$IS_DEVOPS)
+        if (CONFIG_IS_DEVOPS)
             return $devops;
         return $devopsrelease;
     }
@@ -33,7 +33,3 @@ class Config extends \Phalcon\Config
     }
 
 }
-
-Config::$IS_LOCAL = Config::IsLocal();
-Config::$IS_DEVOPS = Config::IsDevops();
-Config::$IS_DEVOPSRELEASE = Config::IsDevopsRelease();
