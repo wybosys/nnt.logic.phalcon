@@ -160,7 +160,6 @@ class Api extends Controller
             "server" => $_SERVER,
             "request" => $_REQUEST
         ];
-        var_dump($_ENV);
         echo json_encode($output);
         exit();
     }
