@@ -158,9 +158,6 @@ class Api extends Controller
         $output = [
             "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
             "env" => $_ENV,
-            "global" => $GLOBALS,
-            "server" => $_SERVER,
-            "cookie" => $_COOKIE,
             "request" => $_REQUEST
         ];
         echo json_encode($output);
