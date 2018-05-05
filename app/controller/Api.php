@@ -159,7 +159,6 @@ class Api extends Controller
             "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
             "env" => $_ENV,
             "global" => $GLOBALS,
-            "session" => isset($_SESSION) ? $_SESSION : [],
             "server" => $_SERVER,
             "cookie" => $_COOKIE,
             "request" => $_REQUEST
