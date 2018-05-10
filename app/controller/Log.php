@@ -306,7 +306,7 @@ class RedislogAdapter implements AdapterInterface
         if ($type > $this->_level)
             return $this;
         $this->_db->select($type);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
@@ -333,49 +333,49 @@ class RedislogAdapter implements AdapterInterface
     function debug($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::DEBUG);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function error($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::ERROR);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function info($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::INFO);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function notice($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::NOTICE);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function warning($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::WARNING);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function alert($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::ALERT);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
     function emergency($message, array $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::EMERGENCY);
-        $this->_db->rPush($this->_key, $message);
+        $this->_db->lPush($this->_key, $message);
         return $this;
     }
 }
