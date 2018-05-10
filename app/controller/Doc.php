@@ -56,9 +56,12 @@ class Doc
             $ret["needauth"] = true;
         } else if (is_array($ops)) {
             $ret["needauth"] = !in_array("noauth", $ops);
-            $ret["local"] = in_array("local", $ops);
-            $ret["devops"] = in_array("devops", $ops);
-            $ret["devopsrelease"] = in_array("devopsrelease", $ops);
+            if (in_array("local", $ops))
+                $ret["local"] = true;
+            if (in_array("devops", $ops))
+                $ret["devops"] = true;
+            if (in_array("devopsrelease", $ops))
+                $ret["devopsrelease"] = true;
             $ret["comment"] = $ann->getArgument(2);
         }
 
@@ -66,12 +69,15 @@ class Doc
         $check_env = isset($ret["local"]) || isset($ret["devops"]) || isset($ret["devopsrelease"]);
         if ($check_env) {
             // 检查当前环境是否匹配
-            if (isset($ret["local"]) && !Config::IsLocal())
+            if (isset($ret["local"])) {
+                if (!Config::IsLocal())
+                    return null;
+            } else if (isset($ret["devops"])) {
+                if (!Config::IsDevops())
+                    return null;
+            } else if (!Config::IsDevopsRelease()) {
                 return null;
-            else if (isset($ret["devops"]) && !Config::IsDevops())
-                return null;
-            else if (!Config::IsDevopsRelease())
-                return null;
+            }
         }
 
         return $ret;
