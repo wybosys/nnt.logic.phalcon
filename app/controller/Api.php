@@ -204,7 +204,7 @@ class Api extends Controller
         }
 
         $data = [
-            'client' => $this->request->getClientAddress(),
+            'client' => $this->request->getClientAddress(true),
             'code' => $code,
             'msg' => $data
         ];
