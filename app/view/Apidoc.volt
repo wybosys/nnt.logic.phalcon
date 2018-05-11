@@ -1,10 +1,10 @@
-{{ javascriptInclude("http://develop.91egame.com/devops/cdn/provider/file/zepto.min.js", false) }}
-{{ javascriptInclude("http://develop.91egame.com/devops/cdn/provider/file/vue.min.js", false) }}
-{{ stylesheet_link("http://develop.91egame.com/devops/cdn/provider/file/bootstrap.min.css", false) }}
-{{ stylesheet_link("http://develop.91egame.com/devops/cdn/provider/file/bootstrap-vue.min.css", false) }} 
-{{ javascriptInclude("http://develop.91egame.com/devops/cdn/provider/file/polyfill.min.js", false) }} 
-{{ javascriptInclude("http://develop.91egame.com/devops/cdn/provider/file/bootstrap-vue.min.js", false) }}
-{{ javascriptInclude("http://develop.91egame.com/devops/cdn/provider/file/vue-json-tree-view.min.js", false) }}
+{{ javascriptInclude("https://develop.91egame.com/devops/cdn/provider/file/zepto.min.js", false) }}
+{{ javascriptInclude("https://develop.91egame.com/devops/cdn/provider/file/vue.min.js", false) }}
+{{ stylesheet_link("https://develop.91egame.com/devops/cdn/provider/file/bootstrap.min.css", false) }}
+{{ stylesheet_link("https://develop.91egame.com/devops/cdn/provider/file/bootstrap-vue.min.css", false) }}
+{{ javascriptInclude("https://develop.91egame.com/devops/cdn/provider/file/polyfill.min.js", false) }}
+{{ javascriptInclude("https://develop.91egame.com/devops/cdn/provider/file/bootstrap-vue.min.js", false) }}
+{{ javascriptInclude("https://develop.91egame.com/devops/cdn/provider/file/vue-json-tree-view.min.js", false) }}
 
 <div id="app" class="container-fluid">
   <div class="row">
