@@ -65,16 +65,9 @@ class Service
      */
     static function PermissionLocate(string $permissionId)
     {
-        $dbph = APP_DIR . '/tmp/permissions.db';
-        $db = new \LevelDb($dbph, [
-            'create_if_missing' => false,
-            'error_if_exists' => false,
-        ], [
-            "snapshot" => true
-        ]);
-        echo "xxx";
-        exit;
-        return $db->get($permissionId);
+        $dbph = APP_DIR . '/run/permissions.db';
+        $db = dba_open($dbph, 'r');
+        return dba_fetch($permissionId, $db);
     }
 
     /**
