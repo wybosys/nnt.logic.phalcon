@@ -57,7 +57,7 @@ class Service
 
     static function PermissionEnabled(): bool
     {
-        return extension_loaded('leveldb') && !Config::IsLocal();
+        return extension_loaded('dba') && !Config::IsLocal();
     }
 
     /**
