@@ -81,5 +81,5 @@ class Service
     }
 }
 
-const KEY_PERMISSIONID = "_permid";
+const KEY_PERMISSIONID = "_permissionid";
 const KEY_SKIPPERMISSION = "_skippermission";
