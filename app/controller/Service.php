@@ -66,7 +66,7 @@ class Service
     static function PermissionLocate(string $permissionId)
     {
         $dbph = APP_DIR . '/tmp/permissions.db';
-        $db = new LevelDb($dbph);
+        $db = new \LevelDb($dbph);
         return $db->get($permissionId);
     }
 
