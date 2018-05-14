@@ -48,7 +48,7 @@ class Service
      */
     static function PermissionId(): string
     {
-        $file = APP_DIR . '/tmp/permission.cfg';
+        $file = APP_DIR . '/run/permission.cfg';
         if (!file_exists($file))
             return null;
         $cfg = json_decode(file_get_contents($file));
