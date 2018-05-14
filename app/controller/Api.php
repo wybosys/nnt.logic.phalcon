@@ -87,13 +87,29 @@ class Api extends Controller
             return;
         }
 
+        // 收集参数
+        $params = Proto::CollectParameters($this->request);
+
+        // 判断访问权限
+        if (Service::PermissionEnabled()) {
+            if (!Service::AllowClient()) {
+                $permid = $params['_permid'];
+                if (!Service::PermissionLocate($permid)) {
+                    echo json_encode([
+                        'code' => Code::PERMISSION_DISALLOW
+                    ]);
+                    return;
+                }
+            }
+        }
+
         // 初始化访问的模型
         $model = null;
         $modelclz = $info->model;
         if ($modelclz) {
             $model = new $modelclz();
             // 检查数据是否满足模型的定义
-            $sta = Proto::Check($this->request, $model);
+            $sta = Proto::Check($params, $model);
             if ($sta != Code::OK) {
                 $this->log($sta);
                 echo json_encode([
@@ -157,6 +173,7 @@ class Api extends Controller
     {
         $output = [
             "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
+            "permission" => Service::PermissionEnabled() ? Service::PermissionId() : "disabled",
             "server" => $_SERVER,
             "request" => $_REQUEST
         ];

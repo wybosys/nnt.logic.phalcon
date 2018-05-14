@@ -7,13 +7,13 @@ use Phalcon\Http\Request\File;
 class Service
 {
     /**
+     * 服务间调用
      * @throws \Exception
      */
     static function Call(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        //$host = $_SERVER['HTTP_ORIGIN'];
-        $host = 'http://develop.91egame.com';
+        $host = Config::Use('http://develop.91egame.com', 'http://develop.91egame.com', 'http://www.91yigame.com');
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -41,5 +41,42 @@ class Service
         if (!$ret || $ret["code"] !== 0)
             throw new \Exception("执行失败", $ret["code"]);
         return $ret;
+    }
+
+    /**
+     * 获得自己的当前的许可ID
+     */
+    static function PermissionId(): string
+    {
+        $file = APP_DIR . '/tmp/permission.cfg';
+        if (!file_exists($file))
+            return null;
+        $cfg = json_decode(file_get_contents($file));
+        return $cfg->id;
+    }
+
+    static function PermissionEnabled(): bool
+    {
+        return extension_loaded('leveldb') && !Config::IsLocal();
+    }
+
+    /**
+     * 判断许可链中是否存在该许可ID
+     */
+    static function PermissionLocate(string $permissionId)
+    {
+        $dbph = APP_DIR . '/tmp/permissions.db';
+        $db = new LevelDb($dbph);
+        return $db->get($permissionId);
+    }
+
+    /**
+     * 是否允许客户端进行访问
+     */
+    static function AllowClient(): bool
+    {
+        $cfgph = APP_DIR . '/devops.json';
+        $cfg = json_decode($cfgph);
+        return isset($cfg->client) ? $cfg->client : false;
     }
 }

@@ -1,3 +1,4 @@
 {
-    "path": "/devops/service/framework/phalcon"
+    "path": "/devops/service/framework/phalcon",
+    "client": false
 }

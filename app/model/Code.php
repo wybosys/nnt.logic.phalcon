@@ -15,4 +15,5 @@ class Code
     const TARGET_EXISTS = -8; // 目标已经存在
     const USER_BLOCK = -9; // 账号被锁定
     const NO_USER = -10; // 用户不存在
+    const PERMISSION_DISALLOW = -11; // 不允许访问
 }

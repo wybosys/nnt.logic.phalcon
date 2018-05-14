@@ -120,10 +120,8 @@ class Proto
      * @param $model object
      * @return integer Code中定义的错误码
      */
-    static function Check($request, $model)
+    static function Check($params, $model)
     {
-        $params = self::CollectParameters($request);
-
         // 填充，如果遇到不符合的，返回错误
         $reader = new Memory();
         $reflect = $reader->get($model);
@@ -207,7 +205,6 @@ class Proto
     }
 
     /**
-     *
      * @param $ann \Phalcon\Annotations\Annotation
      */
     protected static function GetValue($val, $typ, $styp0, $styp1)
@@ -288,7 +285,7 @@ class Proto
         }
     }
 
-    protected static function CollectParameters(\Phalcon\Http\RequestInterface $request)
+    static function CollectParameters(\Phalcon\Http\RequestInterface $request)
     {
         $posts = $request->getPost();
         $gets = $request->getQuery();
