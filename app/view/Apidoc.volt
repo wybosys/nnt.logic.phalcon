@@ -152,7 +152,7 @@
         // 请求数据
         let url = location.href.replace('/apidoc', '/' + this.action.name);
         if (Object.keys(params).length)
-          url += '?' + $.param(params);
+          url += (url.indexOf('?') == -1 ? '?' : '&') + $.param(params);
         // 如果存在文件，则强制为post
         if (Object.keys(files).length) {
           Post(url, files, (err, resp)=>{
