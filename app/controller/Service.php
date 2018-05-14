@@ -70,7 +70,7 @@ class Service
             'create_if_missing' => false,
             'error_if_exists' => false,
         ], [
-            "snapshot" => "php"
+            "snapshot" => true
         ]);
         echo "xxx";
         exit;
