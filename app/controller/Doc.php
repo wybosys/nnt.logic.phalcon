@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use Phalcon\Mvc\Controller;
 use App\Model\Proto;
-
-// todo 使用APC
 use Phalcon\Annotations\Adapter\Memory;
 use Phalcon\Annotations\Annotation;
+use Phalcon\Mvc\Controller;
+
+// todo 使用APC
 
 class Doc
 {
@@ -38,12 +38,15 @@ class Doc
         foreach ($methods as $nm => $method) {
             if (!$method->has('Action'))
                 continue;
-            $ret[] = self::ActionInfo($nm, $method->get('Action'));
+            $info = self::ActionInfo($nm, $method->get('Action'));
+            if ($info)
+                $ret[] = $info;
         }
         return $ret;
     }
 
-    static public function ActionInfo($name, Annotation $ann) {
+    static public function ActionInfo($name, Annotation $ann)
+    {
         $ret = [
             "name" => $name
         ];
@@ -51,11 +54,32 @@ class Doc
         if (is_string($ops)) {
             $ret["comment"] = $ops;
             $ret["needauth"] = true;
-        }
-        else if (is_array($ops)) {
-            $ret["needauth"] = !in_array('noauth', $ops);
+        } else if (is_array($ops)) {
+            $ret["needauth"] = !in_array("noauth", $ops);
+            if (in_array("local", $ops))
+                $ret["local"] = true;
+            if (in_array("devops", $ops))
+                $ret["devops"] = true;
+            if (in_array("devopsrelease", $ops))
+                $ret["devopsrelease"] = true;
             $ret["comment"] = $ann->getArgument(2);
         }
+
+        // 判断action显示与否
+        $check_env = isset($ret["local"]) || isset($ret["devops"]) || isset($ret["devopsrelease"]);
+        if ($check_env) {
+            // 检查当前环境是否匹配
+            if (isset($ret["local"])) {
+                if (!Config::IsLocal())
+                    return null;
+            } else if (isset($ret["devops"])) {
+                if (!Config::IsDevops())
+                    return null;
+            } else if (!Config::IsDevopsRelease()) {
+                return null;
+            }
+        }
+
         return $ret;
     }
 
