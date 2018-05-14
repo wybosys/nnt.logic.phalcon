@@ -93,7 +93,13 @@ class Api extends Controller
         // 判断访问权限
         if (Service::PermissionEnabled()) {
             if (!Service::AllowClient()) {
-                $permid = $params['_permid'];
+                if (!isset($params[KEY_PERMISSIONID])) {
+                    echo json_encode([
+                        'code' => Code::PERMISSION_DISALLOW
+                    ]);
+                    return;
+                }
+                $permid = $params[KEY_PERMISSIONID];
                 if (!Service::PermissionLocate($permid)) {
                     echo json_encode([
                         'code' => Code::PERMISSION_DISALLOW

@@ -80,3 +80,5 @@ class Service
         return isset($cfg->client) ? $cfg->client : false;
     }
 }
+
+const KEY_PERMISSIONID = "_permid";
