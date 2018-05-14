@@ -92,7 +92,18 @@ class Api extends Controller
 
         // 判断访问权限
         if (Service::PermissionEnabled()) {
-            if (!Config::IsLocal() || !isset($params[KEY_SKIPPERMISSION]) || !$params[KEY_SKIPPERMISSION] || $name != 'apidocAction') {
+            // local时不判断
+            // devops时设置了skip不判断
+            // 访问的是apidoc不判断
+            while (1) {
+                if (Config::IsLocal())
+                    break;
+                if (Config::IsDevops() && isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION])
+                    break;
+                if ($name == 'apidocAction')
+                    break;
+
+                // 判断代码
                 if (!Service::AllowClient()) {
                     if (!isset($params[KEY_PERMISSIONID])) {
                         echo json_encode([
@@ -108,6 +119,8 @@ class Api extends Controller
                         return;
                     }
                 }
+
+                break;
             }
         }
 
