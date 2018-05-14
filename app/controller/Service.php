@@ -65,7 +65,7 @@ class Service
      */
     static function PermissionLocate(string $permissionId)
     {
-        $dbph = APP_DIR . '/run/permissions.db';
+        $dbph = APP_DIR . '/run/permissions';
         $db = dba_open($dbph, 'r');
         return dba_fetch($permissionId, $db);
     }
