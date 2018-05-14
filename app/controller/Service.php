@@ -67,6 +67,8 @@ class Service
     {
         $dbph = APP_DIR . '/tmp/permissions.db';
         $db = new \LevelDb($dbph);
+        echo "xxx";
+        exit;
         return $db->get($permissionId);
     }
 
