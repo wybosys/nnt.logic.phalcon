@@ -92,7 +92,7 @@ class Api extends Controller
 
         // 判断访问权限
         if (Service::PermissionEnabled()) {
-            if (!isset($params[KEY_SKIPPERMISSION]) || !$params[KEY_SKIPPERMISSION]) {
+            if (!Config::IsLocal() || !isset($params[KEY_SKIPPERMISSION]) || !$params[KEY_SKIPPERMISSION] || $name != 'apidocAction') {
                 if (!Service::AllowClient()) {
                     if (!isset($params[KEY_PERMISSIONID])) {
                         echo json_encode([

@@ -151,8 +151,10 @@
         }      
         // 请求数据
         let url = location.href.replace('/apidoc', '/' + this.action.name);
+        url += url.indexOf('?') == -1 ? '?' : '&';
         if (Object.keys(params).length)
-          url += (url.indexOf('?') == -1 ? '?' : '&') + $.param(params);
+          url += $.param(params);
+        url += "&_skippermission=1";
         // 如果存在文件，则强制为post
         if (Object.keys(files).length) {
           Post(url, files, (err, resp)=>{
