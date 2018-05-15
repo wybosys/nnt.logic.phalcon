@@ -57,7 +57,8 @@ class Service
 
     static function PermissionEnabled(): bool
     {
-        return extension_loaded('dba') && !Config::IsLocal();
+        // 只有devops环境下才具备检测权限的环境
+        return Config::IsDevops();
     }
 
     /**
@@ -65,9 +66,10 @@ class Service
      */
     static function PermissionLocate(string $permissionId)
     {
-        $dbph = APP_DIR . '/run/permissions';
-        $db = dba_open($dbph, 'r');
-        return dba_fetch($permissionId, $db);
+        $db = new \Redis();
+        $db->connect('localhost', 26379);
+        $db->select(REDIS_PERMISSIONIDS);
+        return $db->get($permissionId);
     }
 
     /**
@@ -83,3 +85,4 @@ class Service
 
 const KEY_PERMISSIONID = "_permissionid";
 const KEY_SKIPPERMISSION = "_skippermission";
+const REDIS_PERMISSIONIDS = 17;

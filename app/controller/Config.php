@@ -4,18 +4,22 @@ namespace App\Controller;
 
 class Config extends \Phalcon\Config
 {
-    static function Use($local, $devops, $devopsrelease)
+    static function Use($local, $devopsdevelop, $devopsrelease)
     {
         if (self::IsLocal())
             return $local;
-        if (self::IsDevops())
-            return $devops;
+        if (self::IsDevopsDevelop())
+            return $devopsdevelop;
         return $devopsrelease;
     }
 
     static function IsLocal(): bool
     {
-        return getenv('DEVOPS') == null && getenv('DEVOPS_RELEASE') == null;
+        return getenv('DEVOPS') == null;
+    }
+
+    static function IsDevops(): bool  {
+        return getenv('DEVOPS') != null;
     }
 
     static function IsDevopsRelease(): bool
@@ -23,7 +27,7 @@ class Config extends \Phalcon\Config
         return getenv('DEVOPS_RELEASE') != null;
     }
 
-    static function IsDevops(): bool
+    static function IsDevopsDevelop(): bool
     {
         return getenv('DEVOPS_RELEASE') == null && getenv('DEVOPS') != null;
     }
