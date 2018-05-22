@@ -183,7 +183,7 @@ class SeaslogAdapter implements AdapterInterface
         }
     }
 
-    function log($type, $message = null, array $context = null): AdapterInterface
+    function log($type, $message = null, $context = null): AdapterInterface
     {
         if ($type > $this->_level)
             return $this;
@@ -213,43 +213,43 @@ class SeaslogAdapter implements AdapterInterface
         return true;
     }
 
-    function debug($message, array $context = null): AdapterInterface
+    function debug($message, $context = null): AdapterInterface
     {
         \Seaslog::debug($message);
         return $this;
     }
 
-    function error($message, array $context = null): AdapterInterface
+    function error($message, $context = null): AdapterInterface
     {
         \Seaslog::error($message);
         return $this;
     }
 
-    function info($message, array $context = null): AdapterInterface
+    function info($message, $context = null): AdapterInterface
     {
         \Seaslog::info($message);
         return $this;
     }
 
-    function notice($message, array $context = null): AdapterInterface
+    function notice($message, $context = null): AdapterInterface
     {
         \Seaslog::notice($message);
         return $this;
     }
 
-    function warning($message, array $context = null): AdapterInterface
+    function warning($message, $context = null): AdapterInterface
     {
         \Seaslog::warning($message);
         return $this;
     }
 
-    function alert($message, array $context = null): AdapterInterface
+    function alert($message, $context = null): AdapterInterface
     {
         \Seaslog::alert($message);
         return $this;
     }
 
-    function emergency($message, array $context = null): AdapterInterface
+    function emergency($message, $context = null): AdapterInterface
     {
         \Seaslog::emergency($message);
         return $this;
@@ -301,7 +301,7 @@ class RedislogAdapter implements AdapterInterface
     private $_db;
     private $_key;
 
-    function log($type, $message = null, array $context = null): AdapterInterface
+    function log($type, $message = null, $context = null): AdapterInterface
     {
         if ($type > $this->_level)
             return $this;
@@ -330,49 +330,49 @@ class RedislogAdapter implements AdapterInterface
         return true;
     }
 
-    function debug($message, array $context = null): AdapterInterface
+    function debug($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::DEBUG);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function error($message, array $context = null): AdapterInterface
+    function error($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::ERROR);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function info($message, array $context = null): AdapterInterface
+    function info($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::INFO);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function notice($message, array $context = null): AdapterInterface
+    function notice($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::NOTICE);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function warning($message, array $context = null): AdapterInterface
+    function warning($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::WARNING);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function alert($message, array $context = null): AdapterInterface
+    function alert($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::ALERT);
         $this->_db->lPush($this->_key, $message);
         return $this;
     }
 
-    function emergency($message, array $context = null): AdapterInterface
+    function emergency($message, $context = null): AdapterInterface
     {
         $this->_db->select(\Phalcon\Logger::EMERGENCY);
         $this->_db->lPush($this->_key, $message);
