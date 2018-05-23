@@ -76,7 +76,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\Echoo, [noauth], "CIDR测试")
+     * @Action(\Test\Model\CidrTest, [noauth], "CIDR测试")
      */
     function cidr(\Test\Model\CidrTest $mdl)
     {
