@@ -17,8 +17,8 @@ class CidrTest
     public $ip;
 
     /**
-     * @Api(3, [bool], [output], "结果")
-     * @var bool
+     * @Api(3, [boolean], [output], "结果")
+     * @var boolean
      */
     public $result;
 }
