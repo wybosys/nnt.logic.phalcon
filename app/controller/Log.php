@@ -183,7 +183,7 @@ class SeaslogAdapter implements AdapterInterface
         }
     }
 
-    function log($type, $message = null, $context = null): AdapterInterface
+    function log($type, $message = null, array $context = null): AdapterInterface
     {
         if ($type > $this->_level)
             return $this;
