@@ -88,7 +88,7 @@ class Service
     static function AllowClient(): bool
     {
         $cfgph = APP_DIR . '/devops.json';
-        $cfg = json_decode($cfgph);
+        $cfg = json_decode(file_get_contents($cfgph));
         return isset($cfg->client) ? $cfg->client : false;
     }
 }
