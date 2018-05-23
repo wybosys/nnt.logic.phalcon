@@ -15,6 +15,10 @@ class Service
         $ch = curl_init();
         $host = Config::Use(Service::HOST_LOCAL, Service::HOST_DEVOPSDEVELOP, Service::HOST_DEVOPSRELEASE);
 
+        if (Service::PermissionEnabled()) {
+            $args[KEY_PERMISSIONID] = Service::PermissionId();
+        }
+
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -88,7 +92,7 @@ class Service
     static function AllowClient(): bool
     {
         $cfgph = APP_DIR . '/devops.json';
-        $cfg = json_decode($cfgph);
+        $cfg = json_decode(file_get_contents($cfgph));
         return isset($cfg->client) ? $cfg->client : false;
     }
 }
