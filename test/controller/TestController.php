@@ -80,7 +80,6 @@ class TestController extends Api
      */
     function cidr(\Test\Model\CidrTest $mdl)
     {
-        list($subnet, $mask) = explode('/', $mdl->rule);
-        $mdl->result = (ip2long($mdl->ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
+        $mdl->result = Service::CidrMatch($mdl->ip, $mdl->rule);
     }
 }
