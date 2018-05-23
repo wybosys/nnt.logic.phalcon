@@ -292,7 +292,7 @@ class Proto
         $files = $request->getUploadedFiles();
 
         // 合并到同一个集合
-        $ret = array_merge($posts, $gets);
+        $ret = array_merge($gets, $posts);
         foreach ($files as $file) {
             if (!$file->getKey())
                 continue;

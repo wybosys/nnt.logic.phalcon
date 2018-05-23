@@ -6,14 +6,14 @@ use Phalcon\Http\Request\File;
 
 class Service
 {
-    /**
-     * 服务间调用
-     * @throws \Exception
-     */
-    static function Call(string $idr, array $args, array $files = null)
+    const HOST_LOCAL = 'http://develop.91egame.com';
+    const HOST_DEVOPSDEVELOP = 'http://develop.91egame.com';
+    const HOST_DEVOPSRELEASE = 'http://www.91yigame.com';
+
+    static function RawCall(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        $host = Config::Use('http://develop.91egame.com', 'http://develop.91egame.com', 'http://www.91yigame.com');
+        $host = Config::Use(Service::HOST_LOCAL, Service::HOST_DEVOPSDEVELOP, Service::HOST_DEVOPSRELEASE);
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -37,6 +37,16 @@ class Service
         $msg = curl_exec($ch);
         curl_close($ch);
 
+        return $msg;
+    }
+
+    /**
+     * 服务间调用
+     * @throws \Exception
+     */
+    static function Call(string $idr, array $args, array $files = null)
+    {
+        $msg = self::RawCall($idr, $args, $files);
         $ret = json_decode($msg, true);
         if (!$ret || $ret["code"] !== 0)
             throw new \Exception("执行失败", $ret["code"]);
