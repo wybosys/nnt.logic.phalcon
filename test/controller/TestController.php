@@ -74,4 +74,13 @@ class TestController extends Api
             $mdl->value = $this->di->getRedis()->get($mdl->key);
         }
     }
+
+    /**
+     * @Action(\Test\Model\Echoo, [noauth], "CIDR测试")
+     */
+    function cidr(\Test\Model\CidrTest $mdl)
+    {
+        list($subnet, $mask) = explode('/', $mdl->rule);
+        $mdl->result = (ip2long($mdl->ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
+    }
 }
