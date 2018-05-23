@@ -104,7 +104,8 @@ class Api extends Controller
                     break;
 
                 // 判断代码
-                if (!Service::AllowClient()) {
+                if (!Service::AllowClient($this->request)) {
+                    // 使用permission规则
                     if (!isset($params[KEY_PERMISSIONID])) {
                         echo json_encode([
                             'code' => Code::PERMISSION_DISALLOW

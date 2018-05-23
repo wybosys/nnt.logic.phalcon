@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Phalcon\Http\Request\File;
+use Phalcon\Http\RequestInterface;
 
 class Service
 {
@@ -13,10 +14,10 @@ class Service
     static function RawCall(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        $host = Config::Use(Service::HOST_LOCAL, Service::HOST_DEVOPSDEVELOP, Service::HOST_DEVOPSRELEASE);
+        $host = Config::Use(self::HOST_LOCAL, self::HOST_DEVOPSDEVELOP, self::HOST_DEVOPSRELEASE);
 
-        if (Service::PermissionEnabled()) {
-            $args[KEY_PERMISSIONID] = Service::PermissionId();
+        if (self::PermissionEnabled()) {
+            $args[KEY_PERMISSIONID] = self::PermissionId();
         }
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
@@ -86,14 +87,52 @@ class Service
         return $db->get($permissionId);
     }
 
+    private static $_DEVOPSCONFIG = null;
+
+    protected static function DevopsConfig()
+    {
+        if (self::$_DEVOPSCONFIG == null) {
+            $cfgph = APP_DIR . '/devops.json';
+            self::$_DEVOPSCONFIG = json_decode(file_get_contents($cfgph));
+        }
+        return self::$_DEVOPSCONFIG;
+    }
+
     /**
      * 是否允许客户端进行访问
      */
-    static function AllowClient(): bool
+    static function AllowClient(RequestInterface $request): bool
     {
-        $cfgph = APP_DIR . '/devops.json';
-        $cfg = json_decode(file_get_contents($cfgph));
-        return isset($cfg->client) ? $cfg->client : false;
+        $cfg = self::DevopsConfig();
+
+        // 全局打开客户端访问
+        if (isset($cfg->client) && $cfg->client)
+            return true;
+
+        // 是否在白名单内
+        $clientip = $request->getClientAddress(true);
+        if (isset($cfg->allow)) {
+            foreach ($cfg->allow as $each) {
+                if (self::CidrMatch($clientip, $each))
+                    return true;
+            }
+        }
+
+        // 是否在黑名单内
+        if (isset($cfg->deny)) {
+            foreach ($cfg->deny as $each) {
+                if (self::CidrMatch($clientip, $each))
+                    return false;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function CidrMatch($ip, $cidr)
+    {
+        list($subnet, $mask) = explode('/', $cidr);
+        return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
     }
 }
 
