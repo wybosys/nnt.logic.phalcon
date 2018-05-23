@@ -126,7 +126,7 @@ class Service
             }
         }
 
-        return false;
+        return true;
     }
 
     static function CidrMatch($ip, $cidr)
