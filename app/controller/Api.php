@@ -80,18 +80,15 @@ class Api extends Controller
         $info = $this->_actions[$name];
 
         // 判断有没有登陆
-        if ($info->needauth && !$this->di->has('user')) {
-            echo json_encode([
-                'code' => Code::NEED_AUTH
-            ]);
-            return;
-        }
-
-        // 收集参数
-        $params = Proto::CollectParameters($this->request);
-
-        // 判断访问权限
-        if (Service::PermissionEnabled()) {
+        if ($info->needauth) {
+            if (!$this->di->has('user')) {
+                echo json_encode([
+                    'code' => Code::NEED_AUTH
+                ]);
+                return;
+            }
+        } else if (Service::PermissionEnabled()) {
+            // 对不需要登录的接口进行权限验证
             // local时不判断
             // devops时设置了skip不判断
             // 访问的是apidoc不判断
@@ -124,6 +121,9 @@ class Api extends Controller
                 break;
             }
         }
+
+        // 收集参数
+        $params = Proto::CollectParameters($this->request);
 
         // 初始化访问的模型
         $model = null;
