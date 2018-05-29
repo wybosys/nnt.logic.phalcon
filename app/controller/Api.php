@@ -7,15 +7,42 @@ use App\Model\Proto;
 use Phalcon\Annotations\Adapter\Memory;
 use Phalcon\Mvc\Controller;
 
-// todo 使用APC
-
 class ActionInfo
 {
+    /**
+     * @var string 动作名
+     */
     public $name;
+
+    /**
+     * @var mixed 动作绑定的模型
+     */
     public $model;
+
+    /**
+     * @var string 注释
+     */
     public $comment;
+
+    /**
+     * @var bool 是否需要登录
+     */
     public $needauth = true;
+
+    /**
+     * @var bool 是否导出到api
+     */
     public $export = true;
+
+    /**
+     * @var bool 是否使用缓存
+     */
+    public $cache = false;
+
+    /**
+     * @var int 缓存时间
+     */
+    public $ttl = 60;
 
     function __construct(string $mthnm, \Phalcon\Annotations\Annotation $ann)
     {
@@ -25,11 +52,31 @@ class ActionInfo
         if (is_string($tmp)) {
             $this->comment = $tmp;
         } else if (is_array($tmp)) {
-            $this->needauth = !in_array('noauth', $tmp);
-            $this->export = !in_array('noexport', $tmp);
+            foreach ($tmp as $e) {
+                if ($e == 'noauth') {
+                    $this->needauth = false;
+                } else if ($e == 'noexport') {
+                    $this->export = false;
+                } else if (strpos($e, 'cache') !== false) {
+                    if (preg_match('/cache\((\d+)\)/', $e, $res) === false)
+                        throw new \Exception("缓存配置错误");
+                    $this->cache = true;
+                    $this->ttl = (int)$res[1];
+                }
+            }
+
             $this->comment = $ann->getArgument(2);
         }
+
+        // 如果打开了cache，但是当前全局不支持cache，自动关闭
+        if ($this->cache && !Cache::IsEnabled())
+            $this->cache = false;
     }
+}
+
+interface IAuth
+{
+    function userIdentifier(): string;
 }
 
 class Api extends Controller
@@ -45,6 +92,7 @@ class Api extends Controller
 
         $actnm = $this->router->getActionName();
 
+        // todo 使用APC
         // 把简化的action恢复成框架需要的actionAction
         $reader = new Memory();
         $reflect = $reader->get($this);
@@ -77,11 +125,19 @@ class Api extends Controller
         if (!isset($this->_actions[$name])) {
             throw new \Exception("没有找到名为 ${name} 的Action");
         }
+
+        // 动作信息
         $info = $this->_actions[$name];
+
+        // 收集参数
+        $params = Proto::CollectParameters($this->request);
 
         // 判断有没有登陆
         if ($info->needauth) {
-            if (!$this->di->has('user')) {
+            $auth = $this->di->get('user');
+            if ($auth && !($auth instanceof IAuth))
+                $auth = null;
+            if (!$auth) {
                 echo json_encode([
                     'code' => Code::NEED_AUTH
                 ]);
@@ -122,14 +178,19 @@ class Api extends Controller
             }
         }
 
-        // 收集参数
-        $params = Proto::CollectParameters($this->request);
+        // 如果开了缓存，则尝试从缓存中恢复数据
+        if ($info->cache && Cache::IsEnabled()) {
+            $cache = new Cache();
+        }
 
         // 初始化访问的模型
-        $model = null;
         $modelclz = $info->model;
+        $inputs = [
+            "__action" => $name
+        ];
         if ($modelclz) {
             $model = new $modelclz();
+
             // 检查数据是否满足模型的定义
             $sta = Proto::Check($params, $model);
             if ($sta != Code::OK) {
@@ -137,6 +198,27 @@ class Api extends Controller
                 echo json_encode([
                     'code' => $sta
                 ]);
+                return;
+            }
+
+            if ($cache) {
+                // 使用模型信息命中缓存(所有input参数+用户的登录信息)
+                $inputs = Proto::Input($model);
+            }
+        }
+
+        // 如果开了缓存，则尝试从缓存中恢复数据
+        if ($info->cache) {
+            $cache = new Cache();
+            // 如果包含登录信息，则输入参数中加入用户id
+            if ($auth) {
+                $inputs['__useridentifier'] = $auth->userIdentifier();
+            }
+            // 将inputs转变为key
+            $cachekey = hash("sha256", json_encode($inputs));
+            $record = $cache->load($cachekey);
+            if ($record) {
+                echo $record;
                 return;
             }
         }
@@ -163,10 +245,17 @@ class Api extends Controller
                 if ($headers->get('Content-Type') === 'application/json') {
                     $out = Proto::Output($model);
                     $this->log(Code::OK);
-                    echo json_encode([
+                    $json = json_encode([
                         'code' => Code::OK,
                         'message' => count($out) ? $out : '{}'
                     ]);
+
+                    // 如果打开了cache，则自动保存到缓存中
+                    if ($cache) {
+                        $cache->save($cachekey, $json, $info->ttl);
+                    }
+
+                    echo $json;
                 }
             }
         } catch (\Throwable $ex) {

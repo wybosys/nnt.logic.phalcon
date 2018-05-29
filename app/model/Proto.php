@@ -176,7 +176,6 @@ class Proto
 
     /**
      * 输出模型的数据到基本对象
-     *
      * @return array
      */
     static function Output($model)
@@ -195,6 +194,35 @@ class Proto
                 if ($api) {
                     $ops = $api->getArgument(2);
                     if (!in_array('output', $ops))
+                        continue;
+                    $typs = $api->getArgument(1);
+                    $ret[$name] = self::OutputValue($model->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
+                }
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * 获取模型的输入参数
+     * @return array
+     */
+    static function Input($model)
+    {
+        $ret = [];
+        if ($model == null)
+            return $ret;
+        $reader = new Memory();
+        $reflect = $reader->get($model);
+        $props = $reflect->getPropertiesAnnotations();
+        if ($props) {
+            foreach ($props as $name => $prop) {
+                if (!$prop->has('Api'))
+                    continue;
+                $api = $prop->get('Api');
+                if ($api) {
+                    $ops = $api->getArgument(2);
+                    if (!in_array('input', $ops))
                         continue;
                     $typs = $api->getArgument(1);
                     $ret[$name] = self::OutputValue($model->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
