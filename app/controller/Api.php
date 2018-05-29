@@ -141,8 +141,10 @@ class Api extends Controller
             }
             if ($auth && !($auth instanceof IAuth)) {
                 $auth = null;
+                echo "yyyyyyyyyy";exit;
             }
             if (!$auth) {
+                echo "ttttttttttt";exit;
                 echo json_encode([
                     'code' => Code::NEED_AUTH
                 ]);
