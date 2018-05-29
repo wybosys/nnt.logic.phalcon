@@ -52,7 +52,7 @@ class Service
     static function Call(string $idr, array $args, array $files = null)
     {
         $msg = self::RawCall($idr, $args, $files);
-        $ret = json_decode($msg, true);
+        $ret = json_decode($msg);
         if (!$ret || $ret["code"] !== 0)
             throw new \Exception("执行失败", $ret["code"]);
         return $ret;
