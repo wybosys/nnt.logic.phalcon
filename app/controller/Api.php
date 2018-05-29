@@ -58,7 +58,7 @@ class ActionInfo
                 } else if ($e == 'noexport') {
                     $this->export = false;
                 } else if (strpos($e, 'cache') !== false) {
-                    if (preg_match('/cache\((\d+)\)/', $e, $res) === false)
+                    if (preg_match('/cache_(\d+)/', $e, $res) === false)
                         throw new \Exception("缓存配置错误");
                     $this->cache = true;
                     $this->ttl = (int)$res[1];
