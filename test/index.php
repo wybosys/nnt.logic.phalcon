@@ -25,7 +25,6 @@ $loader->registerDirs([
 $loader->register();
 
 $di = new FactoryDefault();
-$logger = "fdafas";
 
 $di->setShared('config', function () {
     return include 'config/config.php';
@@ -57,6 +56,10 @@ $di->setShared('session', function () {
     $hdl = SesFactory::load($this->getConfig()->session);
     $hdl->start();
     return $hdl;
+});
+
+$di->setShared('auth', function() {
+    return new \Test\Model\User();
 });
 
 $app = new Application($di);
