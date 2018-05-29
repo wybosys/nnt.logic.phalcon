@@ -8,6 +8,6 @@ class User implements IAuth
 {
     function userIdentifier(): string
     {
-        return null;
+        return "test";
     }
 }

@@ -84,7 +84,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\Echoo, [noauth, cache_10], "测试缓存")
+     * @Action(\Test\Model\Echoo, [auth, cache_10], "测试缓存")
      */
     function cache(\Test\Model\Echoo $mdl)
     {
