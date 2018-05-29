@@ -137,10 +137,10 @@ class Api extends Controller
         if ($info->needauth) {
             if ($this->di->has('user')) {
                 $auth = $this->di->get('user');
+                echo "zzzzzzzz";exit;
             }
             if ($auth && !($auth instanceof IAuth)) {
                 $auth = null;
-                echo "xxxx";exit;
             }
             if (!$auth) {
                 echo json_encode([
