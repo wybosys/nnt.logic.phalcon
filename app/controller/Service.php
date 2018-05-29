@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Model\Code;
 use Phalcon\Http\Request\File;
 use Phalcon\Http\RequestInterface;
 
@@ -53,8 +54,11 @@ class Service
     {
         $msg = self::RawCall($idr, $args, $files);
         $ret = json_decode($msg);
-        if (!$ret || $ret["code"] !== 0)
-            throw new \Exception("执行失败", $ret["code"]);
+        if (!$ret) {
+            $ret = ["code" => Code::RESPONE_ERROR];
+        } else if (!isset($ret["code"])) {
+            $ret["code"] = Code::RESPONE_ERROR;
+        }
         return $ret;
     }
 
