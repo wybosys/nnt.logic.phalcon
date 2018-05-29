@@ -88,6 +88,7 @@ class TestController extends Api
      */
     function cache(\Test\Model\Echoo $mdl)
     {
+        new \Test\Model\User();
         $mdl->output = $mdl->input;
         sleep(5);
     }
