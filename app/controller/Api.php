@@ -179,6 +179,7 @@ class Api extends Controller
         }
 
         // 如果开了缓存，则尝试从缓存中恢复数据
+        $cache = null;
         if ($info->cache && Cache::IsEnabled()) {
             $cache = new Cache();
         }
