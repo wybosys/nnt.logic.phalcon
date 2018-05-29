@@ -135,10 +135,13 @@ class Api extends Controller
         // 判断有没有登陆
         $auth = null;
         if ($info->needauth) {
-            if ($this->di->has('user'))
+            if ($this->di->has('user')) {
                 $auth = $this->di->get('user');
-            if ($auth && !($auth instanceof IAuth))
+            }
+            if ($auth && !($auth instanceof IAuth)) {
                 $auth = null;
+                echo "xxxx";exit;
+            }
             if (!$auth) {
                 echo json_encode([
                     'code' => Code::NEED_AUTH
