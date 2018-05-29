@@ -90,6 +90,6 @@ class TestController extends Api
     {
         new \Test\Model\User();
         $mdl->output = $mdl->input;
-        sleep(5);
+        sleep(2);
     }
 }
