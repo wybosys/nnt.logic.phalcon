@@ -82,4 +82,12 @@ class TestController extends Api
     {
         $mdl->result = Service::CidrMatch($mdl->ip, $mdl->rule);
     }
+
+    /**
+     * @Action(\Test\Model\Echoo, [noauth, cache(10)], "测试缓存")
+     */
+    function cache(\Test\Model\Echoo $mdl)
+    {
+        $mdl->output = $mdl->input;
+    }
 }
