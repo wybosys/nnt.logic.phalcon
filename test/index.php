@@ -58,7 +58,7 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$di->setShared('auth', function() {
+$di->setShared('user', function() {
     return new \Test\Model\User();
 });
 
