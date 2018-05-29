@@ -133,6 +133,7 @@ class Api extends Controller
         $params = Proto::CollectParameters($this->request);
 
         // 判断有没有登陆
+        $auth = null;
         if ($info->needauth) {
             $auth = $this->di->get('user');
             if ($auth && !($auth instanceof IAuth))
