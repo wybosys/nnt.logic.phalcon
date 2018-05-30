@@ -28,5 +28,6 @@ class Profiler
             $output,
             serialize($data)
         );
+        echo file_get_contents($output);exit();
     }
 }
