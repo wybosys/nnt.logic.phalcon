@@ -346,7 +346,7 @@ class Api extends Controller
     }
 
     /**
-     * @Action(null, [noauth, noexport])
+     * @Action(null, [noauth, noexport], "api文档")
      */
     function apidoc()
     {
@@ -364,7 +364,7 @@ class Api extends Controller
     }
 
     /**
-     * @Action(null, [noauth, noexport])
+     * @Action(null, [noauth, noexport], "导出api文档")
      */
     public function apiexport()
     {
@@ -373,11 +373,11 @@ class Api extends Controller
     }
 
     /**
-     * @Action(null, [noauth, noexport])
+     * @Action(null, [noauth, noexport], "性能分析")
      */
     public function profiler()
     {
-        require_once MODULE_DIR . '/profiler/index.php';
+        require_once APP_DIR . '/app/profiler/xhprof_html/index.php';
         exit;
     }
 }
