@@ -13,26 +13,19 @@ class Profiler
     // 开始取样
     static function Start()
     {
-        tideways_xhprof_enable();
+        putenv('XHGUI_MONGO_URI=' . Config::Use('develop.91egame.com:27017', 'mongo:27017', 'mongo:27017'));
+        putenv("XHGUI_PROFILING=enabled");
+        putenv("XHGUI_MONGO_DB=profiler");
+        include APP_DIR . '/app/profiler/src/Xhgui/Saver.php';
+        include APP_DIR . '/app/profiler/src/Xhgui/Saver/Interface.php';
+        include APP_DIR . '/app/profiler/src/Xhgui/Saver/Mongo.php';
+        include APP_DIR . '/app/profiler/src/Xhgui/Util.php';
+        include APP_DIR . '/app/profiler/external/header.php';
     }
 
     // 结束取样
     static function Stop()
     {
-        $data = tideways_xhprof_disable();
-        $source = 'phalcon';
-        if (Config::IsDevops())
-            $source = str_replace('/', '_', getenv('PROJECT'));
-
-        $XHPROF_OUTPUT = sys_get_temp_dir();
-        $run = uniqid();
-        $wts = 100;
-
-        // 保存到临时文件
-        $output = $XHPROF_OUTPUT . "/$run.$source.xhprof";
-        file_put_contents(
-            $output,
-            serialize($data)
-        );
+        // pass 自动结束
     }
 }
