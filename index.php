@@ -7,8 +7,9 @@ if (!isset($_GET['_url'])) {
 }
 
 $phs = array_values(array_filter(explode('/', $_GET['_url'])));
-if (!count($phs))
-    exit();
+if (!count($phs)) {
+    throw new \Exception("传递的url参数错误");
+}
 
 // 加载二级模块
 $REDIRECT_MODULE = __DIR__ . '/' . $phs[0] . '/index.php';
