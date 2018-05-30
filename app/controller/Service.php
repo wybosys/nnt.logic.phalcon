@@ -54,11 +54,12 @@ class Service
     {
         $msg = self::RawCall($idr, $args, $files);
         $ret = json_decode($msg);
-        var_dump($msg);
         if (!$ret) {
-            $ret = ["code" => Code::RESPONE_ERROR];
-        } else if (!isset($ret["code"])) {
-            $ret["code"] = Code::RESPONE_ERROR;
+            $ret = (object)[
+                "code" => Code::RESPONE_ERROR
+            ];
+        } else if (!isset($ret->code)) {
+            $ret->code = Code::RESPONE_ERROR;
         }
         return $ret;
     }

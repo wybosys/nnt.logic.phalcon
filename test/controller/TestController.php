@@ -36,8 +36,7 @@ class TestController extends Api
     function uploadimage(\Test\Model\UploadImage $mdl)
     {
         $ret = Service::Call("devops/media", ["action" => "imagestore.upload"], ["file" => $mdl->file]);
-        var_dump($ret);
-        $mdl->path = $ret["data"]["path"];
+        $mdl->path = $ret->data->path;
     }
 
     /**
