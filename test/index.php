@@ -34,10 +34,6 @@ $di->setShared('url', function () {
     return null;
 });
 
-$di->setShared('logger', function () {
-    return "fafdsafads";
-});
-
 $di->setShared('view', function () {
     $view = new View();
     $view->setDI($this);
