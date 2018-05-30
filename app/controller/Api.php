@@ -371,13 +371,4 @@ class Api extends Controller
         ApiBuilder::export($this);
         exit;
     }
-
-    /**
-     * @Action(null, [noauth, noexport], "性能分析")
-     */
-    public function profiler()
-    {
-        require_once APP_DIR . '/app/profiler/xhprof_html/index.php';
-        exit;
-    }
 }
