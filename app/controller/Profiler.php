@@ -20,14 +20,19 @@ class Profiler
     static function Stop()
     {
         $data = tideways_xhprof_disable();
-        $name = 'phalcon';
+        $source = 'phalcon';
         if (Config::IsDevops())
-            $name = str_replace('/', '_', getenv('PROJECT'));
-        $output = sys_get_temp_dir() . "/" . uniqid() . ".$name.xhprof";
+            $source = str_replace('/', '_', getenv('PROJECT'));
+
+        $XHPROF_OUTPUT = sys_get_temp_dir();
+        $run = uniqid();
+        $wts = 100;
+
+        // 保存到临时文件
+        $output = $XHPROF_OUTPUT . "/$run.$source.xhprof";
         file_put_contents(
             $output,
             serialize($data)
         );
-        echo file_get_contents($output);exit();
     }
 }
