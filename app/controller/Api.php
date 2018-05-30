@@ -189,6 +189,7 @@ class Api extends Controller
         }
 
         // 初始化访问的模型
+        $model = null;
         $modelclz = $info->model;
         $inputs = [
             "__action" => $name
