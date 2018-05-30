@@ -1,6 +1,5 @@
 <?php
 use Phalcon\Loader;
-use Phalcon\Mvc\Application;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\View;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
@@ -52,5 +51,5 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$app = new Application($di);
+$app = new \App\Controller\Application($di);
 echo $app->handle()->getContent();

@@ -23,8 +23,9 @@ class Profiler
         $name = 'phalcon';
         if (Config::IsDevops())
             $name = str_replace('/', '_', getenv('PROJECT'));
+        $output = sys_get_temp_dir() . "/" . uniqid() . ".$name.xhprof";
         file_put_contents(
-            sys_get_temp_dir() . "/" . uniqid() . ".$name.xhprof",
+            $output,
             serialize($data)
         );
     }
