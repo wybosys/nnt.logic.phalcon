@@ -371,4 +371,13 @@ class Api extends Controller
         ApiBuilder::export($this);
         exit;
     }
+
+    /**
+     * @Action(null, [noauth, noexport])
+     */
+    public function profiler()
+    {
+        require_once MODULE_DIR . '/profiler/index.php';
+        exit;
+    }
 }
