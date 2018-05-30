@@ -3,11 +3,9 @@
 namespace App\Controller;
 
 use App\Model\Proto;
-use Phalcon\Annotations\Adapter\Memory;
+use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Annotations\Annotation;
 use Phalcon\Mvc\Controller;
-
-// todo 使用APC
 
 class Doc
 {
@@ -29,7 +27,7 @@ class Doc
 
     static public function ActionInfos(Controller $obj)
     {
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($obj);
         $methods = $reflect->getMethodsAnnotations();
         $ret = [];
@@ -85,7 +83,7 @@ class Doc
 
     static public function ActionParameters(string $act, Controller $obj)
     {
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($obj);
         $methods = $reflect->getMethodsAnnotations();
         if (!$methods)

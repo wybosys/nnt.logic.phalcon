@@ -2,8 +2,7 @@
 
 namespace App\Model;
 
-// todo 使用APC
-use Phalcon\Annotations\Adapter\Memory;
+use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
 
 class MemberDeclaration
@@ -123,7 +122,7 @@ class Proto
     static function Check($params, $model)
     {
         // 填充，如果遇到不符合的，返回错误
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
@@ -155,7 +154,7 @@ class Proto
      */
     static function Decode($model, $params)
     {
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
@@ -183,7 +182,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
@@ -212,7 +211,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
@@ -341,7 +340,7 @@ class Proto
     public static function DeclarationOf($model)
     {
         $ret = [];
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {

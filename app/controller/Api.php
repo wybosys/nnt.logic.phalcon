@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Model\Code;
 use App\Model\Proto;
-use Phalcon\Annotations\Adapter\Memory;
+use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Mvc\Controller;
 
 class ActionInfo
@@ -92,9 +92,8 @@ class Api extends Controller
 
         $actnm = $this->router->getActionName();
 
-        // todo 使用APC
         // 把简化的action恢复成框架需要的actionAction
-        $reader = new Memory();
+        $reader = new Apcu();
         $reflect = $reader->get($this);
         $methods = $reflect->getMethodsAnnotations();
         if ($methods) {

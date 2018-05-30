@@ -3,11 +3,6 @@
 namespace App\Controller;
 
 use Phalcon\Mvc\Controller;
-use App\Model\Proto;
-use App\Model\Code;
-
-// todo 使用APC
-use Phalcon\Annotations\Adapter\Memory;
 
 class ApiBuilder
 {
@@ -22,24 +17,24 @@ class ApiBuilder
         $apinames = [];
         $file = fopen("tmp/$cn" . "Api.js", "w");
         fwrite($file, "import {ApiBase, ApiOutBase} from './ApiBase'\n");
-        foreach ($actions as $v){
+        foreach ($actions as $v) {
             $an = $v['name'];
             $args = $v['params'];
             $out = [];
             $in = [];
-            foreach ($args as $arg){
+            foreach ($args as $arg) {
                 $argn = $arg->name;
 
-                if($arg->output)
+                if ($arg->output)
                     $out[] = $argn;
-                if($arg->input || $arg->optional)
+                if ($arg->input || $arg->optional)
                     $in[] = $argn;
 
             }
             // 进
             $ina = ucfirst($cn . $an . "In");
             $ona = ucfirst($cn . $an . "Out");
-            fwrite($file, "export class " . $ina . " extends ApiBase {\n".
+            fwrite($file, "export class " . $ina . " extends ApiBase {\n" .
                 "   constructor (){
         super()
         this.controller = '$cn'
@@ -97,11 +92,11 @@ class ApiBuilder
         );
         fclose($file);
 
-        $filename = "tmp/"."$cn" . "Api.js";
+        $filename = "tmp/" . "$cn" . "Api.js";
         $outname = "$cn" . "Api.js";
         header("Content-type:application/x-javascript");
-        header('Content-Disposition: attachment; filename="'.$outname .'"'); //指定下载文件的描述
-        header('Content-Length:'.filesize($filename)); //指定下载文件的大小
+        header('Content-Disposition: attachment; filename="' . $outname . '"'); //指定下载文件的描述
+        header('Content-Length:' . filesize($filename)); //指定下载文件的大小
 
 //将文件内容读取出来并直接输出，以便下载
         readfile($filename);
