@@ -56,11 +56,7 @@ class Profiler
 
     function _start()
     {
-        $uri = null;
-        if (empty($uri) && isset($_SERVER['argv'])) {
-            $cmd = basename($_SERVER['argv'][0]);
-            $uri = $cmd . ' ' . implode(' ', array_slice($_SERVER['argv'], 1));
-        }
+        $uri = getenv('PROJECT') . '/' . getenv('HOSTNAME') . '/' . getenv('REQUEST_URI');
 
         $time = array_key_exists('REQUEST_TIME', $_SERVER)
             ? $_SERVER['REQUEST_TIME']
