@@ -56,7 +56,7 @@ class Profiler
 
     function _start()
     {
-        $uri = getenv('PROJECT') . '/' . getenv('HOSTNAME') . '/' . getenv('REQUEST_URI');
+        $uri = getenv('HOSTNAME') . '/' . getenv('PROJECT') . '/' . getenv('REQUEST_URI');
 
         $time = array_key_exists('REQUEST_TIME', $_SERVER)
             ? $_SERVER['REQUEST_TIME']
