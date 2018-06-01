@@ -56,9 +56,7 @@ class Profiler
 
     function _start()
     {
-        $uri = array_key_exists('HTTP_REFERER', $_SERVER)
-            ? $_SERVER['HTTP_REFERER']
-            : null;
+        $uri = null;
         if (empty($uri) && isset($_SERVER['argv'])) {
             $cmd = basename($_SERVER['argv'][0]);
             $uri = $cmd . ' ' . implode(' ', array_slice($_SERVER['argv'], 1));
