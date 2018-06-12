@@ -340,7 +340,7 @@ class Api extends Controller
             'msg' => $data
         ];
 
-        Log::log($typ, json_encode($data));
+        Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }
 
     /**
