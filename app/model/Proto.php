@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Controller\Config;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
 
@@ -114,6 +115,19 @@ class Proto
 {
 
     /**
+     * @param string|object $className
+     * @return \Phalcon\Annotations\Reflection
+     */
+    static function Reflect($model)
+    {
+        $reader = new Apcu([
+            "lifetime" => Config::Use(5, 60 * 5, 60 * 5),
+            "prefix" => "_proto_"
+        ]);
+        return $reader->get($model);
+    }
+
+    /**
      *
      * @param $request \Phalcon\Http\Request|\Phalcon\Http\RequestInterface
      * @param $model object
@@ -122,8 +136,7 @@ class Proto
     static function Check($params, $model)
     {
         // 填充，如果遇到不符合的，返回错误
-        $reader = new Apcu();
-        $reflect = $reader->get($model);
+        $reflect = self::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -154,8 +167,7 @@ class Proto
      */
     static function Decode($model, $params)
     {
-        $reader = new Apcu();
-        $reflect = $reader->get($model);
+        $reflect = self::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -182,8 +194,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reader = new Apcu();
-        $reflect = $reader->get($model);
+        $reflect = self::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -211,8 +222,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reader = new Apcu();
-        $reflect = $reader->get($model);
+        $reflect = self::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -340,8 +350,7 @@ class Proto
     public static function DeclarationOf($model)
     {
         $ret = [];
-        $reader = new Apcu();
-        $reflect = $reader->get($model);
+        $reflect = self::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
