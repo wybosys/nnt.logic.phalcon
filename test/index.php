@@ -26,7 +26,7 @@ $loader->register();
 $di = new FactoryDefault();
 
 $di->setShared('config', function () {
-    return include 'config/appconfig.php';
+    return include 'config/config.php';
 });
 
 $di->setShared('url', function () {
