@@ -1,5 +1,7 @@
 <?php
 
+// 用来配合phalcon工具生成模型
+
 defined('MODULE_DIR') || define('MODULE_DIR', dirname(__DIR__) . '/');
 defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
 
