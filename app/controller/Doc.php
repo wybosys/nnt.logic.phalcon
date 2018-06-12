@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Model\Proto;
-use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Annotations\Annotation;
 use Phalcon\Mvc\Controller;
 
@@ -27,8 +26,7 @@ class Doc
 
     static public function ActionInfos(Controller $obj)
     {
-        $reader = new Apcu();
-        $reflect = $reader->get($obj);
+        $reflect = Proto::Reflect($obj);
         $methods = $reflect->getMethodsAnnotations();
         $ret = [];
         if (!$methods)
@@ -83,8 +81,7 @@ class Doc
 
     static public function ActionParameters(string $act, Controller $obj)
     {
-        $reader = new Apcu();
-        $reflect = $reader->get($obj);
+        $reflect = Proto::Reflect($obj);
         $methods = $reflect->getMethodsAnnotations();
         if (!$methods)
             return [];
