@@ -73,11 +73,6 @@ class ActionInfo
     }
 }
 
-interface IAuth
-{
-    function userIdentifier(): string;
-}
-
 class Api extends Controller
 {
     /**
@@ -135,12 +130,19 @@ class Api extends Controller
             if ($this->di->has('user')) {
                 $auth = $this->di->get('user');
             }
-            if ($auth && !($auth instanceof IAuth)) {
-                $auth = null;
+            if (!$auth) {
+                $err = "没有找到登录数据";
+            } else {
+                $uid = @$auth->userIdentifier();
+                if (!$uid) {
+                    $auth = null;
+                    $err = "没有找到用户的标识";
+                }
             }
             if (!$auth) {
                 echo json_encode([
-                    'code' => Code::NEED_AUTH
+                    'code' => Code::NEED_AUTH,
+                    'error' => $err
                 ]);
                 return;
             }
