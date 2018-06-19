@@ -122,6 +122,7 @@ class Service
                 if (self::CidrMatch($clientip, $each))
                     return true;
             }
+            return false;
         }
 
         // 是否在黑名单内
@@ -130,9 +131,10 @@ class Service
                 if (self::CidrMatch($clientip, $each))
                     return false;
             }
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     static function CidrMatch($ip, $cidr)
