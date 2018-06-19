@@ -160,7 +160,7 @@ class Api extends Controller
 
                 // 全局打开客户端访问
                 if (isset($cfg->client) && $cfg->client)
-                    return true;
+                    break;
 
                 if ($name == 'apidocAction')
                     break;
