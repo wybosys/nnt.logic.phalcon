@@ -161,20 +161,25 @@ class Api extends Controller
 
                 // 判断代码
                 if (!Service::AllowClient($this->request)) {
-                    // 使用permission规则
-                    if (!isset($params[KEY_PERMISSIONID])) {
-                        echo json_encode([
-                            'code' => Code::PERMISSION_DISALLOW
-                        ]);
-                        return;
-                    }
-                    $permid = $params[KEY_PERMISSIONID];
-                    if (!Service::PermissionLocate($permid)) {
-                        echo json_encode([
-                            'code' => Code::PERMISSION_DISALLOW
-                        ]);
-                        return;
-                    }
+                    echo json_encode([
+                        'code' => Code::PERMISSION_DISALLOW
+                    ]);
+                    return;
+                }
+
+                // 使用permission规则
+                if (!isset($params[KEY_PERMISSIONID])) {
+                    echo json_encode([
+                        'code' => Code::PERMISSION_DISALLOW
+                    ]);
+                    return;
+                }
+                $permid = $params[KEY_PERMISSIONID];
+                if (!Service::PermissionLocate($permid)) {
+                    echo json_encode([
+                        'code' => Code::PERMISSION_DISALLOW
+                    ]);
+                    return;
                 }
 
                 break;
