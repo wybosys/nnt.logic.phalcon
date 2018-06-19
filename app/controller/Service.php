@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Model\Code;
 use Phalcon\Http\Request\File;
-use Phalcon\Http\RequestInterface;
 
 class Service
 {
@@ -107,16 +106,9 @@ class Service
     /**
      * 是否允许客户端进行访问
      */
-    static function AllowClient(RequestInterface $request): bool
+    static function AllowClient($cfg, $clientip): bool
     {
-        $cfg = self::DevopsConfig();
-
-        // 全局打开客户端访问
-        if (isset($cfg->client) && $cfg->client)
-            return true;
-
         // 是否在白名单内
-        $clientip = $request->getClientAddress(true);
         if (isset($cfg->allow)) {
             foreach ($cfg->allow as $each) {
                 if (self::CidrMatch($clientip, $each))

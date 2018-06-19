@@ -154,15 +154,25 @@ class Api extends Controller
             while (1) {
                 if (Config::IsLocal())
                     break;
-                if (isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
-                    break;
+
+                // devops.json 中的设置
+                $cfg = self::DevopsConfig();
+
+                // 全局打开客户端访问
+                if (isset($cfg->client) && $cfg->client)
+                    return true;
+
                 if ($name == 'apidocAction')
                     break;
 
+                if (isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
+                    break;
+
                 // 判断代码
-                if (!Service::AllowClient($this->request)) {
+                $clientip = $this->request->getClientAddress(true);
+                if (!Service::AllowClient($cfg, $clientip)) {
                     echo json_encode([
-                        'code' => Code::PERMISSION_DISALLOW
+                        'code' => Code::PERMISSION_DISALLOWniye
                     ]);
                     return;
                 }
