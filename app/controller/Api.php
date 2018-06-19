@@ -156,7 +156,7 @@ class Api extends Controller
                     break;
 
                 // devops.json 中的设置
-                $cfg = self::DevopsConfig();
+                $cfg = Service::DevopsConfig();
 
                 // 全局打开客户端访问
                 if (isset($cfg->client) && $cfg->client)

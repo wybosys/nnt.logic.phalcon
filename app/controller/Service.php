@@ -94,7 +94,7 @@ class Service
 
     private static $_DEVOPSCONFIG = null;
 
-    protected static function DevopsConfig()
+    static function DevopsConfig()
     {
         if (self::$_DEVOPSCONFIG == null) {
             $cfgph = APP_DIR . '/devops.json';
