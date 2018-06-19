@@ -152,7 +152,9 @@ class Api extends Controller
             // devops时设置了skip不判断
             // 访问的是apidoc不判断
             while (1) {
-                if (!Config::IsDevopsRelease() && isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION])
+                if (Config::IsLocal())
+                    break;
+                if (isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
                     break;
                 if ($name == 'apidocAction')
                     break;
