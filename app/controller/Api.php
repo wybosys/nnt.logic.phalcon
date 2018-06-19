@@ -172,7 +172,7 @@ class Api extends Controller
                 $clientip = $this->request->getClientAddress(true);
                 if (!Service::AllowClient($cfg, $clientip)) {
                     echo json_encode([
-                        'code' => Code::PERMISSION_DISALLOWniye
+                        'code' => Code::PERMISSION_DISALLOW
                     ]);
                     return;
                 }
