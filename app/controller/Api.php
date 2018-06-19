@@ -154,7 +154,7 @@ class Api extends Controller
             while (1) {
                 if (Config::IsLocal())
                     break;
-                if (Config::IsDevops() && isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION])
+                if (Config::IsDevopsDevelop() && isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION])
                     break;
                 if ($name == 'apidocAction')
                     break;
