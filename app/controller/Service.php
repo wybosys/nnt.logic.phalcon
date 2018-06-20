@@ -55,7 +55,7 @@ class Service
         $ret = json_decode($msg);
         if (!$ret) {
             $ret = (object)[
-                "code" => Code::RESPONE_ERROR
+                'code' => Code::RESPONE_ERROR
             ];
         } else if (!isset($ret->code)) {
             $ret->code = Code::RESPONE_ERROR;

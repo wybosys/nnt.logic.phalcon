@@ -172,7 +172,8 @@ class Api extends Controller
                 $clientip = $this->request->getClientAddress(true);
                 if (!Service::AllowClient($cfg, $clientip)) {
                     echo json_encode([
-                        'code' => Code::PERMISSION_DISALLOW
+                        'code' => Code::PERMISSION_DISALLOW,
+                        'error' => "不允许客户端访问"
                     ]);
                     return;
                 }
@@ -180,14 +181,16 @@ class Api extends Controller
                 // 使用permission规则
                 if (!isset($params[KEY_PERMISSIONID])) {
                     echo json_encode([
-                        'code' => Code::PERMISSION_DISALLOW
+                        'code' => Code::PERMISSION_DISALLOW,
+                        'error' => '丢失授权信息'
                     ]);
                     return;
                 }
                 $permid = $params[KEY_PERMISSIONID];
                 if (!Service::PermissionLocate($permid)) {
                     echo json_encode([
-                        'code' => Code::PERMISSION_DISALLOW
+                        'code' => Code::PERMISSION_DISALLOW,
+                        'error' => '授权信息错误'
                     ]);
                     return;
                 }

@@ -22,7 +22,7 @@ class TestController extends Api
             "input" => $mdl->input
         ]);
         if ($ret->code != 0)
-            throw new \Exception("错误", $ret->code);
+            throw new \Exception(@$ret->error, $ret->code);
         $mdl->output = $ret->data->output;
     }
 
