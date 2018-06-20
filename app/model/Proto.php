@@ -121,7 +121,7 @@ class Proto
     static function Reflect($model)
     {
         $reader = new Apcu([
-            "lifetime" => Config::Use(5, 60 * 5, 60 * 5),
+            "lifetime" => Config::Use(5, 5, 60 * 5),
             "prefix" => "_proto_"
         ]);
         return $reader->get($model);
