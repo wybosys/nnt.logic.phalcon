@@ -199,7 +199,7 @@
             if (localStorage.getItem('::nnt::logic::sid'))
                 params['_sid'] = localStorage.getItem('::nnt::logic::sid');
             // 请求数据
-            let url = location.href.replace('action=api.doc', 'action=' + this.action.action);
+            let url = location.href.replace('/apidoc', '/' + this.action.name);
             if (Object.keys(params).length)
                 url += '&' + $.param(params);
             window.open(url);
