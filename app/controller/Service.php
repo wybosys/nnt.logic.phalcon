@@ -42,7 +42,6 @@ class Service
         $msg = curl_exec($ch);
         curl_close($ch);
 
-        var_dump($args);
         return $msg;
     }
 
@@ -75,8 +74,10 @@ class Service
     static function PermissionId(): string
     {
         $file = APP_DIR . '/run/permission.cfg';
-        if (!file_exists($file))
+        if (!file_exists($file)) {
+            throw new \Exception("没有找到文件 $file", \App\Model\Code::PERMISSION_DISALLOW);
             return null;
+        }
 
         // 从apcu中读取缓存的pid
         if (apcu_exists(KEY_PERMISSIONTIME)) {
