@@ -21,7 +21,7 @@ class TestController extends Api
         $ret = Service::Call("framework/phalcon/test/echoo", [
             "input" => $mdl->input
         ]);
-        $mdl->output = $ret->data->output;
+        $mdl->output = $ret->data["output"];
     }
 
     /**
