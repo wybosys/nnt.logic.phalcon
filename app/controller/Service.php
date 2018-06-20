@@ -60,10 +60,10 @@ class Service
         } else if (!isset($ret->code)) {
             $ret->code = Code::RESPONE_ERROR;
         } else {
-            if (isset($ret["message"]) && !isset($ret["data"]))
-                $ret["data"] = $ret["message"];
-            else if (isset($ret["data"]) && !isset($ret["message"]))
-                $ret["message"] = $ret["data"];
+            if ($ret->message && !$ret->data)
+                $ret->data = $ret->message;
+            else if ($ret->data && !$ret->message)
+                $ret->message = $ret->data;
         }
         return $ret;
     }
