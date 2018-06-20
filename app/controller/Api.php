@@ -34,6 +34,11 @@ class ActionInfo
     public $export = true;
 
     /**
+     * @var bool 是否暴露该接口
+     */
+    public $expose = false;
+
+    /**
      * @var bool 是否使用缓存
      */
     public $cache = false;
@@ -56,6 +61,8 @@ class ActionInfo
                     $this->needauth = false;
                 } else if ($e == 'noexport') {
                     $this->export = false;
+                } else if ($e == 'expose') {
+                    $this->expose = true;
                 } else if (strpos($e, 'cache') !== false) {
                     if (preg_match('/cache_(\d+)/', $e, $res) === false)
                         throw new \Exception("缓存配置错误");
@@ -124,9 +131,14 @@ class Api extends Controller
         // 收集参数
         $params = Proto::CollectParameters($this->request);
 
-        // 判断有没有登陆
+        // 登录信息
         $auth = null;
-        if ($info->needauth) {
+
+        // 如果设置为接口暴露则不做任何判断
+        if (!$info->expose) {
+            // 不判断权限
+        } else if ($info->needauth) {
+            // 判断有没有登陆
             if ($this->di->has('user')) {
                 $auth = $this->di->get('user');
             }
