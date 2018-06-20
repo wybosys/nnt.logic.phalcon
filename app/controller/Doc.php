@@ -58,6 +58,8 @@ class Doc
                 $ret["devops"] = true;
             if (in_array("devopsrelease", $ops))
                 $ret["devopsrelease"] = true;
+            if (in_array("expose", $ops))
+                $ret["needauth"] = false;
             $ret["comment"] = $ann->getArgument(2);
         }
 
