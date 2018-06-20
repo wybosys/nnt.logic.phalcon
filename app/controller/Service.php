@@ -42,6 +42,7 @@ class Service
         $msg = curl_exec($ch);
         curl_close($ch);
 
+        var_dump($args);
         return $msg;
     }
 
