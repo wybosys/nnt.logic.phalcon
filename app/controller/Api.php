@@ -135,7 +135,7 @@ class Api extends Controller
         $auth = null;
 
         // 如果设置为接口暴露则不做任何判断
-        if (!$info->expose) {
+        if ($info->expose) {
             // 不判断权限
         } else if ($info->needauth) {
             // 判断有没有登陆
