@@ -74,8 +74,10 @@ class Service
     static function PermissionId(): string
     {
         $file = APP_DIR . '/run/permission.cfg';
+        echo "gggggggggg";
         if (!file_exists($file)) {
             throw new \Exception("没有找到文件 $file", \App\Model\Code::PERMISSION_DISALLOW);
+            echo "kkkkkkkkkkk";
             return null;
         }
 
@@ -88,11 +90,16 @@ class Service
                 $pid = $cfg->id;
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
                 apcu_store(KEY_PERMISSIONID, $pid);
+                echo "yyyyyyyyyyy";
                 return $pid;
             }
+            echo "xxxxxxxxxxxx";
         }
 
+        echo "zzzzzzzzzzzzz";
         $pid = apcu_fetch(KEY_PERMISSIONID);
+        echo $pid;
+        exit;
         return $pid;
     }
 
