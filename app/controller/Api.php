@@ -44,6 +44,26 @@ class ActionInfo
     public $cache = false;
 
     /**
+     * @var bool LOCAL可用
+     */
+    public $local = false;
+
+    /**
+     * @var bool DEVOPS-DEVELOP可用
+     */
+    public $devopsdevelop = false;
+
+    /**
+     * @var bool DEVOPS-RELEASE可用
+     */
+    public $devopsrelease = false;
+
+    /**
+     * @var bool DEVOPS可用
+     */
+    public $devops = false;
+
+    /**
      * @var int 缓存时间
      */
     public $ttl = 60;
@@ -69,6 +89,33 @@ class ActionInfo
                     $this->cache = true;
                     $this->ttl = (int)$res[1];
                 }
+            }
+
+            // 检测运行环境
+            $mit = false;
+            if (in_array('devops', $tmp)) {
+                $this->devops = true;
+                $mit = true;
+            }
+            if (in_array('devopsdevelop', $tmp)) {
+                $this->devopsdevelop = true;
+                $this->devops = true;
+                $mit = true;
+            }
+            if (in_array('devopsrelease', $tmp)) {
+                $this->devopsrelease = true;
+                $this->devops = true;
+                $mit = true;
+            }
+            if (in_array('local', $tmp)) {
+                $this->local = true;
+                $mit = true;
+            }
+            if (!$mit) {
+                $this->local = true;
+                $this->devops = true;
+                $this->devopsdevelop = true;
+                $this->devopsrelease = true;
             }
 
             $this->comment = $ann->getArgument(2);
