@@ -74,32 +74,30 @@ class Service
     static function PermissionId(): string
     {
         $file = APP_DIR . '/run/permission.cfg';
-        echo "gggggggggg";
         if (!file_exists($file)) {
             throw new \Exception("没有找到文件 $file", \App\Model\Code::PERMISSION_DISALLOW);
-            echo "kkkkkkkkkkk";
             return null;
         }
 
         // 从apcu中读取缓存的pid
         if (apcu_exists(KEY_PERMISSIONTIME)) {
             $time = apcu_fetch(KEY_PERMISSIONTIME);
-            $ftime = filemtime($time);
+            $ftime = filemtime($file);
             if ($time != $ftime) {
                 $cfg = json_decode(file_get_contents($file));
                 $pid = $cfg->id;
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
                 apcu_store(KEY_PERMISSIONID, $pid);
-                echo "yyyyyyyyyyy";
                 return $pid;
             }
-            echo "xxxxxxxxxxxx";
         }
 
-        echo "zzzzzzzzzzzzz";
-        $pid = apcu_fetch(KEY_PERMISSIONID);
-        echo $pid;
-        exit;
+        $ftime = filemtime($file);
+        $cfg = json_decode(file_get_contents($file));
+        $pid = $cfg->id;
+        apcu_store(KEY_PERMISSIONTIME, $ftime);
+        apcu_store(KEY_PERMISSIONID, $pid);
+        
         return $pid;
     }
 
