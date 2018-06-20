@@ -88,6 +88,7 @@ class Service
                 $pid = $cfg->id;
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
                 apcu_store(KEY_PERMISSIONID, $pid);
+                echo "xxxxxxxxx";exit;
                 return $pid;
             }
         }
@@ -97,7 +98,7 @@ class Service
         $pid = $cfg->id;
         apcu_store(KEY_PERMISSIONTIME, $ftime);
         apcu_store(KEY_PERMISSIONID, $pid);
-        
+
         return $pid;
     }
 
