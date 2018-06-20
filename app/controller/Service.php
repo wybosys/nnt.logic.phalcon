@@ -83,6 +83,9 @@ class Service
         if (apcu_exists(KEY_PERMISSIONTIME)) {
             $time = apcu_fetch(KEY_PERMISSIONTIME);
             $ftime = filemtime($file);
+            echo $time;
+            echo $ftime;
+            exit;
             if ($time != $ftime) {
                 $cfg = json_decode(file_get_contents($file));
                 $pid = $cfg->id;
