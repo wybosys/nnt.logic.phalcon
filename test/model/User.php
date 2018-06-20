@@ -2,9 +2,7 @@
 
 namespace Test\Model;
 
-use App\Controller\IAuth;
-
-class User implements IAuth
+class User
 {
     function userIdentifier(): string
     {
