@@ -17,4 +17,5 @@ class Code
     const NO_USER = -10; // 用户不存在
     const PERMISSION_DISALLOW = -11; // 不允许访问
     const RESPONE_ERROR = -12; // 返回的数据错误
+    const ACTION_NOT_FOUND = -13; // 没有找到动作
 }

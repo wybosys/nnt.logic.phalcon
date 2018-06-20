@@ -199,7 +199,11 @@ class Api extends Controller
     function __call($name, $arguments)
     {
         if (!isset($this->_actions[$name])) {
-            throw new \Exception("没有找到名为 ${name} 的Action");
+            echo json_encode([
+                'code' => Code::ACTION_NOT_FOUND,
+                'error' => "没有找到名为 ${name} 的Action"
+            ]);
+            return;
         }
 
         // 动作信息
