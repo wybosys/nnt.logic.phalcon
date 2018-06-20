@@ -6,7 +6,7 @@ use App\Controller\Service;
 class TestController extends Api
 {
     /**
-     * @Action(\Test\Model\Echoo, [expose], "输出")
+     * @Action(\Test\Model\Echoo, [expose, local], "输出")
      */
     function echoo(\Test\Model\Echoo $mdl)
     {

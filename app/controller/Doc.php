@@ -62,7 +62,7 @@ class Doc
         }
 
         // 判断action显示与否
-        $check_env = isset($ret["local"]) || isset($ret["devops"]) || isset($ret["devopsrelease"]);
+        $check_env = isset($ret["local"]) || isset($ret["devops"]) || isset($ret["devopsdevelop"]) || isset($ret["devopsrelease"]);
         if ($check_env) {
             // 检查当前环境是否匹配
             if (isset($ret["local"])) {
@@ -71,7 +71,13 @@ class Doc
             } else if (isset($ret["devops"])) {
                 if (!Config::IsDevops())
                     return null;
-            } else if (!Config::IsDevopsRelease()) {
+            } else if (isset($ret["devopsdevelop"])) {
+                if (!Config::IsDevopsDevelop())
+                    return null;
+            } else if (isset($ret["devopsrelease"])) {
+                if (!Config::IsDevopsRelease())
+                    return null;
+            } else {
                 return null;
             }
         }
