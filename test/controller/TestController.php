@@ -91,4 +91,16 @@ class TestController extends Api
         $mdl->output = $mdl->input;
         sleep(5);
     }
+
+    /**
+     * @Action(\Test\Model\Echoo, [auth, cache_10], "测试缓存")
+     */
+    function apcu(\Test\Model\Echoo $mdl)
+    {
+        if (apcu_exists($mdl->input)) {
+            $mdl->output = apcu_fetch($mdl->input);
+        } else {
+            throw new \Exception("不存在", \App\Model\Code::TARGET_NOT_FOUND);
+        }
+    }
 }
