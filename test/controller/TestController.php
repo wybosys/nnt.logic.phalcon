@@ -93,7 +93,7 @@ class TestController extends Api
     }
 
     /**
-     * @Action(\Test\Model\Echoo, "测试缓存")
+     * @Action(\Test\Model\Echoo, [noauth], "测试缓存")
      */
     function apcu(\Test\Model\Echoo $mdl)
     {
