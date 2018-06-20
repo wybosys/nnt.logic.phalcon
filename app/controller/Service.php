@@ -71,8 +71,20 @@ class Service
         $file = APP_DIR . '/run/permission.cfg';
         if (!file_exists($file))
             return null;
-        $cfg = json_decode(file_get_contents($file));
-        return $cfg->id;
+
+        // 从apcu中读取缓存的pid
+        if (apcu_exists(KEY_PERMISSIONTIME)) {
+            $time = apcu_fetch(KEY_PERMISSIONTIME);
+            $ftime = filemtime($time);
+            if ($time != $ftime) {
+                $cfg = json_decode(file_get_contents($file));
+                apcu_store(KEY_PERMISSIONTIME, $ftime);
+                apcu_store(KEY_PERMISSIONID, $cfg->id);
+                return $cfg->id;
+            }
+        }
+
+        return apcu_fetch(KEY_PERMISSIONID);
     }
 
     static function PermissionEnabled(): bool
@@ -134,6 +146,7 @@ class Service
     }
 }
 
+const KEY_PERMISSIONTIME = "_permission_time";
 const KEY_PERMISSIONID = "_permissionid";
 const KEY_SKIPPERMISSION = "_skippermission";
 const REDIS_PERMISSIONIDS = 17;
