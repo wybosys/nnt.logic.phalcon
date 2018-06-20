@@ -69,18 +69,14 @@ class Service
     static function PermissionId(): string
     {
         $file = APP_DIR . '/run/permission.cfg';
-        echo "XXXXXXX";
         if (!file_exists($file))
             return null;
 
-        echo "YYYYYYYYYE";
         // 从apcu中读取缓存的pid
         if (apcu_exists(KEY_PERMISSIONTIME)) {
             $time = apcu_fetch(KEY_PERMISSIONTIME);
             $ftime = filemtime($time);
-            echo "ZZZZZZZZZZZZZ";
             if ($time != $ftime) {
-                echo "JJJJJJJJJJJJ";
                 $cfg = json_decode(file_get_contents($file));
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
                 apcu_store(KEY_PERMISSIONID, $cfg->id);
@@ -88,7 +84,6 @@ class Service
             }
         }
 
-        echo "<<<<<<<<<<<<<<";
         return apcu_fetch(KEY_PERMISSIONID);
     }
 
