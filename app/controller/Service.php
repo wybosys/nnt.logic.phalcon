@@ -85,13 +85,17 @@ class Service
             $ftime = filemtime($time);
             if ($time != $ftime) {
                 $cfg = json_decode(file_get_contents($file));
+                $pid = $cfg->id;
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
-                apcu_store(KEY_PERMISSIONID, $cfg->id);
-                return $cfg->id;
+                apcu_store(KEY_PERMISSIONID, $pid);
+                echo $pid;exit();
+                return $pid;
             }
         }
 
-        return apcu_fetch(KEY_PERMISSIONID);
+        $pid = apcu_fetch(KEY_PERMISSIONID);
+        echo $pid;exit();
+        return $pid;
     }
 
     static function PermissionEnabled(): bool
