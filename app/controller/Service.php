@@ -65,7 +65,6 @@ class Service
             else if (isset($ret->data) && !isset($ret->message))
                 $ret->message = $ret->data;
         }
-        var_dump($ret);exit();
         return $ret;
     }
 

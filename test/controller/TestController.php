@@ -21,6 +21,8 @@ class TestController extends Api
         $ret = Service::Call("framework/phalcon/test/echoo", [
             "input" => $mdl->input
         ]);
+        if ($ret->code != 0)
+            throw new \Exception("错误", $ret->code);
         $mdl->output = $ret->data->output;
     }
 
