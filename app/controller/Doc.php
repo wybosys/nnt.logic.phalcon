@@ -56,6 +56,8 @@ class Doc
                 $ret["local"] = true;
             if (in_array("devops", $ops))
                 $ret["devops"] = true;
+            if (in_array("devopsdevelop", $ops))
+                $ret["devopsdevelop"] = true;
             if (in_array("devopsrelease", $ops))
                 $ret["devopsrelease"] = true;
             if (in_array("expose", $ops))
@@ -63,28 +65,34 @@ class Doc
             $ret["comment"] = $ann->getArgument(2);
         }
 
-        // 判断action显示与否
-        $check_env = isset($ret["local"]) || isset($ret["devops"]) || isset($ret["devopsdevelop"]) || isset($ret["devopsrelease"]);
-        if ($check_env) {
-            // 检查当前环境是否匹配
-            if (isset($ret["local"])) {
-                if (!Config::IsLocal())
-                    return null;
-            } else if (isset($ret["devops"])) {
-                if (!Config::IsDevops())
-                    return null;
-            } else if (isset($ret["devopsdevelop"])) {
-                if (!Config::IsDevopsDevelop())
-                    return null;
-            } else if (isset($ret["devopsrelease"])) {
-                if (!Config::IsDevopsRelease())
-                    return null;
-            } else {
-                return null;
-            }
+        // 判断环境显示
+        $pass = false;
+        $mit = false;
+        if (!$pass && isset($ret["local"])) {
+            $mit = true;
+            if (Config::IsLocal())
+                $pass = true;
+        }
+        if (!$pass && isset($ret["devops"])) {
+            $mit = true;
+            if (Config::IsDevops())
+                $pass = true;
+        }
+        if (!$pass && isset($ret["devopsdevelop"])) {
+            $mit = true;
+            if (Config::IsDevopsDevelop())
+                $pass = true;
+        }
+        if (!$pass && isset($ret["devopsrelease"])) {
+            $mit = true;
+            if (Config::IsDevopsRelease())
+                $pass = true;
         }
 
-        return $ret;
+        if (!$mit || $pass)
+            return $ret;
+
+        return null;
     }
 
     static public function ActionParameters(string $act, Controller $obj)

@@ -44,6 +44,26 @@ class ActionInfo
     public $cache = false;
 
     /**
+     * @var bool LOCAL可用
+     */
+    public $local = false;
+
+    /**
+     * @var bool DEVOPS-DEVELOP可用
+     */
+    public $devopsdevelop = false;
+
+    /**
+     * @var bool DEVOPS-RELEASE可用
+     */
+    public $devopsrelease = false;
+
+    /**
+     * @var bool DEVOPS可用
+     */
+    public $devops = false;
+
+    /**
      * @var int 缓存时间
      */
     public $ttl = 60;
@@ -71,12 +91,67 @@ class ActionInfo
                 }
             }
 
+            // 检测运行环境
+            $mit = false;
+            if (in_array('devops', $tmp)) {
+                $this->devops = true;
+                $mit = true;
+            }
+            if (in_array('devopsdevelop', $tmp)) {
+                $this->devopsdevelop = true;
+                $mit = true;
+            }
+            if (in_array('devopsrelease', $tmp)) {
+                $this->devopsrelease = true;
+                $mit = true;
+            }
+            if (in_array('local', $tmp)) {
+                $this->local = true;
+                $mit = true;
+            }
+            if (!$mit) {
+                $this->local = true;
+                $this->devops = true;
+                $this->devopsdevelop = true;
+                $this->devopsrelease = true;
+            }
+
             $this->comment = $ann->getArgument(2);
         }
 
         // 如果打开了cache，但是当前全局不支持cache，自动关闭
         if ($this->cache && !Cache::IsEnabled())
             $this->cache = false;
+    }
+
+    // 可用性判断
+    function isvalid(): bool
+    {
+        $pass = false;
+        $mit = false;
+
+        if (!$pass && $this->local) {
+            $mit = true;
+            if (Config::IsLocal())
+                $pass = true;
+        }
+        if (!$pass && $this->devops) {
+            $mit = true;
+            if (Config::IsDevops())
+                $pass = true;
+        }
+        if (!$pass && $this->devopsdevelop) {
+            $mit = true;
+            if (Config::IsDevopsDevelop())
+                $pass = true;
+        }
+        if (!$pass && $this->devopsrelease) {
+            $mit = true;
+            if (Config::IsDevopsRelease())
+                $pass = true;
+        }
+
+        return !$mit || $pass;
     }
 }
 
@@ -101,7 +176,9 @@ class Api extends Controller
                 $method = $methods[$actnm];
                 if ($method->has('Action')) {
                     $act = $method->get('Action');
-                    $this->_actions[$actnm . 'Action'] = new ActionInfo($actnm, $act);
+                    $ai = new ActionInfo($actnm, $act);
+                    if ($ai->isvalid())
+                        $this->_actions[$actnm . 'Action'] = $ai;
                 }
             }
         }
