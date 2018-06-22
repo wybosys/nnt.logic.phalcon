@@ -400,10 +400,14 @@ class Api extends Controller
     {
         $output = [
             "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
-            "permission" => Service::PermissionEnabled() ? Service::PermissionId() : "disabled",
             "server" => $_SERVER,
             "request" => $_REQUEST
         ];
+
+        if (Service::PermissionEnabled() && !Config::IsDevopsRelease()) {
+            $output["permission"] = Service::PermissionId();
+        }
+
         echo json_encode($output);
         exit();
     }
