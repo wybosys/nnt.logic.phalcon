@@ -32,7 +32,7 @@ class Echoo extends \Phalcon\Mvc\Model
         $this->setSource("echoo");
     }
 
-    public function setSource(string $src)
+    public function setSource($src)
     {
         parent::setSource($src);
     }
