@@ -14,7 +14,8 @@ $loader->registerNamespaces([
     'App\Model' => APP_DIR . 'app/model',
     'App\Controller' => APP_DIR . 'app/controller',
     'Test' => MODULE_DIR,
-    'Test\Model' => MODULE_DIR . 'model'
+    'Test\Model' => MODULE_DIR . 'model',
+    'Test\Db' => MODULE_DIR . 'db'
 ]);
 
 $loader->registerDirs([
@@ -37,7 +38,6 @@ $di->setShared('view', function () {
     $view = new View();
     $view->setDI($this);
     $view->registerEngines([
-        ".phtml" => "Phalcon\Mvc\View\Engine\Php",
         ".volt" => "Phalcon\Mvc\View\Engine\Volt"
     ]);
     return $view;
