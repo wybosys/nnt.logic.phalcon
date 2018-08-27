@@ -13,7 +13,7 @@ $cfg['database'] = [
     "username" => "root",
     "port" => "3306",
     "password" => "root",
-    "dbname" => "devops",
+    "dbname" => "test",
     "charset" => "utf8"
 ];
 
