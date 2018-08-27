@@ -11,8 +11,8 @@ class TestController extends Api
     function echoo(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
-        
-        $rcd = new Test\Model\Echoo();
+
+        $rcd = new \Test\Db\Echoo();
         $rcd->input = $mdl->input;
         $rcd->output = $mdl->output;
         $rcd->save();
