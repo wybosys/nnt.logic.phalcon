@@ -13,7 +13,7 @@ class TestController extends Api
         $mdl->output = $mdl->input;
 
         $rcd = new \Test\Db\Echoo();
-        $rcd->setSource("test1");
+        $rcd->setSource("testxxx");
         $rcd->input = $mdl->input;
         $rcd->output = $mdl->output;
         $rcd->save();
