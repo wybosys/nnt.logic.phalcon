@@ -1,6 +1,6 @@
 <?php
 
-namespace \Test\Db;
+namespace Test\Db;
 
 class Echoo extends \Phalcon\Mvc\Model
 {
