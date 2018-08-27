@@ -32,6 +32,11 @@ class Echoo extends \Phalcon\Mvc\Model
         $this->setSource("echoo");
     }
 
+    public function setSource(string $src)
+    {
+        parent::setSource($src);
+    }
+
     /**
      * Allows to query a set of records that match the specified conditions
      *
