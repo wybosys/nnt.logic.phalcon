@@ -27,7 +27,7 @@ class IndexController extends Api
     /**
      * @Action(null, [noauth, noexport], "导出api文档")
      */
-    public function apiexport()
+    public function export()
     {
         ApiBuilder::export($this);
         exit;
