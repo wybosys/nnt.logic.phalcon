@@ -24,24 +24,10 @@ $loader->registerDirs([
 ]);
 $loader->register();
 
-$di = new FactoryDefault();
+$di = new \Nnt\Controller\Factory();
 
 $di->setShared('config', function () {
     return include 'config/appconfig.php';
-});
-
-$di->setShared('url', function () {
-    return null;
-});
-
-$di->setShared('view', function () {
-    $view = new View();
-    $view->setDI($this);
-    $view->registerEngines([
-        ".phtml" => "Phalcon\Mvc\View\Engine\Php",
-        ".volt" => "Phalcon\Mvc\View\Engine\Volt"
-    ]);
-    return $view;
 });
 
 $di->setShared('db', function () {
@@ -55,4 +41,4 @@ $di->setShared('session', function () {
 });
 
 $app = new \Nnt\Controller\Application($di);
-echo $app->handle()->getContent();
+$app->run();
