@@ -24,7 +24,7 @@ if (isset($_GET['_url'])) {
     $phs = explode('.', $action);
 
     // 只有内部模块可以导向nnt
-    $INNER_MODULES = ['api'];
+    $INNER_MODULES = ['nnt', 'api'];
     $MODULE_NAME = in_array($phs[0], $INNER_MODULES) ? 'nnt' : $phs[0];
 
     // 加载二级模块

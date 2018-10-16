@@ -1,8 +1,5 @@
 <?php
-
 use Phalcon\Loader;
-use Phalcon\Di\FactoryDefault;
-use Phalcon\Mvc\View;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
 
@@ -25,14 +22,10 @@ $loader->registerDirs([
 ]);
 $loader->register();
 
-$di = new FactoryDefault();
+$di = new \Nnt\Controller\Factory();
 
 $di->setShared('config', function () {
     return include 'config/config.php';
-});
-
-$di->setShared('url', function () {
-    return null;
 });
 
 $di->setShared('db', function () {
@@ -45,7 +38,7 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$di->setShared('user', function () {
+$di->setShared('user', function() {
     return new \Test\Model\User();
 });
 
