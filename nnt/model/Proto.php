@@ -362,6 +362,7 @@ class Proto
                 $idx = $api->getArgument(0);
                 $typs = $api->getArgument(1);
                 $ops = $api->getArgument(2);
+
                 $decl = new MemberDeclaration();
                 $decl->name = $name;
                 $decl->index = (int)$idx;
