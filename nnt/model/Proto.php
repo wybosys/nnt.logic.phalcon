@@ -22,11 +22,69 @@ class ClazzDeclaration
 
     /**
      * @var MemberDeclaration[]
+     * Map<string, MemberDeclaration>
      */
     public $members;
+
+    /**
+     * @var PropDeclaration[]
+     * Map<string, PropDeclaration>
+     */
+    public $props;
 }
 
 class MemberDeclaration
+{
+    /**
+     *
+     * @var string
+     */
+    public $name;
+
+    /**
+     *
+     * @var string
+     */
+    public $model;
+
+    /**
+     *
+     * @var boolean
+     */
+    public $optional;
+
+    /**
+     *
+     * @var boolean
+     */
+    public $input;
+
+    /**
+     *
+     * @var boolean
+     */
+    public $output;
+
+    /**
+     *
+     * @var boolean
+     */
+    public $noauth;
+
+    /**
+     *
+     * @var boolean
+     */
+    public $expose;
+
+    /**
+     *
+     * @var string
+     */
+    public $comment = '';
+}
+
+class PropDeclaration
 {
     /**
      *
@@ -384,15 +442,43 @@ class Proto
         if (!$annMethods)
             return;
         foreach ($annMethods as $name => $method) {
-            if (!$method->has('Api'))
+            if (!$method->has('Action'))
                 continue;
 
-            $api = $method->get('Api');
+            $action = $method->get('Action');
+            $model = $action->getArgument(0);
+            $ops = $action->getArgument(1);
+
+            $mem = new MemberDeclaration();
+            $mem->name = $name;
+            $mem->model = $model;
+            $mem->input = in_array('input', $ops);
+            $mem->output = in_array('output', $ops);
+            $mem->optional = in_array('optional', $ops);
+            $mem->noauth = in_array('noauth', $ops);
+            $mem->expose = in_array('expose', $ops);
+            $mem->comment = $action->getArgument(2);
+
+            $decl->members[$mem->name] = $mem;
+        }
+    }
+
+    static function LoadPropsDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    {
+        $decl->props = [];
+        $annProps = $reflect->getPropertiesAnnotations();
+        if (!$annProps)
+            return;
+        foreach ($annProps as $name => $prop) {
+            if (!$prop->has('Api'))
+                continue;
+
+            $api = $prop->get('Api');
             $idx = $api->getArgument(0);
             $typs = $api->getArgument(1);
             $ops = $api->getArgument(2);
 
-            $mem = new MemberDeclaration();
+            $mem = new PropDeclaration();
             $mem->name = $name;
             $mem->index = (int)$idx;
             $mem->input = in_array('input', $ops);
@@ -429,14 +515,15 @@ class Proto
                     $mem->valtyp = $typs[0];
                     break;
             }
-            $decl->members[] = $mem;
+
+            $decl->props[$mem->name] = $mem;
         }
     }
 
     /**
      * 获得model的参数描述
      */
-    static function DeclarationOf($model, $includeClass, $includeMembers): ClazzDeclaration
+    static function DeclarationOf($model, $includeClass, $includeMembers, $includeProps): ClazzDeclaration
     {
         $reflect = self::Reflect($model);
         if (!$reflect)
@@ -450,6 +537,10 @@ class Proto
 
         if ($includeMembers) {
             self::LoadMembersDeclarationOf($reflect, $ret);
+        }
+
+        if ($includeProps) {
+            self::LoadPropsDeclarationOf($reflect, $ret);
         }
 
         return $ret;
