@@ -161,25 +161,23 @@ class Apidoc
             $clazzName = $cmpsClazz[count($cmpsClazz) - 1];
 
             // 解析model的定义
-            $reflect = Proto::Reflect($model);
-            $rclazz = $reflect->getClassAnnotations();
-            if ($rclazz->has('Model')) {
-                $aclazz = $rclazz->get('Model');
-                $ops = $aclazz->getArgument(0);
-                $super = $aclazz->getArgument(1);
-                if (in_array($ops, 'hidden'))
-                    continue;
-                // 如果是enum
-                // 如果是const
-                // 其他
-                {
-                    $clazz = [
-                        'name' => $clazzName,
-                        'super' => $super ? $super : "ApiModel",
-                        'fields' => []
-                    ];
-                    $params['clazzes'][] = $clazz;
+            $decl = Proto::DeclarationOf($model, true, true, true);
+            if ($decl->hidden)
+                continue;
+
+            // 如果是enum
+            // 如果是const
+            // 其他
+            {
+                $clazz = [
+                    'name' => $clazzName,
+                    'super' => $decl->super ? $decl->super : "ApiModel",
+                    'fields' => []
+                ];
+                foreach ($decl->props as $name => $prop) {
+
                 }
+                $params['clazzes'][] = $clazz;
             }
         }
     }
