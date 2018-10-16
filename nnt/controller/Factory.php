@@ -4,6 +4,7 @@ namespace Nnt\Controller;
 
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\View;
+use Phalcon\Mvc\Router;
 
 class Factory extends FactoryDefault
 {
@@ -22,6 +23,17 @@ class Factory extends FactoryDefault
                 ".volt" => "Phalcon\Mvc\View\Engine\Volt"
             ]);
             return $view;
+        });
+
+        $this->setShared('router', function () {
+            $router = new Router();
+            if (defined('LOGIC_ROUTER')) {
+                $router->setDefaults([
+                    'controller' => LOGIC_ROUTER,
+                    'action' => LOGIC_ACTION
+                ]);
+            }
+            return $router;
         });
     }
 }
