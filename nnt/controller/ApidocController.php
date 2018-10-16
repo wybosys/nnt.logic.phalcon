@@ -27,7 +27,7 @@ class ApidocController extends Api
             if (!file_exists($phpFile))
                 throw new \Exception("没有找到 $phpFile");
             include $phpFile;
-            $routers = array_push($routers, $routerClazz);
+            $routers[] = $router;
         }
 
         // 加载所有的模型
@@ -41,7 +41,7 @@ class ApidocController extends Api
             if (!file_exists($phpFile))
                 throw new \Exception("没有找到 $phpFile");
             include $phpFile;
-            $models = array_push($models, $modelClazz);
+            $models[] = $modelClazz;
         }
 
         return [

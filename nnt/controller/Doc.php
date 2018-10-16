@@ -23,9 +23,9 @@ class Doc
 
     static public function RouterAction(string $router, $entrys)
     {
-        $name = strtolower($router);
+        $name = $router;
 
-        $reflect = Proto::Reflect($router);
+        $reflect = Proto::Reflect(ucfirst($router) . 'Controller');
         $methods = $reflect->getMethodsAnnotations();
 
         $as = self::GetAllActionNames($methods);

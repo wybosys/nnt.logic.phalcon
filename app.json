@@ -6,6 +6,7 @@
       ],
       "model": [
         "test/model/Call",
+        "test/model/CidrTest",
         "test/model/Echoo",
         "test/model/HostInfo",
         "test/model/Kv",
