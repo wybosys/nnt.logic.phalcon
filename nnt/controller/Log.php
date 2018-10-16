@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace Nnt\Controller;
 
 use Phalcon\Logger\Adapter\File;
 use Phalcon\Logger\AdapterInterface;

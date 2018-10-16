@@ -6,13 +6,13 @@ use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
 
 define('MODULE_DIR', __DIR__ . '/');
-define('APP_DIR', dirname(__DIR__) . '/');
+define('NNT_DIR', dirname(__DIR__) . '/');
 
 $loader = new Loader();
 $loader->registerNamespaces([
-    'App' => APP_DIR . 'app',
-    'App\Model' => APP_DIR . 'app/model',
-    'App\Controller' => APP_DIR . 'app/controller',
+    'Nnt' => NNT_DIR . 'nnt',
+    'Nnt\Model' => NNT_DIR . 'nnt/model',
+    'Nnt\Controller' => NNT_DIR . 'nnt/controller',
     'Test' => MODULE_DIR,
     'Test\Model' => MODULE_DIR . 'model',
     'Test\Db' => MODULE_DIR . 'db'
@@ -57,5 +57,5 @@ $di->setShared('user', function() {
     return new \Test\Model\User();
 });
 
-$app = new \App\Controller\Application($di);
+$app = new \Nnt\Controller\Application($di);
 echo $app->handle()->getContent();

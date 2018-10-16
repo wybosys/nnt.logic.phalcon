@@ -1,10 +1,9 @@
 <?php
 
-use App\Controller\Api;
-use App\Controller\Doc;
-use App\Controller\ApiBuilder;
-use App\Controller\Service;
-use App\Controller\Config;
+use Nnt\Controller\Api;
+use Nnt\Controller\ApiBuilder;
+use Nnt\Controller\Config;
+use Nnt\Controller\Doc;
 
 class IndexController extends Api
 {

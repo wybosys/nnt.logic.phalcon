@@ -1,5 +1,5 @@
 <?php
-namespace App\Util;
+namespace Nnt\Util;
 
 class Mime
 {

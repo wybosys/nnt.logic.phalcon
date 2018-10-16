@@ -1,7 +1,7 @@
 <?php
 
-use App\Controller\Api;
-use App\Controller\Service;
+use Nnt\Controller\Api;
+use Nnt\Controller\Service;
 
 class TestController extends Api
 {
@@ -80,8 +80,8 @@ class TestController extends Api
     function mklog(\Test\Model\Log $mdl)
     {
         $this->log("mklog");
-        $this->log(\App\Model\Code::OK, $mdl->msg);
-        \App\Controller\Log::log($mdl->type, $mdl->msg);
+        $this->log(\Nnt\Model\Code::OK, $mdl->msg);
+        \Nnt\Controller\Log::log($mdl->type, $mdl->msg);
     }
 
     /**
@@ -127,7 +127,7 @@ class TestController extends Api
         if (apcu_exists($mdl->input)) {
             $mdl->output = apcu_fetch($mdl->input);
         } else {
-            throw new \Exception("不存在", \App\Model\Code::TARGET_NOT_FOUND);
+            throw new \Exception("不存在", \Nnt\Model\Code::TARGET_NOT_FOUND);
         }
     }
 }

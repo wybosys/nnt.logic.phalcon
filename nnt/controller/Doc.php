@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace Nnt\Controller;
 
-use App\Model\Proto;
+use Nnt\Model\Proto;
 use Phalcon\Annotations\Annotation;
 use Phalcon\Mvc\Controller;
 

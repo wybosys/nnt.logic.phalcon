@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model;
+namespace Nnt\Model;
 
-use App\Controller\Config;
+use Nnt\Controller\Config;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
 

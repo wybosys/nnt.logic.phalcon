@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace Nnt\Controller;
 
-use App\Model\Code;
-use App\Model\Proto;
+use Nnt\Model\Code;
+use Nnt\Model\Proto;
 use Phalcon\Mvc\Controller;
 
 class ActionInfo
@@ -412,7 +412,7 @@ class Api extends Controller
     {
         if (is_string($codeOrMsg)) {
             $typ = \Phalcon\Logger::INFO;
-            $code = \App\Model\Code::OK;
+            $code = \Nnt\Model\Code::OK;
             $data = $codeOrMsg;
         } else {
             $code = $codeOrMsg;

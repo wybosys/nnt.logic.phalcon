@@ -1,6 +1,6 @@
 <?php
 
-use App\Controller\Api;
+use Nn\Controller\Api;
 
 class AppController extends Api
 {

@@ -26,7 +26,7 @@ if (isset($_GET['_url'])) {
     $phs = explode('.', $action);
 
     // 加载二级模块
-    $REDIRECT_MODULE = __DIR__ . '/' . $phs[0] . '/index.php';
+    $REDIRECT_MODULE = __DIR__ . '/nnt/index.php';
     if (!file_exists($REDIRECT_MODULE)) {
         throw new \Exception("没有找到模块");
     }

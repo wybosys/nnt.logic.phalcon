@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace Nnt\Controller;
 
 // 性能测试
 class Profiler

@@ -1,18 +1,18 @@
 <?php
-
 use Phalcon\Loader;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\View;
+use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
+use Phalcon\Session\Factory as SesFactory;
 
 define('MODULE_DIR', __DIR__ . '/');
-define('APP_DIR', dirname(__DIR__) . '/');
+define('NNT_DIR', dirname(__DIR__) . '/');
 
 $loader = new Loader();
 $loader->registerNamespaces([
-    'App' => APP_DIR . 'app',
-    'App\Model' => APP_DIR . 'app/model',
-    'App\Controller' => APP_DIR . 'app/controller',
-    'Api' => MODULE_DIR
+    'Nnt' => MODULE_DIR,
+    'Nnt\Model' => MODULE_DIR . 'model',
+    'Nnt\Controller' => MODULE_DIR . 'controller'
 ]);
 
 $loader->registerDirs([
@@ -24,14 +24,14 @@ $loader->register();
 $di = new FactoryDefault();
 
 $di->setShared('config', function () {
-    return include 'config/config.php';
+    return include 'config/appconfig.php';
 });
 
 $di->setShared('url', function () {
     return null;
 });
 
-$di->setShared('view', function () {
+$di->setShared('view', function () {    
     $view = new View();
     $view->setDI($this);
     $view->registerEngines([
@@ -41,5 +41,15 @@ $di->setShared('view', function () {
     return $view;
 });
 
-$app = new \App\Controller\Application($di);
+$di->setShared('db', function () {
+    return DbFactory::load($this->getConfig()->database);
+});
+
+$di->setShared('session', function () {
+    $hdl = SesFactory::load($this->getConfig()->session);
+    $hdl->start();
+    return $hdl;
+});
+
+$app = new \Nnt\Controller\Application($di);
 echo $app->handle()->getContent();
