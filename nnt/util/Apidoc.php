@@ -191,7 +191,7 @@ class Apidoc
         $self->view->start()->finish();
     }
 
-    static function DocExport(Api $self)
+    static function DocExport(Api $self, $logic, $h5g, $vue)
     {
         // 加载实体
         $entrys = self::LoadEntrys();
@@ -203,5 +203,34 @@ class Apidoc
             'consts' => [],
             'routers' => []
         ];
+
+        // 遍历所有的模型，生成模型段
+        foreach ($entrys . models as $model) {
+            // 类名为最后一段
+            $cmpsClazz = explode('/', $model);
+            $clazzName = $cmpsClazz[count($cmpsClazz) - 1];
+
+            // 解析model的定义
+            $reflect = Proto::Reflect($model);
+            $rclazz = $reflect->getClassAnnotations();
+            if ($rclazz->has('Model')) {
+                $aclazz = $rclazz->get('Model');
+                $ops = $aclazz->getArgument(0);
+                $super = $aclazz->getArgument(1);
+                if (in_array($ops, 'hidden'))
+                    continue;
+                // 如果是enum
+                // 如果是const
+                // 其他
+                {
+                    $clazz = [
+                        'name' => $clazzName,
+                        'super' => $super ? $super : "ApiModel",
+                        'fields' => []
+                    ];
+                    $params['clazzes'][] = $clazz;
+                }
+            }
+        }
     }
 }

@@ -36,9 +36,9 @@ class NntController extends Api
     /**
      * @Action(ExportApis, [noauth, noexport], "导出api文档")
      */
-    function export()
+    function export(ExportApis $mdl)
     {
-        Apidoc::DocExport($this);
+        Apidoc::DocExport($this, $mdl->logic, $mdl->h5g, $mdl->vue);
     }
 
     /**
