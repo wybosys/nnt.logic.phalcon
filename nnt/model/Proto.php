@@ -622,12 +622,26 @@ class Proto
 
     static function FpToOptionsDef(PropDeclaration $fp, $ns = ""): string
     {
-        return '';
+        $r = [];
+        if ($fp->input)
+            $r[] = $ns . 'input';
+        if ($fp->output)
+            $r[] = $ns . 'output';
+        if ($fp->optional)
+            $r[] = $ns . 'optional';
+        return "[" . implode(', ', $r) . "]";
     }
 
     static function FpToValtypeDef(PropDeclaration $fp, $ns = ""): string
     {
-        return '';
+        $t = [];
+        if ($fp->keytyp) {
+            $t[] = self::ValtypeDefToDefType($fp->keytyp, $ns);
+        }
+        if ($fp->valtyp) {
+            $t[] = self::ValtypeDefToDefType($fp->valtyp, $ns);
+        }
+        return implode(', ', $t);
     }
 
     static function ValtypeDefToDef($def): string
@@ -640,6 +654,20 @@ class Proto
                 return "number";
             case "boolean":
                 return "boolean";
+        }
+        return $def;
+    }
+
+    static function ValtypeDefToDefType($def, $ns = ''): string
+    {
+        switch ($def) {
+            case "string":
+                return $ns . "string_t";
+            case "double":
+            case "integer":
+                return $ns . "number_t";
+            case "boolean":
+                return $ns . "boolean_t";
         }
         return $def;
     }
