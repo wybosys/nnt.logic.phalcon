@@ -22,7 +22,14 @@ class ApidocController extends Api
         $cfgrouter = $cfgexport->router;
         $cfgmodel = $cfgexport->model;
 
-        // 提取所有的models
+        // 加载所有路由
+        foreach ($cfgrouter as $router) {
+            $routerClazz = ucfirst($router);
+            $phpFile = APP_DIR . "/$router/controller/{$routerClazz}Controller.php";
+            if (!file_exists($phpFile))
+                throw new \Exception("没有找到 $phpFile");
+            include $phpFile;
+        }
 
         // 提取所有的actions
 
@@ -33,5 +40,10 @@ class ApidocController extends Api
         ];
         $self->view->router = json_encode($data);
         $self->view->start()->finish();
+    }
+
+    static function DocExport(Api $self)
+    {
+
     }
 }

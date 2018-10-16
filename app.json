@@ -5,14 +5,14 @@
         "test"
       ],
       "model": [
-        "test/Call",
-        "test/Echoo",
-        "test/HostInfo",
-        "test/Kv",
-        "test/Log",
-        "test/Output",
-        "test/UploadImage",
-        "test/User"
+        "test/model/Call",
+        "test/model/Echoo",
+        "test/model/HostInfo",
+        "test/model/Kv",
+        "test/model/Log",
+        "test/model/Output",
+        "test/model/UploadImage",
+        "test/model/User"
       ]
     }
   }

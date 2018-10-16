@@ -1,7 +1,6 @@
 <?php
 
 use Nnt\Controller\Api;
-use Nnt\Controller\ApiBuilder;
 use Nnt\Controller\Config;
 
 // 使用logic规则访问（通过action传数据）将路由到Index
@@ -20,8 +19,7 @@ class IndexController extends Api
      */
     public function export()
     {
-        ApiBuilder::export($this);
-        exit;
+        ApidocController::DocExport($this);
     }
 
     /**
