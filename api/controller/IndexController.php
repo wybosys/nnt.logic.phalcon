@@ -2,6 +2,7 @@
 
 use App\Controller\Api;
 use App\Controller\Doc;
+use App\Controller\ApiBuilder;
 
 class IndexController extends Api
 {
@@ -21,5 +22,14 @@ class IndexController extends Api
         ];
         $this->view->router = json_encode($data);
         $this->view->start()->finish();
+    }
+
+    /**
+     * @Action(null, [noauth, noexport], "导出api文档")
+     */
+    public function apiexport()
+    {
+        ApiBuilder::export($this);
+        exit;
     }
 }
