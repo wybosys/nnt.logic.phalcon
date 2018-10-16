@@ -194,14 +194,35 @@ class Api extends Controller
     {
         // 使用logic的规则调用
         $params = Proto::CollectParameters($this->request);
-        // 解析action
-        $action = $params['action'];
-        $phs = explode('.', $action);
-        // 调用函数
-        call_user_func([
-            $this,
-            $phs[1]
-        ], $params);
+        try {
+            // 解析action
+            $action = $params['action'];
+            if (!$action)
+                throw new \Exception("没有找到action");
+            $phs = explode('.', $action);
+
+            // 调用函数
+            call_user_func([
+                $this,
+                $phs[1]
+            ], $params);
+        } catch (\Throwable $ex) {
+            $code = $ex->getCode(); // 逻辑主动抛出的code不可能为0
+            if ($code == 0) {
+                $this->log(Code::EXCEPTION, $ex);
+                echo json_encode([
+                    'code' => Code::EXCEPTION,
+                    'error' => $ex->getMessage()
+                ]);
+                throw $ex;
+            } else {
+                $this->log($code, $ex->getMessage());
+                echo json_encode([
+                    'code' => $code,
+                    'error' => $ex->getMessage()
+                ]);
+            }
+        }
     }
 
     /**
