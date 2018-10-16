@@ -6,9 +6,28 @@ use Nnt\Controller\Config;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
 
+class ClazzDeclaration
+{
+    /**
+     *
+     * @var boolean
+     */
+    public $hidden;
+
+    /**
+     *
+     * @var string
+     */
+    public $super;
+
+    /**
+     * @var MemberDeclaration[]
+     */
+    public $members;
+}
+
 class MemberDeclaration
 {
-
     /**
      *
      * @var string
@@ -342,67 +361,97 @@ class Proto
         return $ret;
     }
 
+    static function LoadClassDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    {
+        $annClass = $reflect->getClassAnnotations();
+        if (!$annClass)
+            return;
+        if (!$annClass->has('Model'))
+            return;
+        $mdl = $annClass->get('Model');
+        $ops = $mdl->getArgument(0);
+        $super = $mdl->getArgument(1);
+        if (in_array('hidden', $ops))
+            $decl->hidden = true;
+        if ($super)
+            $decl->super = $super;
+    }
+
+    static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    {
+        $decl->members = [];
+        $annMethods = $reflect->getMethodsAnnotations();
+        if (!$annMethods)
+            return;
+        foreach ($annMethods as $name => $method) {
+            if (!$method->has('Api'))
+                continue;
+
+            $api = $method->get('Api');
+            $idx = $api->getArgument(0);
+            $typs = $api->getArgument(1);
+            $ops = $api->getArgument(2);
+
+            $mem = new MemberDeclaration();
+            $mem->name = $name;
+            $mem->index = (int)$idx;
+            $mem->input = in_array('input', $ops);
+            $mem->output = in_array('output', $ops);
+            $mem->optional = in_array('optional', $ops);
+            $mem->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
+            switch ($typs[0]) {
+                case 'string':
+                    $mem->string = true;
+                    break;
+                case 'integer':
+                    $mem->integer = true;
+                    break;
+                case 'double':
+                    $mem->double = true;
+                    break;
+                case 'boolean':
+                    $mem->boolean = true;
+                    break;
+                case 'file':
+                    $mem->file = true;
+                    break;
+                case 'array':
+                    $mem->array = true;
+                    $mem->valtyp = $typs[1];
+                    break;
+                case 'map':
+                    $mem->map = true;
+                    $mem->keytyp = $typs[1];
+                    $mem->valtyp = $typs[2];
+                    break;
+                default:
+                    $mem->object = true;
+                    $mem->valtyp = $typs[0];
+                    break;
+            }
+            $decl->members[] = $mem;
+        }
+    }
+
     /**
      * 获得model的参数描述
-     *
-     * @return MemberDeclaration[]
      */
-    public static function DeclarationOf($model)
+    static function DeclarationOf($model, $includeClass, $includeMembers): ClazzDeclaration
     {
-        $ret = [];
         $reflect = self::Reflect($model);
-        $props = $reflect->getPropertiesAnnotations();
-        if ($props) {
-            foreach ($props as $name => $prop) {
-                if (!$prop->has('Api'))
-                    continue;
-                $api = $prop->get('Api');
-                if (!$api)
-                    continue;
-                $idx = $api->getArgument(0);
-                $typs = $api->getArgument(1);
-                $ops = $api->getArgument(2);
+        if (!$reflect)
+            return null;
 
-                $decl = new MemberDeclaration();
-                $decl->name = $name;
-                $decl->index = (int)$idx;
-                $decl->input = in_array('input', $ops);
-                $decl->output = in_array('output', $ops);
-                $decl->optional = in_array('optional', $ops);
-                $decl->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
-                switch ($typs[0]) {
-                    case 'string':
-                        $decl->string = true;
-                        break;
-                    case 'integer':
-                        $decl->integer = true;
-                        break;
-                    case 'double':
-                        $decl->double = true;
-                        break;
-                    case 'boolean':
-                        $decl->boolean = true;
-                        break;
-                    case 'file':
-                        $decl->file = true;
-                        break;
-                    case 'array':
-                        $decl->array = true;
-                        $decl->valtyp = $typs[1];
-                        break;
-                    case 'map':
-                        $decl->map = true;
-                        $decl->keytyp = $typs[1];
-                        $decl->valtyp = $typs[2];
-                        break;
-                    default:
-                        $decl->object = true;
-                        $decl->valtyp = $typs[0];
-                        break;
-                }
-                $ret[] = $decl;
-            }
+        $ret = new ClazzDeclaration();
+
+        if ($includeClass) {
+            self::LoadClassDeclarationOf($reflect, $ret);
         }
+
+        if ($includeMembers) {
+            self::LoadMembersDeclarationOf($reflect, $ret);
+        }
+
         return $ret;
     }
 }
