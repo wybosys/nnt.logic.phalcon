@@ -1,7 +1,5 @@
 <?php
 use Phalcon\Loader;
-use Phalcon\Di\FactoryDefault;
-use Phalcon\Mvc\View;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
 
@@ -16,7 +14,7 @@ $loader->registerNamespaces([
     'Nnt\Controller' => MODULE_DIR . 'controller',
     'Nnt\Util' => MODULE_DIR . 'util',
     // 第三方库
-    'Dust' => MODULE_DIR . '3rd/dust'
+    'Dust' => APP_DIR . '3rd/dust'
 ]);
 
 $loader->registerDirs([

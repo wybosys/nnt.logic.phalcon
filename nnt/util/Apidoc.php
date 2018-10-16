@@ -110,7 +110,7 @@ class Apidoc
             $cmps = explode('/', $model);
             for ($i = 0, $l = count($cmps); $i < $l; ++$i)
                 $cmps[$i] = ucfirst($cmps[$i]);
-            $modelClazz = implode('/', $cmps);
+            $modelClazz = implode('\\', $cmps);
             $phpFile = APP_DIR . "/{$model}.php";
             if (!file_exists($phpFile))
                 throw new \Exception("没有找到 $phpFile");
@@ -155,7 +155,7 @@ class Apidoc
         ];
 
         // 遍历所有的模型，生成模型段
-        foreach ($entrys . models as $model) {
+        foreach ($entrys['models'] as $model) {
             // 类名为最后一段
             $cmpsClazz = explode('/', $model);
             $clazzName = $cmpsClazz[count($cmpsClazz) - 1];
@@ -175,10 +175,58 @@ class Apidoc
                     'fields' => []
                 ];
                 foreach ($decl->props as $name => $prop) {
+                    if (!$prop->input && !$prop->output)
+                        continue;
 
+                    $typ = Proto::FpToTypeDef($prop);
+                    $deco = Proto::FpToDecoDef($prop, 'Model.');
+                    $clazz['fields'][] = [
+                        'name' => $name,
+                        'type' => $typ,
+                        'optional' => $prop->optional,
+                        'file' => $prop->file,
+                        'enum' => $prop->enum,
+                        'input' => $prop->input,
+                        'deco' => $deco
+                    ];
                 }
                 $params['clazzes'][] = $clazz;
             }
         }
+
+        // 遍历所有的路由，生成接口段数据
+        foreach ($entrys['routers'] as $router) {
+            $routerClazz = ucfirst($router) . 'Controller';
+            $decl = Proto::DeclarationOf($routerClazz, false, true, false);
+            if (!$decl)
+                continue;
+
+            foreach ($decl->members as $name => $method) {
+                $d = [];
+                $d['name'] = ucfirst($router) . ucfirst($name);
+                $d['action'] = "$router.$name";
+                if ($vue) {
+                    $d['type'] = $method->model;
+                } else {
+                    $d['type'] = "models." . $method->model;
+                }
+                $d['comment'] = $method->comment;
+                $params['routers'][] = $d;
+            }
+        }
+
+        // 渲染模板
+        $apis = '';
+        if ($logic)
+            $apis = APP_DIR . "/nnt/view/apidoc/apis-logic.dust";
+        else if ($h5g)
+            $apis = APP_DIR . "/nnt/view/apidoc/apis-h5g.dust";
+        else if ($vue)
+            $apis = APP_DIR . "/nnt/view/apidoc//apis-vue.dust";
+
+        $dust = new \Dust\Dust();
+        $tpl = $dust->compileFile($apis);
+        $result = $dust->renderTemplate($tpl, $params);
+        echo $result;
     }
 }
