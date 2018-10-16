@@ -227,6 +227,15 @@ class Apidoc
         $dust = new \Dust\Dust();
         $tpl = $dust->compileFile($apis);
         $result = $dust->renderTemplate($tpl, $params);
+
+        // 写入临时文件
+        $output = TMP_DIR . '/api.ts';
+        //file_put_contents($output, $result);
+
+        $resp = $self->response;
+        $resp->setContentType('text/typescript');
+        $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.ts');
+
         echo $result;
     }
 }

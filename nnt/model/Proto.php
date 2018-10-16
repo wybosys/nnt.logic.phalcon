@@ -356,7 +356,7 @@ class Proto
             case 'double':
                 return (double)$val;
             case 'boolean':
-                return $val ? true : false;
+                return $val != "false";
             case 'file':
                 return $val instanceof File ? $val : null;
             case 'object':

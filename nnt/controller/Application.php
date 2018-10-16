@@ -40,3 +40,11 @@ class Application extends \Phalcon\Mvc\Application
         echo $this->handle()->getContent();
     }
 }
+
+define('TMP_DIR', APP_DIR . '/tmp/');
+if (!is_dir(TMP_DIR))
+    mkdir(TMP_DIR);
+
+define('RUN_DIR', APP_DIR . '/run/');
+if (!is_dir(RUN_DIR))
+    mkdir(RUN_DIR);
