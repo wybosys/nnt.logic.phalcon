@@ -169,16 +169,18 @@ class Api extends Controller
         $actnm = $this->router->getActionName();
 
         // 把简化的action恢复成框架需要的actionAction
-        $reflect = Proto::Reflect($this);
-        $methods = $reflect->getMethodsAnnotations();
-        if ($methods) {
-            if (array_key_exists($actnm, $methods)) {
-                $method = $methods[$actnm];
-                if ($method->has('Action')) {
-                    $act = $method->get('Action');
-                    $ai = new ActionInfo($actnm, $act);
-                    if ($ai->isvalid())
-                        $this->_actions[$actnm . 'Action'] = $ai;
+        if ($actnm) {
+            $reflect = Proto::Reflect($this);
+            $methods = $reflect->getMethodsAnnotations();
+            if ($methods) {
+                if (array_key_exists($actnm, $methods)) {
+                    $method = $methods[$actnm];
+                    if ($method->has('Action')) {
+                        $act = $method->get('Action');
+                        $ai = new ActionInfo($actnm, $act);
+                        if ($ai->isvalid())
+                            $this->_actions[$actnm . 'Action'] = $ai;
+                    }
                 }
             }
         }
@@ -190,7 +192,16 @@ class Api extends Controller
 
     function indexAction()
     {
-        // pass
+        // 使用logic的规则调用
+        $params = Proto::CollectParameters($this->request);
+        // 解析action
+        $action = $params['action'];
+        $phs = explode('.', $action);
+        // 调用函数
+        call_user_func([
+            $this,
+            $phs[1]
+        ], $params);
     }
 
     /**
