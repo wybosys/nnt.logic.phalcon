@@ -3,6 +3,8 @@
 use App\Controller\Api;
 use App\Controller\Doc;
 use App\Controller\ApiBuilder;
+use App\Controller\Service;
+use App\Controller\Config;
 
 class IndexController extends Api
 {
@@ -31,5 +33,24 @@ class IndexController extends Api
     {
         ApiBuilder::export($this);
         exit;
+    }
+
+    /**
+     * @Action(null, [noauth, noexport])
+     */
+    function description()
+    {
+        $output = [
+            "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
+            "server" => $_SERVER,
+            "request" => $_REQUEST
+        ];
+
+        if (Service::PermissionEnabled() && !Config::IsDevopsRelease()) {
+            $output["permission"] = Service::PermissionId();
+        }
+
+        echo json_encode($output);
+        exit();
     }
 }

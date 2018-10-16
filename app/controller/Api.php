@@ -405,25 +405,6 @@ class Api extends Controller
     }
 
     /**
-     * @Action(null, [noauth, noexport])
-     */
-    function description()
-    {
-        $output = [
-            "configuration" => Config::Use("LOCAL", "DEVOPS", "DEVOPS_RELEASE"),
-            "server" => $_SERVER,
-            "request" => $_REQUEST
-        ];
-
-        if (Service::PermissionEnabled() && !Config::IsDevopsRelease()) {
-            $output["permission"] = Service::PermissionId();
-        }
-
-        echo json_encode($output);
-        exit();
-    }
-
-    /**
      * @param string|int $codeOrMsg
      * @param string|\Exception $msg
      */
