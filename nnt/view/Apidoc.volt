@@ -6,51 +6,55 @@
 {{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/bootstrap-vue.min.js", false) }}
 {{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/vue-json-tree-view.min.js", false) }}
 
+<!-- @formatter:off -->
 <div id="app" class="container-fluid">
-  <div class="row">
-    <div class="col-md-2">
-      <b-list-group v-for="info in router.actions">
-        <b-list-group-item v-on:click="actSelectAction(info)">${info.name}</b-list-group-item>
-      </b-list-group>
-    </div>
-    <div class="col-md-2">
-      <div>${current}</div>
-      <div v-if="action" style="text-align:right">${action.comment}<span style="color:red" v-if="action.needauth">登录</span></div>
-      <b-form @submit.prevent="actSubmit" v-if="current">
-        <b-form-group v-for="param in inputs" :key="param.index" :label="param.name + ' ' + param.comment" :description="param.desc">
-          <div v-if="param.file">
-            <b-form-file v-model="form[param.index]"></b-form-file>
-            <br>选择文件：${form[param.index] && form[param.index].name}
-            <div>
-              <b-button :field="param.index" @click="actRecordAudio">录音</b-button>
-              <b-button :field="param.index" @click="actPlayAudio">播放</b-button>
+    <div class="row">
+        <div class="col-md-2">
+            <b-list-group v-for="info in actions">
+                <b-list-group-item v-on:click="actSelectAction(info)">${info.name}</b-list-group-item>
+            </b-list-group>
+        </div>
+        <div class="col-md-2">
+            <div>${current}</div>
+            <div v-if="action" style="text-align:right">${action.comment}<span style="color:red" v-if="action.needauth">登录</span>
             </div>
-          </div>
-          <b-form-radio-group v-model="form[param.index]" v-else-if="param.boolean">
-            <b-form-radio value="true">是</b-form-radio>
-            <b-form-radio value="false">否</b-form-radio>
-          </b-form-radio-group>
-          <div v-else-if="form.enum">
-            <b-dropdown text="选择枚举" class="m-md-2">
-              <b-dropdown-item v-for="(item, index) in enums[param.index]" :index="index" :field="field.id" :key="index" @click="actDropdown">
-                ${item.name}
-              </b-dropdown-item>
-            </b-dropdown>
-            <br>当前选择：${form_enums[param.index] && form_enums[param.index].name}
-          </div>
-          <b-form-input type="text" v-model="form[param.index]" v-else></b-form-input>
-        </b-form-group>
-        <b-button type="submit" variant="primary">提交</b-button>
-          <b-button @click="actOpen">OPEN</b-button>
-      </b-form>
+            <b-form @submit.prevent="actSubmit" v-if="current">
+                <b-form-group v-for="param in inputs" :key="param.index" :label="param.name + ' ' + param.comment"
+                              :description="param.desc">
+                    <div v-if="param.file">
+                        <b-form-file v-model="form[param.index]"></b-form-file>
+                        <br>选择文件：${form[param.index] && form[param.index].name}
+                        <div>
+                            <b-button :field="param.index" @click="actRecordAudio">录音</b-button>
+                            <b-button :field="param.index" @click="actPlayAudio">播放</b-button>
+                        </div>
+                    </div>
+                    <b-form-radio-group v-model="form[param.index]" v-else-if="param.boolean">
+                        <b-form-radio value="true">是</b-form-radio>
+                        <b-form-radio value="false">否</b-form-radio>
+                    </b-form-radio-group>
+                    <div v-else-if="form.enum">
+                        <b-dropdown text="选择枚举" class="m-md-2">
+                            <b-dropdown-item v-for="(item, index) in enums[param.index]" :index="index"
+                                             :field="field.id" :key="index" @click="actDropdown">
+                                ${item.name}
+                            </b-dropdown-item>
+                        </b-dropdown>
+                        <br>当前选择：${form_enums[param.index] && form_enums[param.index].name}
+                    </div>
+                    <b-form-input type="text" v-model="form[param.index]" v-else></b-form-input>
+                </b-form-group>
+                <b-button type="submit" variant="primary">提交</b-button>
+                <b-button @click="actOpen">OPEN</b-button>
+            </b-form>
+        </div>
+        <div class="col-md">
+            <tree-view :data="outputs" v-show="outputs">
+            </tree-view>
+            <div v-show="log" v-html="log">
+            </div>
+        </div>
     </div>
-    <div class="col-md">
-      <tree-view :data="outputs" v-show="outputs">
-      </tree-view>
-      <div v-show="log" v-html="log">
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -58,19 +62,19 @@
   new Vue({
     delimiters: ['${', '}'],
     el: '#app',
-    data: {            
-      router: {{router}},
+    data: {
+      actions: {{actions}},
       action: null,
       current: "",
       form: {},
-      inputs: [],      
+      inputs: [],
       outputs: null,
       log: null
     },
     methods: {
-      actSelectAction(info) {        
+      actSelectAction(info) {
         this.action = info;
-        this.current = this.router.name + '.' + info.name;
+        this.current = info.name;
         this.log = null;
         this.form = {};
 
@@ -117,7 +121,7 @@
           }
           param.def = def;
           param.desc = desc.join(' ');
-        });        
+        });
         // 提取输入参数
         this.inputs = info.params.filter(e=>{
           return e.input;
@@ -131,8 +135,8 @@
       actDropdown() {
 
       },
-      actSubmit() {        
-        this.log = null;        
+      actSubmit() {
+        this.log = null;
         let params = {}; // 普通参数
         let files = {}; // 文件参数
         for (let idx in this.inputs) {
@@ -152,12 +156,11 @@
         }
         if (localStorage.getItem('::nnt::logic::sid'))
             params['_sid'] = localStorage.getItem('::nnt::logic::sid');
-            // 请求数据
-        let url = location.href.replace('/apidoc', '/' + this.action.name);
-        url += url.indexOf('?') == -1 ? '?' : '&';
+        params['_skippermission'] = 1;
+        // 请求数据
+        let url = location.href.replace('action=api.doc', 'action=' + this.action.action);
         if (Object.keys(params).length)
-          url += $.param(params);
-        url += "&_skippermission=1";
+          url += '&' + $.param(params);
         // 如果存在文件，则强制为post
         if (Object.keys(files).length) {
           Post(url, files, (err, resp)=>{
@@ -182,33 +185,34 @@
           });
         }
       },
-        actOpen() {
-            let params = {}; // 普通参数
-            for (let idx in this.inputs) {
-                let input = this.inputs[idx];
-                if (!(input.index in this.form)) {
-                    if (!input.optional) {
-                        alert("没有设置参数 " + input.name);
-                        return;
-                    }
-                    else
-                        continue;
-                }
-                params[input.name] = this.form[input.index];
+      actOpen() {
+        let params = {}; // 普通参数
+        for (let idx in this.inputs) {
+          let input = this.inputs[idx];
+          if (!(input.index in this.form)) {
+            if (!input.optional) {
+              alert("没有设置参数 " + input.name);
+              return;
             }
-            if (localStorage.getItem('::nnt::logic::sid'))
-                params['_sid'] = localStorage.getItem('::nnt::logic::sid');
-            // 请求数据
-            let url = location.href.replace('/apidoc', '/' + this.action.name);
-            if (Object.keys(params).length)
-                url += '&' + $.param(params);
-            window.open(url);
-        },
+            else
+              continue;
+          }
+            params[input.name] = this.form[input.index];
+        }
+        if (localStorage.getItem('::nnt::logic::sid'))
+            params['_sid'] = localStorage.getItem('::nnt::logic::sid');
+        params['_skippermission'] = 1;
+        // 请求数据
+        let url = location.href.replace('action=api.doc', 'action=' + this.action.action);
+        if (Object.keys(params).length)
+          url += '&' + $.param(params);
+        window.open(url);
+      },
       actRecordAudio() {
       },
       actPlayAudio() {
       }
-    }
+    },
   });
 
   function Get(url, cb) {
@@ -245,13 +249,13 @@
                       return;
                   }
                   try {
-                      var jsd = JSON.parse(hdl.responseText);
-                      cb(null, {'status':hdl.status, 'data':jsd});
-                      // 判断是否含有登陆信息
-                      var sid = hdl.getResponseHeader("X-NntLogic-SessionId");
-                      if (sid) {
-                          localStorage.setItem('::nnt::logic::sid', sid);
-                      }
+                    var jsd = JSON.parse(hdl.responseText);
+                    cb(null, {'status':hdl.status, 'data':jsd});
+                    // 判断是否含有登陆信息
+                    var sid = hdl.getResponseHeader("X-NntLogic-SessionId");
+                    if (sid) {
+                        localStorage.setItem('::nnt::logic::sid', sid);
+                    }
                   }
                   catch (e) {
                     cb(new Error(hdl.responseText));
@@ -263,3 +267,4 @@
 
   //# sourceURL=apidoc.js
 </script>
+</html>
