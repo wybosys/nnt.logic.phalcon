@@ -5,6 +5,7 @@ use Nnt\Controller\ApiBuilder;
 use Nnt\Controller\Config;
 use Nnt\Controller\Doc;
 
+// 使用logic规则访问（通过action传数据）将路由到Index
 class IndexController extends Api
 {
     /**

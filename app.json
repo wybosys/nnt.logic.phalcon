@@ -1,0 +1,19 @@
+{
+  "apidoc": {
+    "export": {
+      "router": [
+        "test"
+      ],
+      "model": [
+        "test/Call",
+        "test/Echoo",
+        "test/HostInfo",
+        "test/Kv",
+        "test/Log",
+        "test/Output",
+        "test/UploadImage",
+        "test/User"
+      ]
+    }
+  }
+}
