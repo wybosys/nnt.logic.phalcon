@@ -197,8 +197,12 @@ class Api extends Controller
         try {
             // 解析action
             $action = $params['action'];
-            if (!$action)
-                throw new \Exception("没有找到action");
+            if (!$action) {
+                echo json_encode([
+                    'code' => Code::OK
+                ]);
+                return;
+            }
             $phs = explode('.', $action);
 
             // 调用函数

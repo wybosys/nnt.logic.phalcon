@@ -1,4 +1,5 @@
 <?php
+
 use Phalcon\Loader;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\View;
@@ -34,15 +35,6 @@ $di->setShared('url', function () {
     return null;
 });
 
-$di->setShared('view', function () {
-    $view = new View();
-    $view->setDI($this);
-    $view->registerEngines([
-        ".volt" => "Phalcon\Mvc\View\Engine\Volt"
-    ]);
-    return $view;
-});
-
 $di->setShared('db', function () {
     return DbFactory::load($this->getConfig()->database);
 });
@@ -53,7 +45,7 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$di->setShared('user', function() {
+$di->setShared('user', function () {
     return new \Test\Model\User();
 });
 
