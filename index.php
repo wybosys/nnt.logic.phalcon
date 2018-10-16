@@ -3,7 +3,10 @@
 error_reporting(E_ALL);
 
 if (!isset($_GET['_url'])) {
-    throw new \Exception("没有按照phalcon的要求设置web服务器的url转发规则");
+    // 没有按照phalcon的要求设置web服务器的url转发规则
+    echo "NntLogicPhalcon WebRoot";
+    http_response_code(404);
+    return;
 }
 
 $phs = array_values(array_filter(explode('/', $_GET['_url'])));
