@@ -1,7 +1,5 @@
 <?php
 
-error_reporting(E_ERROR);
-
 // 收集所有的get、post参数
 if (isset($_GET['_url'])) {
     // 如果存在url，则按照phalcon标准的keypath来路由

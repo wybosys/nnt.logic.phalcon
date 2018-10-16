@@ -196,13 +196,14 @@ class Api extends Controller
         $params = Proto::CollectParameters($this->request);
         try {
             // 解析action
-            $action = $params['action'];
-            if (!$action) {
+            if (!isset($params['action'])) {
                 echo json_encode([
                     'code' => Code::OK
                 ]);
                 return;
             }
+
+            $action = $params['action'];
             $phs = explode('.', $action);
 
             // 调用函数
