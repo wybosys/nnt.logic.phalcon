@@ -10,9 +10,9 @@ define('APP_DIR', dirname(__DIR__) . '/');
 
 $loader = new Loader();
 $loader->registerNamespaces([
-    'Nnt' => NNT_DIR . 'nnt',
-    'Nnt\Model' => NNT_DIR . 'nnt/model',
-    'Nnt\Controller' => NNT_DIR . 'nnt/controller',
+    'Nnt' => APP_DIR . 'nnt',
+    'Nnt\Model' => APP_DIR . 'nnt/model',
+    'Nnt\Controller' => APP_DIR . 'nnt/controller',
     'Test' => MODULE_DIR,
     'Test\Model' => MODULE_DIR . 'model',
     'Test\Db' => MODULE_DIR . 'db'

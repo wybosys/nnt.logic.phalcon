@@ -118,7 +118,7 @@ class Doc
                     break;
             }
 
-            $ret[$name] = $t;
+            $ret[] = $t;
         }
 
         return $ret;

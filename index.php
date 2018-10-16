@@ -25,8 +25,12 @@ if (isset($_GET['_url'])) {
     // 按照logic的规则来路由
     $phs = explode('.', $action);
 
+    // 只有内部模块可以导向nnt
+    $INNER_MODULES = ['api'];
+    $MODULE_NAME = in_array($phs[0], $INNER_MODULES) ? 'nnt' : $phs[0];
+
     // 加载二级模块
-    $REDIRECT_MODULE = __DIR__ . '/nnt/index.php';
+    $REDIRECT_MODULE = __DIR__ . "/$MODULE_NAME/index.php";
     if (!file_exists($REDIRECT_MODULE)) {
         throw new \Exception("没有找到模块");
     }
