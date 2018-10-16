@@ -22,6 +22,14 @@ class TestController extends Api
     /**
      * @Action(\Test\Model\Echoo, [noauth], "输出")
      */
+    function echo(\Test\Model\Echoo $mdl)
+    {
+        $mdl->output = $mdl->input;
+    }
+
+    /**
+     * @Action(\Test\Model\Echoo, [noauth], "输出")
+     */
     function callechoo(\Test\Model\Echoo $mdl)
     {
         $ret = Service::Call("framework/phalcon/test/echoo", [
