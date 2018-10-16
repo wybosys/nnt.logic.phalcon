@@ -34,4 +34,9 @@ class Application extends \Phalcon\Mvc\Application
     }
 
     private $_profiler = false;
+
+    function run()
+    {
+        echo $this->handle()->getContent();
+    }
 }

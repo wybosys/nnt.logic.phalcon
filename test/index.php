@@ -43,4 +43,4 @@ $di->setShared('user', function() {
 });
 
 $app = new \Nnt\Controller\Application($di);
-echo $app->handle()->getContent();
+$app->run();
