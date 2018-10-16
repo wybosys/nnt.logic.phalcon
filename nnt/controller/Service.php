@@ -89,8 +89,7 @@ class Service
                 apcu_store(KEY_PERMISSIONTIME, $ftime);
                 apcu_store(KEY_PERMISSIONID, $pid);
                 return $pid;
-            }
-            else {
+            } else {
                 $pid = apcu_fetch(KEY_PERMISSIONID);
                 return $pid;
             }
@@ -161,6 +160,13 @@ class Service
     {
         list($subnet, $mask) = explode('/', $cidr);
         return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
+    }
+
+    static function GetDomain()
+    {
+        $path = self::DevopsConfig()->path;
+        $domain = substr($path, 16);
+        return $domain;
     }
 }
 

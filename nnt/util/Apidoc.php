@@ -3,6 +3,7 @@
 namespace Nnt\Util;
 
 use Nnt\Controller\Api;
+use Nnt\Controller\Service;
 use Nnt\Model\Proto;
 
 class Doc
@@ -38,7 +39,10 @@ class Doc
             $t["name"] = $t["action"] = "$name.$action";
             $t["comment"] = $actdecl->getArgument(2);
             $modelClazz = $actdecl->getArgument(0);
-            $t["params"] = self::ParametersInfo($modelClazz);
+            if (!$modelClazz)
+                $t["params"] = [];
+            else
+                $t["params"] = self::ParametersInfo($modelClazz);
             $ret[] = $t;
         }
 
@@ -62,10 +66,10 @@ class Doc
     {
         $reflect = Proto::Reflect($model);
         $props = $reflect->getPropertiesAnnotations();
-        $ret = [];
         if (!$props)
-            return $ret;
+            return [];
 
+        $ret = [];
         foreach ($props as $name => $prop) {
             if (!$prop->has('Api'))
                 continue;
@@ -148,6 +152,7 @@ class Apidoc
             include $phpFile;
             $routers[] = $router;
         }
+        $routers[] = 'nnt';
 
         // 加载所有的模型
         $models = [];
@@ -188,6 +193,15 @@ class Apidoc
 
     static function DocExport(Api $self)
     {
+        // 加载实体
+        $entrys = self::LoadEntrys();
 
+        $params = [
+            'domain' => Service::GetDomain(),
+            'clazzes' => [],
+            'enums' => [],
+            'consts' => [],
+            'routers' => []
+        ];
     }
 }
