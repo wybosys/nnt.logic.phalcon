@@ -87,6 +87,12 @@ class MemberDeclaration
      *
      * @var boolean
      */
+    public $noexport;
+
+    /**
+     *
+     * @var boolean
+     */
     public $expose;
 
     /**
@@ -480,6 +486,7 @@ class Proto
             $mem->output = in_array('output', $ops);
             $mem->optional = in_array('optional', $ops);
             $mem->noauth = in_array('noauth', $ops);
+            $mem->noexport = in_array('noexport', $ops);
             $mem->expose = in_array('expose', $ops);
             $mem->comment = $action->getArgument(2);
 

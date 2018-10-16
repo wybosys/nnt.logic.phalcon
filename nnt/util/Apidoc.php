@@ -141,6 +141,11 @@ class Apidoc
         $self->view->start()->finish();
     }
 
+    static function GetDefModelClass($model): string {
+        $cmpsClazz = explode('\\', $model);
+        return $cmpsClazz[count($cmpsClazz) - 1];
+    }
+
     static function DocExport(Api $self, $logic, $h5g, $vue)
     {
         // 加载实体
@@ -157,8 +162,7 @@ class Apidoc
         // 遍历所有的模型，生成模型段
         foreach ($entrys['models'] as $model) {
             // 类名为最后一段
-            $cmpsClazz = explode('/', $model);
-            $clazzName = $cmpsClazz[count($cmpsClazz) - 1];
+            $clazzName = self::GetDefModelClass($model);
 
             // 解析model的定义
             $decl = Proto::DeclarationOf($model, true, true, true);
@@ -202,14 +206,20 @@ class Apidoc
                 continue;
 
             foreach ($decl->members as $name => $method) {
+                if ($method->noexport)
+                    continue;
+
                 $d = [];
                 $d['name'] = ucfirst($router) . ucfirst($name);
                 $d['action'] = "$router.$name";
+
+                $cn = self::GetDefModelClass($method->model);
                 if ($vue) {
-                    $d['type'] = $method->model;
+                    $d['type'] = $cn;
                 } else {
-                    $d['type'] = "models." . $method->model;
+                    $d['type'] = "models." . $cn;
                 }
+
                 $d['comment'] = $method->comment;
                 $params['routers'][] = $d;
             }
