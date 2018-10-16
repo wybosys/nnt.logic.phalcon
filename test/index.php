@@ -6,7 +6,7 @@ use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
 
 define('MODULE_DIR', __DIR__ . '/');
-define('NNT_DIR', dirname(__DIR__) . '/');
+define('APP_DIR', dirname(__DIR__) . '/');
 
 $loader = new Loader();
 $loader->registerNamespaces([

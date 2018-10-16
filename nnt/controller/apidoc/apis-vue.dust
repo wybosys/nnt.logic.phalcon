@@ -1,0 +1,38 @@
+// 请不要修改该自动生成的文件
+
+import {~lb}Model{~rb} from "./model-impl";
+
+class ApiModel extends Model {
+  domain = "{.domain}";
+}
+
+{#enums}
+export enum {.name} {~lb}
+  {#.defs}
+      {.name} = {.value},
+  {/.defs}
+{~rb}
+{/enums}
+
+{#consts}
+export const {.name} = {.value|s};
+{/consts}
+
+{#clazzes}
+export class {.name} extends {.super} {~lb}
+  {#.fields}
+      {?.deco}{.deco|s}{/.deco}
+      {.name}{?.optional}?{/.optional}:{.type|s};
+  {/.fields}
+{~rb}
+{/clazzes}
+
+{#routers}
+export let R{.name} = ["{.action}", {.type}, "{.comment|s}"];
+{/routers}
+
+{#routers}
+export function {.name}():{.type} {~lb}
+  return Model.NewRequest(R{.name});
+{~rb}
+{/routers}
