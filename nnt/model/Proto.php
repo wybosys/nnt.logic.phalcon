@@ -579,7 +579,6 @@ class Proto
 
     static function FpToTypeDef(PropDeclaration $fp): string
     {
-        $typ = "";
         if ($fp->string) {
             $typ = "string";
         } else if ($fp->integer) {
@@ -590,7 +589,6 @@ class Proto
             $typ = "boolean";
         } else if ($fp->array) {
             $typ = "Array<";
-            $vt = "any";
             switch ($fp->valtyp) {
                 case "string":
                     $vt = "string";
@@ -619,7 +617,7 @@ class Proto
                 $typ = "any";
             else
                 $typ = "string";
-        } else if ($fp->json) {
+        } else if ($fp->json || $fp->object) {
             $typ = "Object";
         } else {
             $typ = $fp->valtyp;
@@ -675,13 +673,15 @@ class Proto
                 return $ns . "number_t";
             case "boolean":
                 return $ns . "boolean_t";
+            case "object":
+                return "Object";
         }
         return $def;
     }
 
     static function FpToCommentDef(PropDeclaration $fp): string
     {
-        return $fp->comment ? (', "' . $fp->comment . '\"') : "";
+        return $fp->comment ? (', "' . $fp->comment . '"') : "";
     }
 
     static function FpToDecoDef(PropDeclaration $fp, $ns = ""): string
