@@ -130,4 +130,12 @@ class TestController extends Api
             throw new \Exception("不存在", \Nnt\Model\Code::TARGET_NOT_FOUND);
         }
     }
+
+    /**
+     * @Action(null, [noauth])
+     */
+    function noargs()
+    {
+        // pass
+    }
 }

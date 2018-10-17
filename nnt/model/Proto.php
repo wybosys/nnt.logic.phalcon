@@ -477,6 +477,8 @@ class Proto
 
             $action = $method->get('Action');
             $model = $action->getArgument(0);
+            if ($model == null)
+                $model = "\Nnt\Model\Nil";
             $ops = $action->getArgument(1);
 
             $mem = new MemberDeclaration();

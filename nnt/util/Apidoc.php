@@ -92,6 +92,10 @@ class Apidoc
         $cfgrouter = $cfgexport->router;
         $cfgmodel = $cfgexport->model;
 
+        // 添加基础库
+        if (!in_array('nnt/model/Nil', $cfgmodel))
+            $cfgmodel[] = 'nnt/model/Nil';
+
         // 加载所有路由
         $routers = [];
         foreach ($cfgrouter as $router) {
@@ -117,7 +121,6 @@ class Apidoc
             include $phpFile;
             $models[] = $modelClazz;
         }
-        //$models[] = 'nnt/model/Code';
 
         return [
             "routers" => $routers,
@@ -142,7 +145,8 @@ class Apidoc
         $self->view->start()->finish();
     }
 
-    static function GetDefModelClass($model): string {
+    static function GetDefModelClass($model): string
+    {
         $cmpsClazz = explode('\\', $model);
         return $cmpsClazz[count($cmpsClazz) - 1];
     }
