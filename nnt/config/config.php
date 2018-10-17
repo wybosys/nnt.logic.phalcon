@@ -4,7 +4,7 @@
 defined('MODULE_DIR') || define('MODULE_DIR', dirname(__DIR__) . '/');
 defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
 
-if (!defined(APP_MODE) || APP_MODE != 'app') {
+if (!defined('APP_MODE') || APP_MODE != 'app') {
     // cli等形式访问
     include APP_DIR . "nnt/controller/Config.php";
 }
@@ -12,7 +12,7 @@ if (!defined(APP_MODE) || APP_MODE != 'app') {
 // 加载根目录中的配置
 $cfg = include APP_DIR . 'app.php';
 
-if (!defined(APP_MODE) || APP_MODE != 'app') {
+if (!defined('APP_MODE') || APP_MODE != 'app') {
     // 额外设置环境数据
     $cfg['application'] = [
         "controllersDir" => APP_DIR,
