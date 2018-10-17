@@ -15,4 +15,9 @@ class Echoo
      * @var string
      */
     public $output;
+
+    /**
+     * @Api(3, [enum, \Nnt\Model\Code], [output], "状态")
+     */
+    public $status;
 }

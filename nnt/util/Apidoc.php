@@ -151,12 +151,6 @@ class Apidoc
         $self->view->start()->finish();
     }
 
-    static function GetDefModelClass($model): string
-    {
-        $cmpsClazz = explode('\\', $model);
-        return $cmpsClazz[count($cmpsClazz) - 1];
-    }
-
     static function DocExport(Api $self, $logic, $h5g, $vue)
     {
         // 加载实体
@@ -173,7 +167,7 @@ class Apidoc
         // 遍历所有的模型，生成模型段
         foreach ($entrys['models'] as $model) {
             // 类名为最后一段
-            $clazzName = self::GetDefModelClass($model);
+            $clazzName = Proto::GetClassName($model);
 
             // 解析model的定义
             $decl = Proto::DeclarationOf($model, true, true, true);
@@ -244,7 +238,7 @@ class Apidoc
                 $d['name'] = ucfirst($router) . ucfirst($name);
                 $d['action'] = "$router.$name";
 
-                $cn = self::GetDefModelClass($method->model);
+                $cn = Proto::GetClassName($method->model);
                 if ($vue) {
                     $d['type'] = $cn;
                 } else {

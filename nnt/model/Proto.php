@@ -424,6 +424,8 @@ class Proto
                 return $arr;
             case 'object':
                 return json_encode($val);
+            case 'enum':
+                return $val;
             default:
                 return self::Output($val);
         }
@@ -518,6 +520,7 @@ class Proto
             $mem->output = in_array('output', $ops);
             $mem->optional = in_array('optional', $ops);
             $mem->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
+
             switch ($typs[0]) {
                 case 'string':
                     $mem->string = true;
@@ -542,6 +545,11 @@ class Proto
                     $mem->map = true;
                     $mem->keytyp = $typs[1];
                     $mem->valtyp = $typs[2];
+                    break;
+                case 'enum':
+                case 'enumerate':
+                    $mem->enum = true;
+                    $mem->valtyp = $typs[1];
                     break;
                 default:
                     $mem->object = true;
@@ -579,6 +587,11 @@ class Proto
         return $ret;
     }
 
+    static function GetClassName($clazz): string {
+        $cmps = explode('\\', $clazz);
+        return $cmps[count($cmps) - 1];
+    }
+
     static function FpToTypeDef(PropDeclaration $fp): string
     {
         if ($fp->string) {
@@ -613,7 +626,7 @@ class Proto
         } else if ($fp->multimap) {
             $typ = "Multimap<" . self::ValtypeDefToDef($fp->keytyp) . ", " . self::ValtypeDefToDef($fp->valtyp) . ">";
         } else if ($fp->enum) {
-            $typ = $fp->valtyp;
+            $typ = self::GetClassName($fp->valtyp);
         } else if ($fp->file) {
             if ($fp->input)
                 $typ = "any";
@@ -662,7 +675,8 @@ class Proto
             case "boolean":
                 return "boolean";
         }
-        return $def;
+
+        return self::GetClassName($def);
     }
 
     static function ValtypeDefToDefType($def, $ns = ''): string
@@ -678,7 +692,8 @@ class Proto
             case "object":
                 return "Object";
         }
-        return $def;
+
+        return self::GetClassName($def);
     }
 
     static function FpToCommentDef(PropDeclaration $fp): string

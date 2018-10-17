@@ -2,6 +2,7 @@
 
 use Nnt\Controller\Api;
 use Nnt\Controller\Service;
+use Nnt\Model\Code;
 
 class TestController extends Api
 {
@@ -25,6 +26,7 @@ class TestController extends Api
     function echo(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
+        $mdl->status = Code::EXCEPTION;
     }
 
     /**
