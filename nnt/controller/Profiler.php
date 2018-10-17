@@ -12,7 +12,7 @@ class Profiler
         $this->config = [
             'mode' => 'development',
             'save.handler' => 'mongodb',
-            'db.host' => Config::Use('mongodb://develop.91egame.com:27017', 'mongodb://mongo:27017', 'mongodb://mongo:27017'),
+            'db.host' => Config::Use('mongodb://localhost:27017', 'mongodb://mongo:27017', 'mongodb://mongo:27017'),
             'db.db' => 'profiler',
             'db.options' => array(),
             'templates.path' => dirname(__DIR__) . '/src/templates',

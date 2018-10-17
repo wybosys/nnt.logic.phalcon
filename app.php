@@ -6,7 +6,7 @@ $cfg = [];
 
 $cfg['database'] = [
     "adapter" => "Mysql",
-    "host" => "develop.91egame.com",
+    "host" => "localhost",
     "username" => "root",
     "port" => "3306",
     "password" => "root",
@@ -22,6 +22,6 @@ $cfg['redis'] = [
     "persistent" => true
 ];
 
-define('SERVICE_HOST', Config::Use('http://develop.91egame.com', 'http://develop.91egame.com', 'http://www.91yigame.com'));
+define('SERVICE_HOST', Config::Use('http://localhost', 'http://proxy', 'http://proxy'));
 
 return $cfg;
