@@ -117,6 +117,7 @@ class Apidoc
             include $phpFile;
             $models[] = $modelClazz;
         }
+        //$models[] = 'nnt/model/Code';
 
         return [
             "routers" => $routers,
@@ -243,7 +244,7 @@ class Apidoc
         //file_put_contents($output, $result);
 
         $resp = $self->response;
-        $resp->setContentType('text/typescript');
+        $resp->setContentType('application/javascript');
         $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.ts');
 
         echo $result;
