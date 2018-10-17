@@ -5,16 +5,16 @@ namespace Nnt\Controller;
 use Nnt\Model\Code;
 use Phalcon\Http\Request\File;
 
+if (!defined('SERVICE_HOST')) {
+    throw new \Exception('请在app.php中配置SERVICE_HOST');
+}
+
 class Service
 {
-    const HOST_LOCAL = 'http://develop.91egame.com';
-    const HOST_DEVOPSDEVELOP = 'http://develop.91egame.com';
-    const HOST_DEVOPSRELEASE = 'http://www.91yigame.com';
-
     static function RawCall(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        $host = Config::Use(self::HOST_LOCAL, self::HOST_DEVOPSDEVELOP, self::HOST_DEVOPSRELEASE);
+        $host = SERVICE_HOST;
 
         if (self::PermissionEnabled()) {
             $args[KEY_PERMISSIONID] = self::PermissionId();

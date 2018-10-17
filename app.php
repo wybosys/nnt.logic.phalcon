@@ -22,4 +22,6 @@ $cfg['redis'] = [
     "persistent" => true
 ];
 
+define('SERVICE_HOST', Config::Use('http://develop.91egame.com', 'http://develop.91egame.com', 'http://www.91yigame.com'));
+
 return $cfg;
