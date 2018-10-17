@@ -15,9 +15,9 @@ $cfg = include APP_DIR . 'app.php';
 if (!defined(APP_DIR) || APP_DIR != 'app') {
     // 额外设置环境数据
     $cfg['application'] = [
-        "controllersDir" => MODULE_DIR . "controller",
-        "modelsDir" => MODULE_DIR . "model",
-        "viewsDir" => MODULE_DIR . "view"
+        "controllersDir" => APP_DIR,
+        "modelsDir" => APP_DIR,
+        "viewsDir" => APP_DIR,
     ];
 }
 
