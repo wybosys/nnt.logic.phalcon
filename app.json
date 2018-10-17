@@ -5,6 +5,7 @@
         "test"
       ],
       "model": [
+        "test/model/Def",
         "test/model/Call",
         "test/model/CidrTest",
         "test/model/Echoo",

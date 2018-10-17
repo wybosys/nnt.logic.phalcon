@@ -196,7 +196,12 @@ class Apidoc
                 $params['enums'][] = $em;
             } // 如果是const
             else if ($decl->const) {
-
+                foreach (Proto::ConstsOfClass($model) as $name => $val) {
+                    $params['consts'][] = [
+                        'name' => strtoupper($clazzName) . '_' . strtoupper($name),
+                        'value' => is_string($val) ? ("\"$val\"") : $val
+                    ];
+                }
             } // 其他
             else {
                 $clazz = [
