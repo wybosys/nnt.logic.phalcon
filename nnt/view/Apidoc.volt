@@ -157,8 +157,15 @@
         if (localStorage.getItem('::nnt::logic::sid'))
             params['_sid'] = localStorage.getItem('::nnt::logic::sid');
         params['_skippermission'] = 1;
-        // 请求数据
-        let url = location.href.replace('action=api.doc', 'action=' + this.action.action);
+        // 请求数据，和js的不同，phalcon会支持多种格式
+        let url = location.href;
+        if (url.indexOf('action=api.doc') != -1) {
+          url = url.replace('action=api.doc', 'action=' + this.action.action);
+        } else if (url.indexOf('api/doc') != -1) {
+          url = url.replace('api/doc', '?action=' + this.action.action);
+        } else if (url.indexOf('nnt/doc') != -1) {
+          url = url.replace('nnt/doc', '?action=' + this.action.action);
+        }
         if (Object.keys(params).length)
           url += '&' + $.param(params);
         // 如果存在文件，则强制为post
