@@ -5,9 +5,11 @@ namespace Nnt\Controller;
 use Nnt\Model\Code;
 use Phalcon\Http\Request\File;
 
+/*
 if (!defined('SERVICE_HOST')) {
     throw new \Exception('请在app.php中配置SERVICE_HOST');
 }
+*/
 
 class Service
 {
