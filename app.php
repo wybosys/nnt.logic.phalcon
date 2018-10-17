@@ -1,11 +1,6 @@
 <?php
 
-// 专用于业务的config文件
-
-use Nnt\Controller\Config;
-
-defined('MODULE_DIR') || define('MODULE_DIR', dirname(__DIR__) . '/');
-defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
+use \Nnt\Controller\Config;
 
 $cfg = [];
 
@@ -27,4 +22,4 @@ $cfg['redis'] = [
     "persistent" => true
 ];
 
-return new Config($cfg);
+return $cfg;

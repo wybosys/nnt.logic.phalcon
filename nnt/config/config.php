@@ -1,26 +1,24 @@
 <?php
 
 // 用来配合phalcon工具生成模型
-
 defined('MODULE_DIR') || define('MODULE_DIR', dirname(__DIR__) . '/');
 defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
 
-$cfg = [];
+if (!defined(APP_DIR) || APP_DIR != 'app') {
+    // cli等形式访问
+    include APP_DIR . "nnt/controller/Config.php";
+}
 
-$cfg['database'] = [
-    "adapter" => "Mysql",
-    "host" => "develop.91egame.com",
-    "username" => "root",
-    "port" => "3306",
-    "password" => "root",
-    "dbname" => "test",
-    "charset" => "utf8"
-];
+// 加载根目录中的配置
+$cfg = include APP_DIR . 'app.php';
 
-$cfg['application'] = [
-    "controllersDir" => MODULE_DIR . "controller",
-    "modelsDir" => MODULE_DIR . "model",
-    "viewsDir" => MODULE_DIR . "view"
-];
+if (!defined(APP_DIR) || APP_DIR != 'app') {
+    // 额外设置环境数据
+    $cfg['application'] = [
+        "controllersDir" => MODULE_DIR . "controller",
+        "modelsDir" => MODULE_DIR . "model",
+        "viewsDir" => MODULE_DIR . "view"
+    ];
+}
 
 return new \Phalcon\Config($cfg);

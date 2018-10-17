@@ -1,10 +1,17 @@
 <?php
+
 use Phalcon\Loader;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
 
+// 本模块的路径
 define('MODULE_DIR', __DIR__ . '/');
+
+// 应用根目录
 define('APP_DIR', dirname(__DIR__) . '/');
+
+// 应用模式（未定义则为在命令行中使用phalcon-dev-tools)
+define('APP_MODE', 'app');
 
 $loader = new Loader();
 $loader->registerNamespaces([
@@ -26,7 +33,7 @@ $loader->register();
 $di = new \Nnt\Controller\Factory();
 
 $di->setShared('config', function () {
-    return include 'config/appconfig.php';
+    return include 'config/config.php';
 });
 
 $di->setShared('db', function () {
