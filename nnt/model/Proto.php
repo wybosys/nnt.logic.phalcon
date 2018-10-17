@@ -225,7 +225,7 @@ class Proto
      * @param string|object $className
      * @return \Phalcon\Annotations\Reflection
      */
-    static function Reflect($model)
+    static function Annotations($model)
     {
         $reader = new Apcu([
             "lifetime" => Config::Use(5, 5, 60 * 5),
@@ -243,7 +243,7 @@ class Proto
     static function Check($params, $model)
     {
         // 填充，如果遇到不符合的，返回错误
-        $reflect = self::Reflect($model);
+        $reflect = self::Annotations($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -257,7 +257,7 @@ class Proto
                     if (!isset($params[$name])) {
                         if (array_search('optional', $ops) !== false)
                             continue;
-                        return Code::PARAMETERS;
+                        return Code::PARAMETER_NOT_MATCH;
                     }
                     // 根据设置，提取输入数据
                     $typs = $api->getArgument(1);
@@ -274,7 +274,7 @@ class Proto
      */
     static function Decode($model, $params)
     {
-        $reflect = self::Reflect($model);
+        $reflect = self::Annotations($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -301,7 +301,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reflect = self::Reflect($model);
+        $reflect = self::Annotations($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -329,7 +329,7 @@ class Proto
         $ret = [];
         if ($model == null)
             return $ret;
-        $reflect = self::Reflect($model);
+        $reflect = self::Annotations($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
             foreach ($props as $name => $prop) {
@@ -458,11 +458,11 @@ class Proto
             return;
         $mdl = $annClass->get('Model');
         $ops = $mdl->getArgument(0);
-        $super = $mdl->getArgument(1);
-        if (in_array('hidden', $ops))
-            $decl->hidden = true;
-        if ($super)
-            $decl->super = $super;
+        $decl->super = $mdl->getArgument(1);
+
+        $decl->hidden = in_array('hidden', $ops);
+        $decl->enum = in_array('enum', $ops) || in_array('enumm', $ops);
+        $decl->const = in_array('const', $ops) || in_array('constant', $ops);
     }
 
     static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
@@ -556,24 +556,24 @@ class Proto
     /**
      * 获得model的参数描述
      */
-    static function DeclarationOf($model, $includeClass, $includeMembers, $includeProps): ClazzDeclaration
+    static function DeclarationOf($model, $includeClass = true, $includeMembers = true, $includeProps = true): ClazzDeclaration
     {
-        $reflect = self::Reflect($model);
-        if (!$reflect)
+        $anns = self::Annotations($model);
+        if (!$anns)
             return null;
 
         $ret = new ClazzDeclaration();
 
         if ($includeClass) {
-            self::LoadClassDeclarationOf($reflect, $ret);
+            self::LoadClassDeclarationOf($anns, $ret);
         }
 
         if ($includeMembers) {
-            self::LoadMembersDeclarationOf($reflect, $ret);
+            self::LoadMembersDeclarationOf($anns, $ret);
         }
 
         if ($includeProps) {
-            self::LoadPropsDeclarationOf($reflect, $ret);
+            self::LoadPropsDeclarationOf($anns, $ret);
         }
 
         return $ret;
@@ -713,5 +713,19 @@ class Proto
             $deco = "@" . $ns . "type(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         }
         return $deco;
+    }
+
+    /**
+     * @return int[]
+     * Map<string, int>
+     */
+    static function ConstsOfClass($clazz)
+    {
+        $ret = [];
+        $reflect = new \ReflectionClass($clazz);
+        foreach ($reflect->getConstants() as $name => $val) {
+            $ret[$name] = $val;
+        }
+        return $ret;
     }
 }

@@ -170,7 +170,7 @@ class Api extends Controller
 
         // 把简化的action恢复成框架需要的actionAction
         if ($actnm) {
-            $reflect = Proto::Reflect($this);
+            $reflect = Proto::Annotations($this);
             $methods = $reflect->getMethodsAnnotations();
             if ($methods) {
                 if (array_key_exists($actnm, $methods)) {

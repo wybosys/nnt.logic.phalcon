@@ -93,8 +93,14 @@ class Apidoc
         $cfgmodel = $cfgexport->model;
 
         // 添加基础库
-        if (!in_array('nnt/model/Nil', $cfgmodel))
-            $cfgmodel[] = 'nnt/model/Nil';
+        $BASE_MODELS = [
+            'nnt/model/Nil',
+            'nnt/model/Code'
+        ];
+        foreach ($BASE_MODELS as $e) {
+            if (!in_array($e, $cfgmodel))
+                $cfgmodel[] = $e;
+        }
 
         // 加载所有路由
         $routers = [];
@@ -103,7 +109,7 @@ class Apidoc
             $phpFile = APP_DIR . "/$router/controller/{$routerClazz}.php";
             if (!file_exists($phpFile))
                 throw new \Exception("没有找到 $phpFile");
-            include $phpFile;
+            include_once $phpFile;
             $routers[] = $router;
         }
         $routers[] = 'nnt';
@@ -118,7 +124,7 @@ class Apidoc
             $phpFile = APP_DIR . "/{$model}.php";
             if (!file_exists($phpFile))
                 throw new \Exception("没有找到 $phpFile");
-            include $phpFile;
+            include_once $phpFile;
             $models[] = $modelClazz;
         }
 
@@ -175,9 +181,24 @@ class Apidoc
                 continue;
 
             // 如果是enum
-            // 如果是const
-            // 其他
-            {
+            if ($decl->enum) {
+                // 静态变量是用类const变量进行的模拟
+                $em = [
+                    'name' => $clazzName,
+                    'defs' => []
+                ];
+                foreach (Proto::ConstsOfClass($model) as $name => $val) {
+                    $em['defs'][] = [
+                        'name' => $name,
+                        'value' => $val
+                    ];
+                }
+                $params['enums'][] = $em;
+            } // 如果是const
+            else if ($decl->const) {
+
+            } // 其他
+            else {
                 $clazz = [
                     'name' => $clazzName,
                     'super' => $decl->super ? $decl->super : "ApiModel",

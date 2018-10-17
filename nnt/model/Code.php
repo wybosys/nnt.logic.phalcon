@@ -2,6 +2,9 @@
 
 namespace Nnt\Model;
 
+/**
+ * @Model([enum])
+ */
 class Code
 {
     const UNKNOWN = -1000;
