@@ -1,1 +1,1 @@
-义悠的几个php项目所基于的框架
+遵循nnt.logic规范的phalcon框架
