@@ -292,7 +292,7 @@ class Api extends Controller
                 if (isset($cfg->client) && $cfg->client)
                     break;
 
-                if ($name == 'apidocAction')
+                if ($name == 'docAction')
                     break;
 
                 if (isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
