@@ -21,8 +21,8 @@ class Code
     const SERVER_NOT_FOUND = -989; // 没有找到服务器
     const LENGTH_OVERFLOW = -988; // 长度超过限制
     const TARGET_NOT_FOUND = -987; // 目标对象没有找到
-    const PERMISSIO_FAILED = -986; // 没有权限
-    const WAIT_IMPLEMENTION = -985; // 等待实现
+    const PERMISSION_FAILED = -986; // 没有权限
+    const NOT_IMPLEMENTION = -985; // 等待实现
     const ACTION_NOT_FOUND = -984; // 没有找到动作
     const TARGET_EXISTS = -983; // 已经存在
     const STATE_FAILED = -982; // 状态错误
