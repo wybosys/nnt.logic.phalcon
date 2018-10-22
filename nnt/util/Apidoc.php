@@ -94,8 +94,8 @@ class Apidoc
 
         // 添加基础库
         $BASE_MODELS = [
-            'nnt/model/Nil',
-            'nnt/model/Code'
+            'nnt/model/Nil'
+            //'nnt/model/Code' // 不输出code定义，避免重复
         ];
         foreach ($BASE_MODELS as $e) {
             if (!in_array($e, $cfgmodel))
