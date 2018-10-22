@@ -151,7 +151,7 @@ class Apidoc
         $self->view->start()->finish();
     }
 
-    static function DocExport(Api $self, $logic, $h5g, $vue)
+    static function DocExport(Api $self, \ExportApis $opts)
     {
         // 加载实体
         $entrys = self::LoadEntrys();
@@ -239,7 +239,7 @@ class Apidoc
                 $d['action'] = "$router.$name";
 
                 $cn = Proto::GetClassName($method->model);
-                if ($vue) {
+                if ($opts->vue) {
                     $d['type'] = $cn;
                 } else {
                     $d['type'] = "models." . $cn;
@@ -251,13 +251,15 @@ class Apidoc
         }
 
         // 渲染模板
-        $apis = '';
-        if ($logic)
-            $apis = APP_DIR . "/nnt/view/apidoc/apis-logic.dust";
-        else if ($h5g)
-            $apis = APP_DIR . "/nnt/view/apidoc/apis-h5g.dust";
-        else if ($vue)
-            $apis = APP_DIR . "/nnt/view/apidoc//apis-vue.dust";
+        $apis = APP_DIR . "/nnt/view/apidoc/";
+        if ($opts->logic)
+            $apis .= "apis-logic.dust";
+        else if ($opts->h5g)
+            $apis .= "apis-h5g.dust";
+        else if ($opts->vue)
+            $apis .= "apis-vue.dust";
+        else if ($opts->php)
+            $apis .= "apis-php.dust";
 
         $dust = new \Dust\Dust();
         $tpl = $dust->compileFile($apis);

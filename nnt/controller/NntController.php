@@ -8,17 +8,22 @@ use Nnt\Util\Apidoc;
 class ExportApis
 {
     /**
-     * @Api(1, [boolean], [input, optional], "生成logic客户端使用的api")
+     * @Api(1, [boolean], [input, optional], "生成基于nnt.logic.node项目使用的api")
      */
     public $logic;
 
     /**
-     * @Api(2, [boolean], [input, optional], "生成h5g游戏使用api")
+     * @Api(2, [boolean], [input, optional], "生成基于nnt.logic.php项目使用的api")
+     */
+    public $php;
+
+    /**
+     * @Api(3, [boolean], [input, optional], "生成h5g游戏使用api")
      */
     public $h5g;
 
     /**
-     * @Api(3, [boolean], [input, optional], "生成vue项目中使用的api")
+     * @Api(4, [boolean], [input, optional], "生成vue项目中使用的api")
      */
     public $vue;
 }
@@ -38,7 +43,7 @@ class NntController extends Api
      */
     function export(ExportApis $mdl)
     {
-        Apidoc::DocExport($this, $mdl->logic, $mdl->h5g, $mdl->vue);
+        Apidoc::DocExport($this, $mdl);
     }
 
     /**
