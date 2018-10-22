@@ -57,10 +57,10 @@ class Service
         $ret = json_decode($msg);
         if (!$ret) {
             $ret = (object)[
-                'code' => Code::RESPONE_ERROR
+                'code' => Code::FORMAT_ERROR
             ];
         } else if (!isset($ret->code)) {
-            $ret->code = Code::RESPONE_ERROR;
+            $ret->code = Code::FORMAT_ERROR;
         } else {
             if (isset($ret->message) && !isset($ret->data))
                 $ret->data = $ret->message;
@@ -77,7 +77,7 @@ class Service
     {
         $file = APP_DIR . '/run/permission.cfg';
         if (!file_exists($file)) {
-            throw new \Exception("没有找到文件 $file", \Nnt\Model\Code::PERMISSION_DISALLOW);
+            throw new \Exception("没有找到文件 $file", Code::PERMISSIO_FAILED);
             return null;
         }
 
