@@ -28,7 +28,12 @@ if (isset($_GET['_url'])) {
         // 加载模块
         require $REDIRECT_MODULE;
     })();
-} else if (($action = $_GET['action']) || ($action = $_POST['action'])) {
+} else if (isset($_GET['action']) || isset($_POST['action'])) {
+    if (isset($_GET['action']))
+        $action = $_GET['action'];
+    else
+        $action = $_POST['action'];
+
     // 按照logic的规则来路由
     $phs = explode('.', $action);
 
