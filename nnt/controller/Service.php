@@ -77,7 +77,7 @@ class Service
     {
         $file = APP_DIR . '/run/permission.cfg';
         if (!file_exists($file)) {
-            throw new \Exception("没有找到文件 $file", Code::PERMISSIO_FAILED);
+            throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
             return null;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 use Phalcon\Loader;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 use Phalcon\Session\Factory as SesFactory;
@@ -38,7 +39,7 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$di->setShared('user', function() {
+$di->setShared('user', function () {
     return new \Test\Model\User();
 });
 
