@@ -151,13 +151,23 @@ class Apidoc
         $self->view->start()->finish();
     }
 
+    static function DomainToNamespace(string $domain): string
+    {
+        $ex = explode('/', $domain);
+        return ucfirst($ex[0]) . '\\' . ucfirst($ex[1]);
+    }
+
     static function DocExport(Api $self, \ExportApis $opts)
     {
         // 加载实体
         $entrys = self::LoadEntrys();
 
+        // 转换名称
+        $domain = Service::GetDomain();
+
         $params = [
-            'domain' => Service::GetDomain(),
+            'domain' => $domain,
+            'namespace' => self::DomainToNamespace($domain),
             'clazzes' => [],
             'enums' => [],
             'consts' => [],
@@ -241,6 +251,8 @@ class Apidoc
                 $cn = Proto::GetClassName($method->model);
                 if ($opts->vue) {
                     $d['type'] = $cn;
+                } else if ($opts->php) {
+                    $d['type'] = 'M' . $cn;
                 } else {
                     $d['type'] = "models." . $cn;
                 }

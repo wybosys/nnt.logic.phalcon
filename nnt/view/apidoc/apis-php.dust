@@ -1,47 +1,44 @@
 // 请不要修改该自动生成的文件
 
-import {~lb}Model{~rb} from "./model-impl";
+namespace {namespace};
 
-export module models {
+include_once "./model-impl.php";
 
-class ApiModel extends Model {
-  domain = "{.domain}";
+class ApiModel extends \Model {
+    public $domain = "{domain}";
 }
 
 {#enums}
-    export enum {.name} {~lb}
+  class {.name} {~lb}
     {#.defs}
-        {.name} = {.value},
+        static ${.name} = {.value};
     {/.defs}
-    {~rb}
+  {~rb}
 {/enums}
 
 {#consts}
-    export const {.name} = {.value|s};
+  const {.name} = {.value|s};
 {/consts}
 
 {#clazzes}
-    export class {.name} extends {.super} {~lb}
-    {#.fields}
-        {?.deco}{.deco|s}{/.deco}
-        {.name}{?.optional}?{/.optional}:{.type|s};
-    {/.fields}
-    {~rb}
+  class M{.name} extends {.super} {~lb}
+  {#.fields}
+      /*
+      * {?.deco}{.deco|s}{/.deco}
+      */
+      public ${.name};
+  {/.fields}
+  {~rb}
 {/clazzes}
-}
 
-export module routers {
+class Routers {~lb}
 {#routers}
-    export let {.name} = ["{.action}", {.type}, "{.comment|s}"];
+  static ${.name} = ["{.action}", "{namespace}\{.type}", "{.comment|s}"];
 {/routers}
-}
+{~rb}
 
-export module api {
 {#routers}
-    export function {.name}():{.type} {~lb}
-    return Model.NewRequest(routers.{.name});
-    {~rb}
+  function {.name}():{.type} {~lb}
+  return \Model::NewRequest(Routers::${.name});
+  {~rb}
 {/routers}
-}
-
-Model.BindImpl(api, models, routers);
