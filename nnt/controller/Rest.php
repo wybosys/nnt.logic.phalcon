@@ -96,6 +96,7 @@ class Rest extends Session
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
 
+        Log::log(\Phalcon\Logger::INFO, "S2S:" . $url);
         $resp = curl_exec($ch);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = array_filter(explode("\r\n", substr($resp, 0, $header_size)));
