@@ -18,6 +18,8 @@ class Model extends Logic
 
     function requestUrl(): string
     {
-        return Config::Use($this->host . "?action=" . $this->action, $this->host . $this->domain . "/?action=" . $this->action, $this->host . $this->domain . "/?action=" . $this->action);
+        return Config::Use($this->host . "?action=" . $this->action,
+            $this->host . $this->domain . "/?action=" . $this->action,
+            $this->host . $this->domain . "/?action=" . $this->action);
     }
 }
