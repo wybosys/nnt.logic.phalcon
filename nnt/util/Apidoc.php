@@ -268,15 +268,16 @@ class Apidoc
 
         // 构造response
         $resp = $self->response;
-        $resp->setContentType('text/plain');
 
         // 特殊的输出
         if ($opts->php) {
             $output = TMP_DIR . '/api.php';
-            $result = htmlspecialchars("<?php\n") . $result;
+            $result = "<?php\n" . $result;
+            $resp->setContentType('text/php');
             $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.php');
         } else {
             $output = TMP_DIR . '/api.ts';
+            $resp->setContentType('application/javascript');
             $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.ts');
         }
 
