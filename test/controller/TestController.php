@@ -38,7 +38,7 @@ class TestController extends Api
     function callechoo(\Test\Model\Echoo $mdl)
     {
         $m = \Framework\Phalcon\TestEcho();
-        $m->input = $mdl->input;
+        $m->input = "S2S:" . $mdl->input;
         Rest::Get($m);
         $mdl->output = $m->output;
         $mdl->status = $m->status;
