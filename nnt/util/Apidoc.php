@@ -218,7 +218,11 @@ class Apidoc
                         continue;
 
                     $typ = Proto::FpToTypeDef($prop);
-                    $deco = Proto::FpToDecoDef($prop, 'Model.');
+                    if ($opts->php) {
+                        $deco = Proto::FpToDecoDefPHP($prop);
+                    } else {
+                        $deco = Proto::FpToDecoDef($prop, 'Model.');
+                    }
                     $clazz['fields'][] = [
                         'name' => $name,
                         'type' => $typ,

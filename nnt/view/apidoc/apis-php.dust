@@ -2,7 +2,7 @@
 
 namespace {namespace};
 
-include_once "./model-impl.php";
+include_once __DIR__ . "/model-impl.php";
 
 class ApiModel extends \Model {
     public $domain = "{domain}";
@@ -23,8 +23,7 @@ class ApiModel extends \Model {
 {#clazzes}
   class M{.name} extends {.super} {~lb}
   {#.fields}
-      /*
-      * {?.deco}{.deco|s}{/.deco}
+      /** {?.deco}{.deco|s}{/.deco}
       */
       public ${.name};
   {/.fields}

@@ -2,18 +2,19 @@
 
 namespace Nnt\Controller;
 
+use Nnt\Model\Code;
+use Nnt\Model\HttpContentType;
+use Nnt\Model\Kernel;
 use Nnt\Model\Logic;
 use Nnt\Model\HttpMethod;
+use Nnt\Model\ResponseData;
 use Phalcon\Http\Request\File;
 
 class Rest extends Session
 {
     static function Fetch(Logic &$m)
     {
-        $url = "";
-        if ($m->host)
-            $url .= $m->host;
-        $url .= $m->requestUrl();
+        $url = $m->requestUrl();
         if (strpos($url, '?') == -1)
             $url .= "?/";
 
@@ -40,22 +41,20 @@ class Rest extends Session
 
             // 添加permission的控制
             if (Service::PermissionEnabled()) {
-                $p[KEY_PERMISSIONID] = Service::PermissionId();
+                $p[] = KEY_PERMISSIONID . "=" . Service::PermissionId();
             }
 
             // 添加跳过的标记
             if (!Config::IsDevopsRelease()) {
-                $p[KEY_SKIPPERMISSION] = 1;
+                $p[] = KEY_SKIPPERMISSION . "=1";
             }
 
             if (count($p))
                 $url .= "&" . implode('&', $p);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $resp = curl_exec($ch);
-            curl_close($ch);
         } else {
             $p = [];
 
@@ -74,7 +73,7 @@ class Rest extends Session
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -95,10 +94,41 @@ class Rest extends Session
             }
 
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            $resp = curl_exec($ch);
-            curl_close($ch);
         }
 
+        $resp = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = array_filter(explode("\r\n", substr($resp, 0, $header_size)));
+        $body = substr($resp, $header_size);
+        curl_close($ch);
+
         // 处理获得的数据
+        self::ProcessResponse($m, $body, $headers);
+    }
+
+    static function Get(Logic &$m)
+    {
+        return self::ImplGet("\Nnt\Controller\Rest", $m);
+    }
+
+    static function ProcessResponse(&$m, &$body, &$headers)
+    {
+        if ($headers[0] != "HTTP/1.1 200 OK") {
+            throw new \Exception($headers[0], Code::FAILED);
+        }
+
+        $rd = new ResponseData();
+
+        // 根据返回的类型分别处理
+        if ($m->responseType == HttpContentType::$JSON) {
+            $rd->body = Kernel::toJsonObj($body, null, true);
+            if (!$rd->body) {
+                throw new \Exception("收到的数据不符合定义", Code::FORMAT_ERROR);
+            }
+
+            $m->parseData($rd);
+        } else {
+            $m->parseData($rd);
+        }
     }
 }

@@ -16,10 +16,19 @@ class Service
     static function RawCall(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
-        $host = SERVICE_HOST;
 
+        // 从配置中读取基础的host地址
+        $cfg = Application::$shared->config("logic");
+        $host = $cfg["HOST"];
+
+        // 添加permission的信息
         if (self::PermissionEnabled()) {
             $args[KEY_PERMISSIONID] = self::PermissionId();
+        }
+
+        // 添加跳过的标记
+        if (!Config::IsDevopsRelease()) {
+            $p[KEY_SKIPPERMISSION] = 1;
         }
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);

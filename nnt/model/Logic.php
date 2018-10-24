@@ -108,6 +108,32 @@ abstract class Logic
         return $r;
     }
 
+    function parseData(ResponseData &$data)
+    {
+        // 保护一下数据结构，标准的为 {code, message(error), data}
+        if ($data->body && !isset($data->body['data']) && isset($data->body['message'])) {
+            $data->body['data'] = $data->body['message'];
+            $data->body['message'] = null;
+        }
+
+        $this->code = @$data->body['code'];
+        $this->error = @$data->body['message'];
+
+        // 读取数据到对象，需要吧code、error放到前面处理，避免如果错误、或者返回的data中本来就包含code时，导致消息的code被通信的code覆盖
+        if ($data->body) {
+            // 把data的数据写入model中
+            Proto::Decode($this, $data->body['data']);
+        }
+
+        if ($this->code != 0) {
+            $msg = "";
+            if ($this->error)
+                $msg .= $this->error . " ";
+            $msg .= "错误码:" . $this->code;
+            throw new \Exception($msg, $this->code);
+        }
+    }
+
     static function NewRequest($req)
     {
         $clz = $req[1];
@@ -115,4 +141,5 @@ abstract class Logic
         $r->action = $req[0];
         return $r;
     }
+
 }

@@ -22,6 +22,8 @@ $cfg['redis'] = [
     "persistent" => true
 ];
 
-define('SERVICE_HOST', Config::Use('http://localhost', 'http://proxy', 'http://proxy'));
+$cfg['logic'] = [
+    "HOST" => Config::Use('http://phalcon.wybosys.com', 'http://proxy', 'http://proxy')
+];
 
 return $cfg;

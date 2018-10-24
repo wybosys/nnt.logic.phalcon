@@ -351,7 +351,7 @@ class Proto
     /**
      * @param $ann \Phalcon\Annotations\Annotation
      */
-    protected static function GetValue($val, $typ, $styp0, $styp1)
+    static function GetValue($val, $typ, $styp0, $styp1)
     {
         // 定义为[type, subtype, subtype]
         switch ($typ) {
@@ -367,6 +367,8 @@ class Proto
                 return $val instanceof File ? $val : null;
             case 'object':
                 return json_decode($val, true);
+            case 'enum':
+                return (int)$val;
             case 'array':
                 $ret = [];
                 $valtyp = $styp0;
@@ -587,7 +589,8 @@ class Proto
         return $ret;
     }
 
-    static function GetClassName($clazz): string {
+    static function GetClassName($clazz): string
+    {
         $cmps = explode('\\', $clazz);
         return $cmps[count($cmps) - 1];
     }
@@ -726,6 +729,39 @@ class Proto
             $deco = "@" . $ns . "json(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         } else {
             $deco = "@" . $ns . "type(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+        }
+        return $deco;
+    }
+
+    static function FpToDecoDefPHP(PropDeclaration $fp): string
+    {
+        $deco = null;
+        if ($fp->string) {
+            $deco = "@Api(" . $fp->index . ", [string], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco .= "\n\t* @var string";
+        } else if ($fp->integer) {
+            $deco = "@Api(" . $fp->index . ", [integer], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco .= "\n\t* @var int";
+        } else if ($fp->double) {
+            $deco = "@Api(" . $fp->index . ", [double], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco .= "\n\t* @var double";
+        } else if ($fp->boolean) {
+            $deco = "@Api(" . $fp->index . ", [boolean], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco .= "\n\t* @var boolean";
+        } else if ($fp->array) {
+            $deco = "@Api(" . $fp->index . ", [array, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->map) {
+            $deco = "@Api(" . $fp->index . ", [map, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->multimap) {
+            $deco = "@Api(" . $fp->index . ", [multimap, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->enum) {
+            $deco = "@Api(" . $fp->index . ", [enum, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->file) {
+            $deco = "@Api(" . $fp->index . ", [file], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->json) {
+            $deco = "@Api(" . $fp->index . ", [json], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else {
+            $deco = "@Api(" . $fp->index . ", [type, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
         }
         return $deco;
     }

@@ -17,7 +17,14 @@ class Application extends \Phalcon\Mvc\Application
                 throw new \Exception('当前php运行环境中没有安装tideways_xhprof模块');
             }
         }
+
+        Application::$shared = $this;
     }
+
+    /**
+     * @var Application
+     */
+    static $shared;
 
     /**
      * Handles a MVC request
@@ -38,6 +45,16 @@ class Application extends \Phalcon\Mvc\Application
     function run()
     {
         echo $this->handle()->getContent();
+    }
+
+    private $_config;
+
+    function config($name)
+    {
+        if (!$this->_config) {
+            $this->_config = include_once APP_DIR . "/app.php";
+        }
+        return $this->_config[$name];
     }
 }
 

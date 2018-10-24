@@ -3,6 +3,9 @@
 use Nnt\Controller\Api;
 use Nnt\Controller\Service;
 use Nnt\Model\Code;
+use Nnt\Controller\Rest;
+
+@include_once MODULE_DIR . "/logic/framework-phalcon-api.php";
 
 class TestController extends Api
 {
@@ -34,12 +37,11 @@ class TestController extends Api
      */
     function callechoo(\Test\Model\Echoo $mdl)
     {
-        $ret = Service::Call("framework/phalcon/test/echoo", [
-            "input" => $mdl->input
-        ]);
-        if ($ret->code != 0)
-            throw new \Exception(@$ret->error, $ret->code);
-        $mdl->output = $ret->data->output;
+        $m = \Framework\Phalcon\TestEcho();
+        $m->input = $mdl->input;
+        Rest::Get($m);
+        $mdl->output = $m->output;
+        $mdl->status = $m->status;
     }
 
     /**

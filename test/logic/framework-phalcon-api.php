@@ -3,7 +3,7 @@
 
 namespace Framework\Phalcon;
 
-include_once "./model-impl.php";
+include_once __DIR__ . "/model-impl.php";
 
 class ApiModel extends \Model {
     public $domain = "framework/phalcon";
@@ -18,18 +18,16 @@ class ApiModel extends \Model {
 
   class MCall extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input], "服务名")
+      /** @Api(1, [string], [input], "服务名")
+	* @var string
       */
       public $name;
   
-      /*
-      * @Model.type(2, Object, [Model.input], "参数集")
+      /** @Api(2, [type, Object], [input], "参数集")
       */
       public $args;
   
-      /*
-      * @Model.type(3, Object, [Model.output], "获得")
+      /** @Api(3, [type, Object], [output], "获得")
       */
       public $output;
   
@@ -37,18 +35,18 @@ class ApiModel extends \Model {
 
   class MCidrTest extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input], "规则 172.0.0.0/24")
+      /** @Api(1, [string], [input], "规则 172.0.0.0/24")
+	* @var string
       */
       public $rule;
   
-      /*
-      * @Model.string(2, [Model.input], "IP")
+      /** @Api(2, [string], [input], "IP")
+	* @var string
       */
       public $ip;
   
-      /*
-      * @Model.boolean(3, [Model.output], "结果")
+      /** @Api(3, [boolean], [output], "结果")
+	* @var boolean
       */
       public $result;
   
@@ -56,18 +54,17 @@ class ApiModel extends \Model {
 
   class MEchoo extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input], "输入")
+      /** @Api(1, [string], [input], "输入")
+	* @var string
       */
       public $input;
   
-      /*
-      * @Model.string(2, [Model.output], "输出")
+      /** @Api(2, [string], [output], "输出")
+	* @var string
       */
       public $output;
   
-      /*
-      * @Model.enumerate(3, Code, [Model.output], "状态")
+      /** @Api(3, [enum, Code], [output], "状态")
       */
       public $status;
   
@@ -75,13 +72,13 @@ class ApiModel extends \Model {
 
   class MHostInfo extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input])
+      /** @Api(1, [string], [input])
+	* @var string
       */
       public $name;
   
-      /*
-      * @Model.string(2, [Model.output])
+      /** @Api(2, [string], [output])
+	* @var string
       */
       public $info;
   
@@ -89,13 +86,13 @@ class ApiModel extends \Model {
 
   class MKv extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input, Model.output])
+      /** @Api(1, [string], [input, output])
+	* @var string
       */
       public $key;
   
-      /*
-      * @Model.string(2, [Model.input, Model.output, Model.optional])
+      /** @Api(2, [string], [input, output, optional])
+	* @var string
       */
       public $value;
   
@@ -103,13 +100,13 @@ class ApiModel extends \Model {
 
   class MLog extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.input, Model.output])
+      /** @Api(1, [string], [input, output])
+	* @var string
       */
       public $msg;
   
-      /*
-      * @Model.integer(2, [Model.input, Model.output, Model.optional])
+      /** @Api(2, [integer], [input, output, optional])
+	* @var int
       */
       public $type;
   
@@ -117,8 +114,8 @@ class ApiModel extends \Model {
 
   class MOutput extends ApiModel {
   
-      /*
-      * @Model.string(1, [Model.output])
+      /** @Api(1, [string], [output])
+	* @var string
       */
       public $output;
   
@@ -126,13 +123,12 @@ class ApiModel extends \Model {
 
   class MUploadImage extends ApiModel {
   
-      /*
-      * @Model.file(1, [Model.input])
+      /** @Api(1, [file], [input])
       */
       public $file;
   
-      /*
-      * @Model.string(2, [Model.output])
+      /** @Api(2, [string], [output])
+	* @var string
       */
       public $path;
   
