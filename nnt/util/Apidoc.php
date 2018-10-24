@@ -268,8 +268,8 @@ class Apidoc
 
         // 渲染模板
         $apis = APP_DIR . "/nnt/view/apidoc/";
-        if ($opts->logic)
-            $apis .= "apis-logic.dust";
+        if ($opts->node)
+            $apis .= "apis-node.dust";
         else if ($opts->h5g)
             $apis .= "apis-h5g.dust";
         else if ($opts->vue)

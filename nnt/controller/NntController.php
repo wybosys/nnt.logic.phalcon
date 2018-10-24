@@ -8,12 +8,12 @@ use Nnt\Util\Apidoc;
 class ExportApis
 {
     /**
-     * @Api(1, [boolean], [input, optional], "生成基于nnt.logic.node项目使用的api")
+     * @Api(1, [boolean], [input, optional], "生成基于 logic.node 项目使用的api")
      */
-    public $logic;
+    public $node;
 
     /**
-     * @Api(2, [boolean], [input, optional], "生成基于nnt.logic.php项目使用的api")
+     * @Api(2, [boolean], [input, optional], "生成基于 logic.php 项目使用的api")
      */
     public $php;
 
