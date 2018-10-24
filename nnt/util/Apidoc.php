@@ -261,17 +261,24 @@ class Apidoc
         else if ($opts->php)
             $apis .= "apis-php.dust";
 
+        // 数据填模板
         $dust = new \Dust\Dust();
         $tpl = $dust->compileFile($apis);
         $result = $dust->renderTemplate($tpl, $params);
 
-        // 写入临时文件
-        $output = TMP_DIR . '/api.ts';
-        //file_put_contents($output, $result);
-
+        // 构造response
         $resp = $self->response;
-        $resp->setContentType('application/javascript');
-        $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.ts');
+        $resp->setContentType('text/plain');
+
+        // 特殊的输出
+        if ($opts->php) {
+            $output = TMP_DIR . '/api.php';
+            $result = htmlspecialchars("<?php\n") . $result;
+            $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.php');
+        } else {
+            $output = TMP_DIR . '/api.ts';
+            $resp->setFileToSend($output, str_replace('/', '-', $params['domain']) . '-api.ts');
+        }
 
         echo $result;
     }

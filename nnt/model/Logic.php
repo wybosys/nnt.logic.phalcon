@@ -6,5 +6,5 @@ namespace Nnt\Model;
 
 class Logic
 {
-    
+
 }
