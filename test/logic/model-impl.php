@@ -1,6 +1,6 @@
 <?php
 
-class Model
+class Model extends \Nnt\Model\Logic
 {
     public $domain;
 }
