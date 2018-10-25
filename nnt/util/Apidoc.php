@@ -255,7 +255,7 @@ class Apidoc
                 $cn = Proto::GetClassName($method->model);
                 if ($opts->vue) {
                     $d['type'] = $cn;
-                } else if ($opts->php) {
+                } else if ($opts->php || $opts->node) {
                     $d['type'] = 'M' . $cn;
                 } else {
                     $d['type'] = "models." . $cn;
