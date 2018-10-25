@@ -253,9 +253,9 @@ class Apidoc
                 $d['action'] = "$router.$name";
 
                 $cn = Proto::GetClassName($method->model);
-                if ($opts->vue) {
+                if ($opts->vue || $opts->node) {
                     $d['type'] = $cn;
-                } else if ($opts->php || $opts->node) {
+                } else if ($opts->php) {
                     $d['type'] = 'M' . $cn;
                 } else {
                     $d['type'] = "models." . $cn;
