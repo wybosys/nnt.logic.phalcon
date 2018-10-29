@@ -47,14 +47,9 @@ class Application extends \Phalcon\Mvc\Application
         echo $this->handle()->getContent();
     }
 
-    private $_config;
-
     function config($name)
     {
-        if (!$this->_config) {
-            $this->_config = include_once APP_DIR . "/app.php";
-        }
-        return $this->_config[$name];
+        return $this->di->getShared('config')[$name];
     }
 }
 
