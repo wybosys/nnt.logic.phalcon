@@ -28,7 +28,7 @@ class Service
 
         // 添加跳过的标记
         if (!Config::IsDevopsRelease()) {
-            $p[KEY_SKIPPERMISSION] = 1;
+            $args[KEY_SKIPPERMISSION] = 1;
         }
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
