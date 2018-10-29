@@ -80,6 +80,32 @@ class Service
     }
 
     /**
+     * 服务间调用
+     * @throws \Exception
+     */
+    static function Fetch(string $idr, array $args, array $files = null)
+    {
+        $ret = self::Call($idr, $args, $files);
+        if ($ret->code != Code::OK) {
+            throw new \Exception("API调用失败", $ret->code);
+        }
+        return $ret->data;
+    }
+
+    /**
+     * 服务间调用
+     * @throws \Exception
+     */
+    static function Get(string $idr, array $args, array $files = null)
+    {
+        $ret = self::Call($idr, $args, $files);
+        if ($ret->code != Code::OK) {
+            return null;
+        }
+        return $ret->data;
+    }
+
+    /**
      * 获得自己的当前的许可ID
      */
     static function PermissionId(): string
