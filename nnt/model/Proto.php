@@ -282,19 +282,35 @@ class Proto
         $reflect = self::Annotations($model);
         $props = $reflect->getPropertiesAnnotations();
         if ($props) {
-            foreach ($props as $name => $prop) {
-                if (!$prop->has('Api'))
-                    continue;
-                $api = $prop->get('Api');
-                if ($api) {
-                    if (!isset($params[$name]))
+            if (is_array($params)) {
+                foreach ($props as $name => $prop) {
+                    if (!$prop->has('Api'))
                         continue;
-                    // 根据设置，提取输入数据
-                    $typs = $api->getArgument(1);
-                    $model->{$name} = self::GetValue($params[$name], isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
+                    $api = $prop->get('Api');
+                    if ($api) {
+                        if (!isset($params[$name]))
+                            continue;
+                        // 根据设置，提取输入数据
+                        $typs = $api->getArgument(1);
+                        $model->{$name} = self::GetValue($params[$name], isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
+                    }
+                }
+            } else {
+                foreach ($props as $name => $prop) {
+                    if (!$prop->has('Api'))
+                        continue;
+                    $api = $prop->get('Api');
+                    if ($api) {
+                        if (!isset($params->{$name}))
+                            continue;
+                        // 根据设置，提取输入数据
+                        $typs = $api->getArgument(1);
+                        $model->{$name} = self::GetValue($params->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
+                    }
                 }
             }
         }
+        return $model;
     }
 
     /**

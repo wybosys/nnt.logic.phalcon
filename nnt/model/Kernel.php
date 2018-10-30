@@ -4,10 +4,10 @@ namespace Nnt\Model;
 
 class Kernel
 {
-    static function toJsonObj(string $str, $def = null, $asso = false)
+    static function toJsonObj(string $str, $def = null)
     {
         try {
-            return json_decode($str, $asso);
+            return json_decode($str);
         } catch (\Throwable $ex) {
         }
         return $def;

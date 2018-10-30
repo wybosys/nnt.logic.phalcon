@@ -131,7 +131,7 @@ class SeaslogAdapter implements AdapterInterface
 
     static function IsValid()
     {
-        return class_exists('\SeasLog');
+        return extension_loaded("SeasLog");
     }
 
     private $_formatter;
