@@ -21,4 +21,13 @@ class Kernel
         }
         return $def;
     }
+
+    static function EnsureDir($path)
+    {
+        if (is_dir($path))
+            return;
+        if (!mkdir($path)) {
+            throw new \Exception("创建 $path 失败 ");
+        }
+    }
 }

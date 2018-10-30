@@ -2,6 +2,7 @@
 
 namespace Nnt\Controller;
 
+use Nnt\Model\Kernel;
 use Phalcon\DiInterface;
 
 class Application extends \Phalcon\Mvc\Application
@@ -54,9 +55,6 @@ class Application extends \Phalcon\Mvc\Application
 }
 
 define('TMP_DIR', APP_DIR . '/tmp/');
-if (!is_dir(TMP_DIR))
-    mkdir(TMP_DIR);
-
+Kernel::EnsureDir(TMP_DIR);
 define('RUN_DIR', APP_DIR . '/run/');
-if (!is_dir(RUN_DIR))
-    mkdir(RUN_DIR);
+Kernel::EnsureDir(RUN_DIR);
