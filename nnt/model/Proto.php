@@ -231,7 +231,12 @@ class Proto
             "lifetime" => Config::Use(5, 5, 60 * 5),
             "prefix" => "_proto_"
         ]);
-        return $reader->get($model);
+        try {
+            $anno = $reader->get($model);
+        } catch (\Throwable $ex) {
+            throw new \Exception("$model 获取Annotaions失败");
+        }
+        return $anno;
     }
 
     /**
@@ -780,3 +785,25 @@ class Proto
         return $ret;
     }
 }
+
+// 内嵌自定义的类型查找
+spl_autoload_register(function ($classname) {
+    // 文件、路径均为小写
+    $path = str_replace('\\', '/', strtolower($classname));
+    $target = APP_DIR . "/$path.php";
+    if (!is_file($target)) {
+        // 再尝试一次使用类名加载
+        $ps = explode('\\', $classname);
+        $target = APP_DIR;
+        for ($i = 0, $l = count($ps); $i < $l - 1; ++$i) {
+            $target .= '/' . strtolower($ps[$i]);
+        }
+        $target .= '/' . $ps[$l - 1] . ".php";
+        if (!is_file($target)) {
+            echo "没有找到类文件 $target\n";
+            return false;
+        }
+    }
+    include_once $target;
+    return true;
+});
