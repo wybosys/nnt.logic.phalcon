@@ -13,6 +13,7 @@ $loader->registerNamespaces([
     'Nnt\Model' => APP_DIR . 'nnt/model',
     'Nnt\Controller' => APP_DIR . 'nnt/controller',
     'Test' => MODULE_DIR,
+    'Test\Controller' => MODULE_DIR . 'controller',
     'Test\Model' => MODULE_DIR . 'model',
     'Test\Db' => MODULE_DIR . 'db'
 ]);
@@ -39,9 +40,5 @@ $di->setShared('session', function () {
     return $hdl;
 });
 
-$di->setShared('user', function () {
-    return new \Test\Model\User();
-});
-
-$app = new \Nnt\Controller\Application($di);
+$app = new \Test\Controller\Application($di);
 $app->run();

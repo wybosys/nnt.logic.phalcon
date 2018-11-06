@@ -52,6 +52,12 @@ class Application extends \Phalcon\Mvc\Application
     {
         return $this->di->getShared('config')[$name];
     }
+
+    // 统一检查是否登录
+    function auth($params)
+    {
+        // pass
+    }
 }
 
 define('TMP_DIR', APP_DIR . '/tmp/');

@@ -2,7 +2,9 @@
 
 namespace Test\Model;
 
-class User
+use Nnt\Model\IAuthedUser;
+
+class User implements IAuthedUser
 {
     function userIdentifier(): string
     {
