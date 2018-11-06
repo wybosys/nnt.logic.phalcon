@@ -41,10 +41,7 @@ $di->setShared('session', function () {
 });
 
 $di->setShared('redis', function () {
-    $redis = new \Redis();
-    $cfg = $this->getConfig()->redis;
-    $redis->connect($cfg['host']);
-    return $redis;
+    return new \Nnt\Controller\KvRedis($this->getConfig()->redis);
 });
 
 $app = new \Test\Controller\Application($di);

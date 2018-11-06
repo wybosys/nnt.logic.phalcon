@@ -1,7 +1,6 @@
 <?php
 
 namespace Nnt\Controller;
-require_once dirname(dirname(__DIR__)) . '/3rd/predis/Predis.php';
 
 class KvRedis
 {
@@ -11,20 +10,20 @@ class KvRedis
         $port = isset($opts['port']) ? $opts['port'] : 6379;
         $prefix = isset($opts['prefix']) ? $opts['prefix'] : '';
         $index = isset($opts['index']) ? $opts['index'] : 0;
-        $ops = [
-            'prefix' => $prefix,
-            'parameters' => [
-                'database' => $index
-            ]
-        ];
-        if (isset($opts['cluster']) && $opts['cluster'])
-            $ops['cluster'] = 'redis';
-
-        $this->_hdl = new \Predis\Client([
-            'scheme' => 'tcp',
-            'host' => $host,
-            'port' => $port,
-        ], $ops);
+        $cluster = isset($opts['cluster']) && $opts['cluster'];
+        if ($cluster) {
+            $this->_hdl = new \RedisCluster(NULL, [
+                $host . ':' . $port
+            ]);
+            if ($prefix)
+                $this->_hdl->setOption(\RedisCluster::OPT_PREFIX, $prefix);
+        } else {
+            $this->_hdl = new \Redis();
+            $this->_hdl->connect($host, $port);
+            if ($prefix)
+                $this->_hdl->setOption(\Redis::OPT_PREFIX, $prefix);
+            $this->_hdl->select($index);
+        }
     }
 
     private $_hdl;
@@ -89,14 +88,14 @@ class KvRedis
         return $this->_hdl->decrby($key, $value);
     }
 
-    function lPush($key, ...$values)
+    function lPush($key, $value1, $value2 = null, $valueN = null)
     {
-        return $this->_hdl->lpush($key, $values);
+        return $this->_hdl->lpush($key, $value1, $value2, $valueN);
     }
 
-    function rPush($key, ...$values)
+    function rPush($key, $value1, $value2 = null, $valueN = null)
     {
-        return $this->_hdl->rpush($key, $values);
+        return $this->_hdl->rpush($key, $value1, $value2, $valueN);
     }
 
     function lPushx($key, $value)
@@ -164,16 +163,6 @@ class KvRedis
         return $this->_hdl->getset($key, $value);
     }
 
-    function randomKey()
-    {
-        return $this->_hdl->randomkey();
-    }
-
-    function select($dbindex)
-    {
-        return $this->_hdl->select($dbindex);
-    }
-
     function expire($key, $ttl)
     {
         return $this->_hdl->expire($key, $ttl);
@@ -192,11 +181,6 @@ class KvRedis
     function pExpireAt($key, $timestamp)
     {
         return $this->_hdl->pexpireat($key, $timestamp);
-    }
-
-    function auth($password)
-    {
-        return $this->_hdl->auth($password);
     }
 
     function type($key)
