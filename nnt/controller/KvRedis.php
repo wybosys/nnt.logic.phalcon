@@ -1,7 +1,7 @@
 <?php
 
 namespace Nnt\Controller;
-require_once '../../3rd/predis/Predis.php';
+require_once dirname(dirname(__DIR__)) . '/3rd/predis/Predis.php';
 
 class KvRedis
 {
