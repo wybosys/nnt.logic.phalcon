@@ -1,7 +1,4 @@
 {
     "path": "/devops/service/framework/phalcon",
-    "client": false,
-    "allow": [
-        "172.0.0.0/8"
-    ]
+    "client": true
 }
