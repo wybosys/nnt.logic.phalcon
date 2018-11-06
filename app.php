@@ -15,10 +15,9 @@ $cfg['database'] = [
 ];
 
 $cfg['redis'] = [
-    "host" => "redis",
-    "port" => 6379,
-    "index" => 0,
+    "host" => "dbproxy",
     "prefix" => "fp_",
+    "cluster" => true,
     "persistent" => true
 ];
 
