@@ -93,7 +93,7 @@ class TestController extends Api
      */
     function redis(\Test\Model\Kv $mdl)
     {
-        $redis = $this->di->getRedids();
+        $redis = $this->di->getRedis();
         if ($mdl->value) {
             $redis->set($mdl->key, $mdl->value, 5);
         } else {
