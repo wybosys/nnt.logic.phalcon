@@ -479,4 +479,9 @@ class Api extends Controller
 
         Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }
+
+    protected function responseSessionId($sid)
+    {
+        $this->response->setHeader('X-NntLogic-SessionId', $sid);
+    }
 }
