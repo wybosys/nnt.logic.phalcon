@@ -504,18 +504,23 @@ class Proto
             $model = $action->getArgument(0);
             if ($model == null)
                 $model = "\Nnt\Model\Nil";
-            $ops = $action->getArgument(1);
 
             $mem = new MemberDeclaration();
             $mem->name = $name;
             $mem->model = $model;
-            $mem->input = in_array('input', $ops);
-            $mem->output = in_array('output', $ops);
-            $mem->optional = in_array('optional', $ops);
-            $mem->noauth = in_array('noauth', $ops);
-            $mem->noexport = in_array('noexport', $ops);
-            $mem->expose = in_array('expose', $ops);
-            $mem->comment = $action->getArgument(2);
+
+            $ops = $action->getArgument(1);
+            if (is_string($ops)) {
+                $mem->comment = $ops;
+            } else {
+                $mem->input = in_array('input', $ops);
+                $mem->output = in_array('output', $ops);
+                $mem->optional = in_array('optional', $ops);
+                $mem->noauth = in_array('noauth', $ops);
+                $mem->noexport = in_array('noexport', $ops);
+                $mem->expose = in_array('expose', $ops);
+                $mem->comment = $action->getArgument(2);
+            }
 
             $decl->members[$mem->name] = $mem;
         }
