@@ -19,8 +19,6 @@ class Service
      */
     static function RawCall(string $idr, array $args, array $files = null)
     {
-        $ch = curl_init();
-
         // 从配置中读取基础的host地址
         $cfg = Application::$shared->config("logic");
         $host = $cfg["HOST"];
@@ -36,11 +34,13 @@ class Service
         }
 
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         if ($files && count($files)) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 "Content-Type: multipart/form-data"
@@ -52,10 +52,20 @@ class Service
                 }
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+            $msg = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $options = [
+                'http' => [
+                    'method' => 'GET',
+                    'header' => 'Content-type:application/x-www-form-urlencoded'
+                ]
+            ];
+            $context = stream_context_create($options);
+            $msg = file_get_contents($url, false, $context);
         }
 
-        $msg = curl_exec($ch);
-        curl_close($ch);
 
         return $msg;
     }
