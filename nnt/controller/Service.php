@@ -13,6 +13,10 @@ if (!defined('SERVICE_HOST')) {
 
 class Service
 {
+    /**
+     * 调用logic实现的微服务
+     * @throws \Exception
+     */
     static function RawCall(string $idr, array $args, array $files = null)
     {
         $ch = curl_init();
@@ -94,26 +98,29 @@ class Service
 
     /**
      * 服务间调用
-     * @throws \Exception
      */
     static function Get(string $idr, array $args, array $files = null)
     {
-        $ret = self::Call($idr, $args, $files);
-        if ($ret->code != Code::OK) {
-            return null;
+        try {
+            $ret = self::Call($idr, $args, $files);
+            if ($ret->code != Code::OK) {
+                return null;
+            }
+            return $ret->data;
+        } catch (\Throwable $err) {
         }
-        return $ret->data;
+        return null;
     }
 
     /**
      * 获得自己的当前的许可ID
+     * @throws \Exception
      */
     static function PermissionId(): string
     {
         $file = APP_DIR . '/run/permission.cfg';
         if (!file_exists($file)) {
             throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
-            return null;
         }
 
         // 从apcu中读取缓存的pid
