@@ -390,27 +390,31 @@ class Api extends Controller
                     $this,
                     $info->name
                 ], $arguments);
-            if ($sta != Code::OK) {
-                $this->log($sta);
-                echo json_encode([
-                    'code' => $sta
-                ]);
-            } else {
-                $headers = $this->response->getHeaders();
-                if ($headers->get('Content-Type') === 'application/json') {
-                    $out = Proto::Output($model);
-                    $this->log(Code::OK);
-                    $json = json_encode([
-                        'code' => Code::OK,
-                        'message' => count($out) ? $out : '{}'
+
+            if (!$this->_submited) {
+                $this->_submited = true;
+                if ($sta != Code::OK) {
+                    $this->log($sta);
+                    echo json_encode([
+                        'code' => $sta
                     ]);
+                } else {
+                    $headers = $this->response->getHeaders();
+                    if ($headers->get('Content-Type') === 'application/json') {
+                        $out = Proto::Output($model);
+                        $this->log(Code::OK);
+                        $json = json_encode([
+                            'code' => Code::OK,
+                            'message' => count($out) ? $out : '{}'
+                        ]);
 
-                    // 如果打开了cache，则自动保存到缓存中
-                    if ($cache) {
-                        $cache->save($cachekey, $json, $info->ttl);
+                        // 如果打开了cache，则自动保存到缓存中
+                        if ($cache) {
+                            $cache->save($cachekey, $json, $info->ttl);
+                        }
+
+                        echo $json;
                     }
-
-                    echo $json;
                 }
             }
         } catch (\Throwable $ex) {
@@ -430,6 +434,18 @@ class Api extends Controller
                 ]);
             }
         }
+    }
+
+    // 是否已经输出
+    protected $_submited;
+
+    // 提交完整的输出
+    function submit($object)
+    {
+        $str = json_encode($object);
+        $this->log(Code::OK, $str);
+        $this->_submited = true;
+        echo $str;
     }
 
     /**
