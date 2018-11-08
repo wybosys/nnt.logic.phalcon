@@ -445,6 +445,7 @@ class Proto
                     $arr[$k] = $v;
                 }
                 return $arr;
+            case 'json':
             case 'object':
                 return json_encode($val);
             case 'enum':
