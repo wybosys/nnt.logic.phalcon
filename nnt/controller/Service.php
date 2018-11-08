@@ -231,14 +231,19 @@ class Service
     // 不能转换通过www.xxx.com这类的地址，避免服务器无法通过server_name重定位服务
     static function MapHost(string $host): string
     {
+        if (apcu_exists($host))
+            return apcu_fetch($host);
         $url = parse_url($host);
-        if (strpos($url['host'], '.') !== false)
+        if (strpos($url['host'], '.') !== false) {
+            apcu_store($host, $host, 3600); // 一个小时刷新一次
             return $host;
+        }
         $ip = gethostbyname($url['host']);
         if (!isset($url['path']))
             $url['path'] = '';
         $new = $url['scheme'] . '://' . $ip . $url['path'];
         echo "logic的host从" . $host . "自动转换为" . $new;
+        apcu_store($host, $new, 3600);
         return $new;
     }
 }
