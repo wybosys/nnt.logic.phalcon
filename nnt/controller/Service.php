@@ -14,6 +14,29 @@ if (!defined('SERVICE_HOST')) {
 class Service
 {
     /**
+     * 直接访问URL
+     */
+    static function DirectGet(string $url, array $args)
+    {
+        if (strpos($url, '?') === false)
+            $url .= '/?';
+        else
+            $url .= '&';
+        $url .= http_build_query($args);
+
+        $options = [
+            'http' => [
+                'method' => 'GET',
+                'header' => 'Content-type:application/x-www-form-urlencoded'
+            ]
+        ];
+        $context = stream_context_create($options);
+        $msg = file_get_contents($url, false, $context);
+
+        return $msg;
+    }
+
+    /**
      * 调用logic实现的微服务
      * @throws \Exception
      */
