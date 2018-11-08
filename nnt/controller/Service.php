@@ -21,7 +21,7 @@ class Service
     {
         // 从配置中读取基础的host地址
         $cfg = Application::$shared->config("logic");
-        $host = $cfg["HOST"];
+        $host = self::MapHost($cfg["HOST"]);
 
         // 添加permission的信息
         if (self::PermissionEnabled()) {
@@ -225,6 +225,21 @@ class Service
         $path = self::DevopsConfig()->path;
         $domain = substr($path, 16);
         return $domain;
+    }
+
+    // php使用域名访问时有可能过慢，所以需要转换仅通过host来访问的地址
+    // 不能转换通过www.xxx.com这类的地址，避免服务器无法通过server_name重定位服务
+    static function MapHost(string $host): string
+    {
+        $url = parse_url($host);
+        if (strpos($url['host'], '.') !== false)
+            return $host;
+        $ip = gethostbyname($url['host']);
+        if (!isset($url['path']))
+            $url['path'] = '';
+        $new = $url['scheme'] . '://' . $ip . $url['path'];
+        echo "logic的host从" . $host . "自动转换为" . $new;
+        return $new;
     }
 }
 
