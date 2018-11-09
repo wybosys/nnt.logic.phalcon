@@ -157,26 +157,14 @@ class Service
         }
 
         // 从apcu中读取缓存的pid
-        if (apcu_exists(KEY_PERMISSIONTIME)) {
-            $time = apcu_fetch(KEY_PERMISSIONTIME);
-            $ftime = filemtime($file);
-            if ($time != $ftime) {
-                $cfg = json_decode(file_get_contents($file));
-                $pid = $cfg->id;
-                apcu_store(KEY_PERMISSIONTIME, $ftime);
-                apcu_store(KEY_PERMISSIONID, $pid);
-                return $pid;
-            } else {
-                $pid = apcu_fetch(KEY_PERMISSIONID);
-                return $pid;
-            }
+        if (apcu_exists(KEY_PERMISSIONID)) {
+            $pid = apcu_fetch(KEY_PERMISSIONID);
+            return $pid;
         }
 
-        $ftime = filemtime($file);
         $cfg = json_decode(file_get_contents($file));
         $pid = $cfg->id;
-        apcu_store(KEY_PERMISSIONTIME, $ftime);
-        apcu_store(KEY_PERMISSIONID, $pid);
+        apcu_store(KEY_PERMISSIONID, $pid, 60);
 
         return $pid;
     }
