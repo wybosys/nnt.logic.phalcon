@@ -249,7 +249,7 @@ class Service
         if (!isset($url['path']))
             $url['path'] = '';
         $new = $url['scheme'] . '://' . $ip . $url['path'];
-        echo "logic的host从" . $host . "自动转换为" . $new;
+        //echo "logic的host从" . $host . "自动转换为" . $new;
         apcu_store($host, $new, 3600);
         return $new;
     }
