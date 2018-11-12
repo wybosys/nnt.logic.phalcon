@@ -197,8 +197,9 @@ class Api extends Controller
         try {
             // 解析action
             if (!isset($params['action'])) {
+                $this->log(Code::ACTION_NOT_FOUND);
                 echo json_encode([
-                    'code' => Code::OK
+                    'code' => Code::ACTION_NOT_FOUND
                 ]);
                 return;
             }
@@ -236,6 +237,7 @@ class Api extends Controller
     function __call($name, $arguments)
     {
         if (!isset($this->_actions[$name])) {
+            $this->log(Code::ACTION_NOT_FOUND);
             echo json_encode([
                 'code' => Code::ACTION_NOT_FOUND,
                 'error' => "没有找到名为 ${name} 的Action"
@@ -272,6 +274,7 @@ class Api extends Controller
                 }
             }
             if (!$auth) {
+                $this->log(Code::NEED_AUTH);
                 echo json_encode([
                     'code' => Code::NEED_AUTH,
                     'error' => $err
@@ -303,6 +306,7 @@ class Api extends Controller
                 // 判断代码
                 $clientip = $this->request->getClientAddress(true);
                 if (!Service::AllowClient($cfg, $clientip)) {
+                    $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,
                         'error' => "不允许客户端访问"
@@ -312,6 +316,7 @@ class Api extends Controller
 
                 // 使用permission规则
                 if (!isset($params[KEY_PERMISSIONID])) {
+                    $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,
                         'error' => '丢失授权信息'
@@ -320,6 +325,7 @@ class Api extends Controller
                 }
                 $permid = $params[KEY_PERMISSIONID];
                 if (!Service::PermissionLocate($permid)) {
+                    $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,
                         'error' => '授权信息错误'

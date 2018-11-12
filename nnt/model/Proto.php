@@ -455,11 +455,12 @@ class Proto
         }
     }
 
-    static function CollectParameters(\Phalcon\Http\RequestInterface $request)
+    static function CollectParameters(\Phalcon\Http\Request $request)
     {
         $posts = $request->getPost();
         $gets = $request->getQuery();
         $files = $request->getUploadedFiles();
+        $json = $request->getJsonRawBody();
 
         // 合并到同一个集合
         $ret = array_merge($gets, $posts);
@@ -467,6 +468,12 @@ class Proto
             if (!$file->getKey())
                 continue;
             $ret[$file->getKey()] = $file;
+        }
+
+        if ($json) {
+            foreach ($json as $k => $v) {
+                $ret[$k] = $v;
+            }
         }
 
         // 去除phalcon默认的_url参数
