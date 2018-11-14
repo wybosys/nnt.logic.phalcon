@@ -26,8 +26,9 @@ class Kernel
     {
         if (is_dir($path))
             return;
-        if (!mkdir($path)) {
-            throw new \Exception("创建 $path 失败 ");
+        if (!@mkdir($path)) {
+            echo "创建 $path 失败 ";
+            die;
         }
     }
 }
