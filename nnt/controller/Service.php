@@ -44,7 +44,7 @@ class Service
     {
         // 从配置中读取基础的host地址
         $cfg = Application::$shared->config("logic");
-        $host = self::MapHost($cfg["HOST"]);
+        $host = $cfg["HOST"];
 
         // 添加permission的信息
         if (self::PermissionEnabled()) {
@@ -56,14 +56,19 @@ class Service
             $args[KEY_SKIPPERMISSION] = 1;
         }
 
+        // 组装url
         $url = $host . '/' . $idr . '/?' . http_build_query($args);
 
-        if ($files && count($files)) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // 初始化curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
+        // 解决curl卡顿的问题
+        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+
+        if ($files && count($files)) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 "Content-Type: multipart/form-data"
@@ -75,20 +80,10 @@ class Service
                 }
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-            $msg = curl_exec($ch);
-            curl_close($ch);
-        } else {
-            $options = [
-                'http' => [
-                    'method' => 'GET',
-                    'header' => 'Content-type:application/x-www-form-urlencoded'
-                ]
-            ];
-            $context = stream_context_create($options);
-            $msg = file_get_contents($url, false, $context);
         }
 
+        $msg = curl_exec($ch);
+        curl_close($ch);
 
         return $msg;
     }
@@ -232,26 +227,6 @@ class Service
         $path = self::DevopsConfig()->path;
         $domain = substr($path, 16);
         return $domain;
-    }
-
-    // php使用域名访问时有可能过慢，所以需要转换仅通过host来访问的地址
-    // 不能转换通过www.xxx.com这类的地址，避免服务器无法通过server_name重定位服务
-    static function MapHost(string $host): string
-    {
-        if (apcu_exists($host))
-            return apcu_fetch($host);
-        $url = parse_url($host);
-        if (strpos($url['host'], '.') !== false) {
-            apcu_store($host, $host, 3600); // 一个小时刷新一次
-            return $host;
-        }
-        $ip = gethostbyname($url['host']);
-        if (!isset($url['path']))
-            $url['path'] = '';
-        $new = $url['scheme'] . '://' . $ip . $url['path'];
-        //echo "logic的host从" . $host . "自动转换为" . $new;
-        apcu_store($host, $new, 3600);
-        return $new;
     }
 }
 
