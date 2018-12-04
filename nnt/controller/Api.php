@@ -411,7 +411,7 @@ class Api extends Controller
                         $this->log(Code::OK);
                         $json = json_encode([
                             'code' => Code::OK,
-                            'message' => count($out) ? $out : '{}'
+                            'message' => count($out) ? $out : (object)[]
                         ]);
 
                         // 如果打开了cache，则自动保存到缓存中
