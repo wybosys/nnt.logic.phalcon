@@ -16,22 +16,36 @@ class Service
     /**
      * 直接访问URL
      */
-    static function DirectGet(string $url, array $args)
+    static function DirectGet(string $url, array $args, $get = true)
     {
-        if (strpos($url, '?') === false)
-            $url .= '/?';
-        else
-            $url .= '&';
-        $url .= http_build_query($args);
+        if ($get) {
+            if (strpos($url, '?') === false)
+                $url .= '/?';
+            else
+                $url .= '&';
+            $url .= http_build_query($args);
+        }
 
-        $options = [
-            'http' => [
-                'method' => 'GET',
-                'header' => 'Content-type:application/x-www-form-urlencoded'
-            ]
-        ];
-        $context = stream_context_create($options);
-        $msg = file_get_contents($url, false, $context);
+        // 初始化curl
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // 解决curl卡顿的问题
+        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+
+        // 如果是post请求，则填充参数
+        if (!$get) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Content-Type: multipart/form-data"
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        }
+
+        $msg = curl_exec($ch);
+        curl_close($ch);
 
         return $msg;
     }
