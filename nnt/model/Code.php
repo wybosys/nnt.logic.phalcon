@@ -34,6 +34,7 @@ class Code
     const AUTH_EXPIRED = -976; // 授权过期
     const SIGNATURE_ERROR = -975; // 签名错误
     const FORMAT_ERROR = -974; // 格式错误
+    const CONFIG_ERROR = -973; // 配置错误
 
     const IM_CHECK_FAILED = -899; // IM检查输入的参数失败
     const IM_NO_RELEATION = -898; // IM检查双方不存在关系
