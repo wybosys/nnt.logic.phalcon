@@ -133,7 +133,13 @@ class Service
     {
         $ret = self::Call($idr, $args, $files);
         if ($ret->code != Code::OK) {
-            throw new \Exception("API调用失败", $ret->code);
+            if (@$ret->error)
+                $msg = $ret->error;
+            else if (@$ret->message)
+                $msg = $ret->message;
+            else
+                $msg = 'API FAILED';
+            throw new \Exception($msg, $ret->code);
         }
         return $ret->data;
     }
