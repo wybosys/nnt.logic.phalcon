@@ -25,4 +25,8 @@ $cfg['logic'] = [
     "HOST" => Config::Use('http://phalcon.wybosys.com', 'http://proxy', 'http://proxy')
 ];
 
+$cfg['webproxy'] = [
+    "HOST" => 'webproxy'
+];
+
 return $cfg;

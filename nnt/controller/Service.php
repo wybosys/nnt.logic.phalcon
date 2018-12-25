@@ -15,10 +15,12 @@ class Service
 {
     /**
      * 直接访问URL
+     * @jsonobj 如果！=null并且是post请求，则代表jsonobj需要按照json形式请求
+     * @proxy 传递在app.php中配置的代理配置名称
      */
-    static function DirectGet(string $url, array $args, $get = true)
+    static function DirectGet(string $url, array $args, $get = true, $jsonobj = null, $proxy = null)
     {
-        if ($get) {
+        if ($get || $jsonobj) {
             if (strpos($url, '?') === false)
                 $url .= '/?';
             else
@@ -35,13 +37,30 @@ class Service
         // 解决curl卡顿的问题
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
+        //
+        if ($proxy) {
+            $cfg = Application::$shared->config($proxy);
+            if (!$cfg)
+                throw new \Exception('代理配置错误', Code::CONFIG_ERROR);
+            curl_setopt($ch, CURLOPT_PROXY, @$cfg->HOST);
+        }
+
         // 如果是post请求，则填充参数
         if (!$get) {
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Content-Type: multipart/form-data"
-            ]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+            if ($jsonobj) {
+                $str = json_encode($jsonobj);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json; charset=utf-8',
+                    'Content-Length: ' . strlen($str)
+                ]);
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Content-Type: multipart/form-data"
+                ]);
+            }
         }
 
         $msg = curl_exec($ch);
@@ -84,9 +103,6 @@ class Service
 
         if ($files && count($files)) {
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Content-Type: multipart/form-data"
-            ]);
             $data = [];
             foreach ($files as $key => $file) {
                 if ($file instanceof File) {
@@ -94,6 +110,9 @@ class Service
                 }
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Content-Type: multipart/form-data"
+            ]);
         }
 
         $msg = curl_exec($ch);
