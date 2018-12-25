@@ -15,12 +15,11 @@ class Service
 {
     /**
      * 直接访问URL
-     * @jsonobj 如果！=null并且是post请求，则代表jsonobj需要按照json形式请求
      * @proxy 传递在app.php中配置的代理配置名称
      */
-    static function DirectGet(string $url, array $args, $get = true, $jsonobj = null, $proxy = null)
+    static function DirectGet(string $url, array $args, $get = true, array $headers = null, $proxy = null, $json = false)
     {
-        if ($get || $jsonobj) {
+        if ($get) {
             if (strpos($url, '?') === false)
                 $url .= '/?';
             else
@@ -37,7 +36,15 @@ class Service
         // 解决curl卡顿的问题
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
-        //
+        // 设置headers
+        $reqheaders = [];
+        if ($headers) {
+            foreach ($headers as $k => $v) {
+                $reqheaders[] = $k . ':' . $v;
+            }
+        }
+
+        // 配置代理
         if ($proxy) {
             $cfg = Application::$shared->config($proxy);
             if (!$cfg)
@@ -48,19 +55,17 @@ class Service
         // 如果是post请求，则填充参数
         if (!$get) {
             curl_setopt($ch, CURLOPT_POST, 1);
-            if ($jsonobj) {
-                $str = json_encode($jsonobj);
+            if ($json) {
+                $str = json_encode($args);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json; charset=utf-8',
-                    'Content-Length: ' . strlen($str)
-                ]);
+                $reqheaders[] = 'Content-Type: application/json; charset=utf-8';
+                $reqheaders[] = 'Content-Length: ' . strlen($str);
             } else {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    "Content-Type: multipart/form-data"
-                ]);
+                $reqheaders[] = "Content-Type: multipart/form-data";
             }
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
         }
 
         $msg = curl_exec($ch);
