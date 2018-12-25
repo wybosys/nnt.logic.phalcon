@@ -64,9 +64,10 @@ class Service
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
                 $reqheaders[] = "Content-Type: multipart/form-data";
             }
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
         }
+
+        if ($reqheaders)
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
 
         $msg = curl_exec($ch);
         curl_close($ch);
