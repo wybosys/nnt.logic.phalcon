@@ -17,7 +17,7 @@ class Service
      * 直接访问URL
      * @proxy 传递在app.php中配置的代理配置名称
      */
-    static function DirectGet(string $url, array $args, $get = true, array $headers = null, $json = false, string $proxy = null)
+    static function DirectGet(string $url, array $args, $get = true, $json = false, array $headers = null, string $proxy = null)
     {
         if ($get) {
             if (strpos($url, '?') === false)
