@@ -479,7 +479,10 @@ class Api extends Controller
             $this->_clientip = $this->request->getHeader('http_x_real_ip');
         } else if ($this->request->hasHeader('remote_addr')) {
             $this->_clientip = $this->request->getHeader('remote_addr');
-        } else {
+        }
+
+        // 保护为空的情况
+        if (!$this->_clientip) {
             $this->_clientip = 'unknown';
         }
 
