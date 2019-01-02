@@ -482,6 +482,9 @@ class Api extends Controller
         } else {
             $this->_clientip = 'unknown';
         }
+
+        // clientip 会返回多个
+        $this->_clientip = explode(',', $this->_clientip, 2)[0];
         return $this->_clientip;
     }
 
