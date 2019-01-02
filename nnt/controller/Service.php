@@ -139,10 +139,12 @@ class Service
         $ret = json_decode($msg);
         if (!$ret) {
             $ret = (object)[
-                'code' => Code::FORMAT_ERROR
+                'code' => Code::FORMAT_ERROR,
+                'message' => $msg
             ];
         } else if (!isset($ret->code)) {
             $ret->code = Code::FORMAT_ERROR;
+            $ret->message = $msg;
         } else {
             if (isset($ret->message) && !isset($ret->data))
                 $ret->data = $ret->message;
