@@ -475,6 +475,8 @@ class Api extends Controller
             $this->_clientip = $this->request->getHeader('http_x_forwarded_for');
         } else if ($this->request->hasHeader('x-forwarded-for')) {
             $this->_clientip = $this->request->getHeader('x-forwarded-for');
+        } else if ($this->request->hasHeader('http_x_real_ip')) {
+            $this->_clientip = $this->request->getHeader('http_x_real_ip');
         } else if ($this->request->hasHeader('remote_addr')) {
             $this->_clientip = $this->request->getHeader('remote_addr');
         } else {
