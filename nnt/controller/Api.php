@@ -189,11 +189,20 @@ class Api extends Controller
         $this->response->setContentType('application/json');
     }
 
+    private $_params;
+
+    function requestParams()
+    {
+        if ($this->_params)
+            return $this->_params;
+        $this->_params = Proto::CollectParameters($this->request);
+        return $this->_params;
+    }
 
     function indexAction()
     {
         // 使用logic的规则调用
-        $params = Proto::CollectParameters($this->request);
+        $params = $this->requestParams();
         try {
             // 解析action
             if (!isset($params['action'])) {
@@ -249,7 +258,7 @@ class Api extends Controller
         $info = $this->_actions[$name];
 
         // 收集参数
-        $params = Proto::CollectParameters($this->request);
+        $params = $this->requestParams();
 
         // 登录信息
         $auth = null;
@@ -304,7 +313,7 @@ class Api extends Controller
                     break;
 
                 // 判断代码
-                $clientip = $this->request->getClientAddress(true);
+                $clientip = $this->clientIp();
                 if (!Service::AllowClient($cfg, $clientip)) {
                     $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
@@ -443,7 +452,7 @@ class Api extends Controller
     }
 
     // 是否已经输出
-    protected $_submited;
+    private $_submited;
 
     // 提交完整的输出
     function submit($object)
@@ -452,6 +461,44 @@ class Api extends Controller
         $this->log(Code::OK, $str);
         $this->_submited = true;
         echo $str;
+    }
+
+    // 获得客户端IP
+    private $_clientip;
+
+    function clientIp(): string
+    {
+        if ($this->_clientip)
+            return $this->_clientip;
+        // 先抓取docker-swarm特定的ip
+        if ($this->request->hasHeader('http_x_forwarded_for')) {
+            $this->_clientip = $this->request->getHeader('http_x_forwarded_for');
+        } else if ($this->request->hasHeader('x-forwarded-for')) {
+            $this->_clientip = $this->request->getHeader('x-forwarded-for');
+        } else if ($this->request->hasHeader('remote_addr')) {
+            $this->_clientip = $this->request->getHeader('remote_addr');
+        } else {
+            $this->_clientip = 'unknown';
+        }
+        return $this->_clientip;
+    }
+
+    // 获得客户端代理信息
+    private $_userAgent;
+
+    function userAgent(): string
+    {
+        if ($this->_userAgent)
+            return $this->_userAgent;
+        $params = $this->requestParams();
+        if (isset($params['_agent'])) {
+            $this->_userAgent = $params['_agent'];
+        } else if ($this->request->hasHeader('user-agent')) {
+            $this->_userAgent = $this->request->getHeader('user-agent');
+        } else {
+            $this->_userAgent = 'unknown';
+        }
+        return $this->_userAgent;
     }
 
     /**
@@ -494,7 +541,7 @@ class Api extends Controller
         }
 
         $data = [
-            'client' => $this->request->getClientAddress(true),
+            'client' => $this->clientIp(),
             'code' => $code,
             'msg' => $data
         ];
