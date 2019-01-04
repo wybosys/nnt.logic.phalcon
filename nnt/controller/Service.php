@@ -195,15 +195,16 @@ class Service
      */
     static function PermissionId(): string
     {
-        $file = APP_DIR . '/run/permission.cfg';
-        if (!file_exists($file)) {
-            throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
-        }
-
         // 从apcu中读取缓存的pid
         if (apcu_exists(KEY_PERMISSIONID)) {
             $pid = apcu_fetch(KEY_PERMISSIONID);
-            return $pid;
+            if ($pid)
+                return $pid;
+        }
+
+        $file = APP_DIR . '/run/permission.cfg';
+        if (!file_exists($file)) {
+            throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
         }
 
         $cfg = json_decode(file_get_contents($file));
