@@ -20,6 +20,7 @@ $loader->registerNamespaces([
     'Nnt\Model' => MODULE_DIR . 'model',
     'Nnt\Controller' => MODULE_DIR . 'controller',
     'Nnt\Util' => MODULE_DIR . 'util',
+    'Nnt\Sdks' => APP_DIR . 'nnt/sdks',
     // 第三方库
     'Dust' => APP_DIR . '3rd/dust'
 ]);

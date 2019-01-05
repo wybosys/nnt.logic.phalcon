@@ -268,7 +268,15 @@ class Api extends Controller
             // 不判断权限
         } else if ($info->needauth) {
             // 调用业务层收集用户数据
-            Application::$shared->auth($params);
+            try {
+                Application::$shared->auth($params);
+            } catch (\Throwable $err) {
+                echo json_encode([
+                    'code' => Code::NEED_AUTH,
+                    'error' => $err
+                ]);
+                return;
+            }
             // 判断有没有登陆
             if ($this->di->has('user')) {
                 $auth = $this->di->get('user');
