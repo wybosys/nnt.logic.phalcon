@@ -158,12 +158,18 @@ class ActionInfo
 class Api extends Controller
 {
     /**
+     * @var Api
+     */
+    static $shared;
+
+    /**
      * @var ActionInfo[]
      */
     private $_actions = [];
 
     function initialize()
     {
+        Api::$shared = $this;
         header('Access-Control-Allow-Origin:*');
 
         $actnm = $this->router->getActionName();
