@@ -2,7 +2,9 @@
 
 namespace Nnt\Sdks;
 
-class SdkUserInfo
+use Nnt\Model\IAuthedUser;
+
+class SdkUserInfo implements IAuthedUser
 {
     /**
      * @var string
@@ -27,4 +29,9 @@ class SdkUserInfo
      * @Api(4, [string], [output], "头像")
      */
     public $avatar;
+
+    function userIdentifier(): string
+    {
+        return $this->userid;
+    }
 }

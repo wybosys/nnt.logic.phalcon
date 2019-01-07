@@ -29,8 +29,7 @@ class Sdks
             "action" => 'user.info',
             "_sid" => $m->sid
         ]);
-
-        return Proto::Decode(new SdkUserInfo(), $ret);
+        return Proto::Decode(new SdkUserInfo(), $ret->user);
     }
 
     static function RechargeInfo(SdkRechargeInfo $m): SdkRechargeInfo
