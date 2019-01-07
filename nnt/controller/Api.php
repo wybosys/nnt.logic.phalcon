@@ -575,4 +575,24 @@ class Api extends Controller
     {
         $this->response->setHeader('X-NntLogic-SessionId', $sid);
     }
+
+    // 使用当前的请求设置curl，可以达到传递headers的目的
+    function instanceConnector(): Connector
+    {
+        $r = new Connector();
+        $r->ua($this->userAgent());
+
+        // 传递部分用来标记用户的headers
+        if ($this->request->hasHeader('http_x_forwarded_for')) {
+            $r->header('HTTP_X_FORWARDED_FOR', $this->request->getHeader('http_x_forwarded_for'));
+        } else if ($this->request->hasHeader('x-forwarded-for')) {
+            $r->header('X-FORWARDED-FOR', $this->request->getHeader('x-forwarded-for'));
+        } else if ($this->request->hasHeader('http_x_real_ip')) {
+            $r->header('HTTP_X_REAL_IP', $this->request->getHeader('http_x_real_ip'));
+        } else if ($this->request->hasHeader('remote_addr')) {
+            $r->header('REMOTE_ADDR', $this->request->getHeader('remote_addr'));
+        }
+
+        return $r;
+    }
 }

@@ -19,61 +19,21 @@ class Service
      */
     static function DirectGet(string $url, array $args, $get = true, $json = false, array $headers = null, string $proxy = null)
     {
-        if ($get) {
-            if (strpos($url, '?') === false)
-                $url .= '/?';
-            else
-                $url .= '&';
-            $url .= http_build_query($args);
-        }
-
-        // 初始化curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux) AppleWebKit/600.1.4 (KHTML, like Gecko) NetType/WIFI');
-
-        // 解决curl卡顿的问题
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-
-        // 设置headers
-        $reqheaders = [];
-        if ($headers) {
-            foreach ($headers as $k => $v) {
-                $reqheaders[] = $k . ':' . $v;
-            }
-        }
+        $connect = new Connector($url);
+        $connect->args($args);
+        $connect->json = $json;
+        $connect->headers($headers);
+        $connect->method = $get ? Connector::$METHOD_GET : Connector::$METHOD_POST;
 
         // 配置代理
         if ($proxy) {
             $cfg = Application::$shared->config($proxy);
             if (!$cfg)
                 throw new \Exception('代理配置错误', Code::CONFIG_ERROR);
-            curl_setopt($ch, CURLOPT_PROXY, @$cfg->HOST);
+            $connect->proxy(@$cfg->HOST);
         }
 
-        // 如果是post请求，则填充参数
-        if (!$get) {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            if ($json) {
-                $str = json_encode($args);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                $reqheaders[] = 'Content-Type: application/json; charset=utf-8';
-                $reqheaders[] = 'Content-Length: ' . strlen($str);
-            } else {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-                $reqheaders[] = "Content-Type: multipart/form-data";
-            }
-        }
-
-        if ($reqheaders)
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
-
-        $msg = curl_exec($ch);
-        curl_close($ch);
-
-        return $msg;
+        return $connect->send();
     }
 
     /**
@@ -86,47 +46,14 @@ class Service
         $cfg = Application::$shared->config("logic");
         $host = $cfg["HOST"];
 
-        // 添加permission的信息
-        if (self::PermissionEnabled()) {
-            $args[KEY_PERMISSIONID] = self::PermissionId();
-        }
+        // 从全局的api生成一个链接
+        $connect = Api::$shared->instanceConnector();
+        $connect->devops = true;
+        $connect->url = $host . '/' . $idr;
+        $connect->args($args);
+        $connect->files($files);
 
-        // 添加跳过的标记
-        if (!Config::IsDevopsRelease()) {
-            $args[KEY_SKIPPERMISSION] = 1;
-        }
-
-        // 组装url
-        $url = $host . '/' . $idr . '/?' . http_build_query($args);
-
-        // 初始化curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux) AppleWebKit/600.1.4 (KHTML, like Gecko) NetType/WIFI');
-
-        // 解决curl卡顿的问题
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-
-        if ($files && count($files)) {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            $data = [];
-            foreach ($files as $key => $file) {
-                if ($file instanceof File) {
-                    $data[$key] = curl_file_create($file->getTempName(), $file->getType(), $file->getName());
-                }
-            }
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                "Content-Type: multipart/form-data"
-            ]);
-        }
-
-        $msg = curl_exec($ch);
-        curl_close($ch);
-
-        return $msg;
+        return $connect->send();
     }
 
     /**
@@ -187,37 +114,6 @@ class Service
         } catch (\Throwable $err) {
         }
         return null;
-    }
-
-    /**
-     * 获得自己的当前的许可ID
-     * @throws \Exception
-     */
-    static function PermissionId(): string
-    {
-        // 从apcu中读取缓存的pid
-        if (apcu_exists(KEY_PERMISSIONID)) {
-            $pid = apcu_fetch(KEY_PERMISSIONID);
-            if ($pid)
-                return $pid;
-        }
-
-        $file = APP_DIR . '/run/permission.cfg';
-        if (!file_exists($file)) {
-            throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
-        }
-
-        $cfg = json_decode(file_get_contents($file));
-        $pid = $cfg->id;
-        apcu_store(KEY_PERMISSIONID, $pid, 60);
-
-        return $pid;
-    }
-
-    static function PermissionEnabled(): bool
-    {
-        // 只有devops环境下才具备检测权限的环境
-        return Config::IsDevops();
     }
 
     /**
