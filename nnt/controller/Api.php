@@ -323,7 +323,7 @@ class Api extends Controller
                 if ($name == 'docAction')
                     break;
 
-                if (isset($params[KEY_SKIPPERMISSION]) && $params[KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
+                if (isset($params[Devops::KEY_SKIPPERMISSION]) && $params[Devops::KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
                     break;
 
                 // 判断代码
@@ -338,7 +338,7 @@ class Api extends Controller
                 }
 
                 // 使用permission规则
-                if (!isset($params[KEY_PERMISSIONID])) {
+                if (!isset($params[Devops::KEY_PERMISSIONID])) {
                     $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,
@@ -346,7 +346,7 @@ class Api extends Controller
                     ]);
                     return;
                 }
-                $permid = $params[KEY_PERMISSIONID];
+                $permid = $params[Devops::KEY_PERMISSIONID];
                 if (!Devops::PermissionLocate($permid)) {
                     $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([

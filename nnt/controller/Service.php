@@ -22,7 +22,7 @@ class Service
         $connect->args($args);
         $connect->json = $json;
         $connect->headers($headers);
-        $connect->method = $get ? Connector::$METHOD_GET : Connector::$METHOD_POST;
+        $connect->method = $get ? Connector::METHOD_GET : Connector::METHOD_POST;
 
         // 配置代理
         if ($proxy) {
@@ -145,8 +145,3 @@ class Service
         return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
     }
 }
-
-const KEY_PERMISSIONTIME = "_permission_time";
-const KEY_PERMISSIONID = "_permissionid";
-const KEY_SKIPPERMISSION = "_skippermission";
-const REDIS_PERMISSIONIDS = 17;

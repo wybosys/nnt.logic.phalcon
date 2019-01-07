@@ -2,7 +2,7 @@
 
 use Nnt\Controller\Api;
 use Nnt\Controller\Config;
-use Nnt\Controller\Service;
+use Nnt\Controller\Devops;
 use Nnt\Util\Apidoc;
 
 class ExportApis
@@ -57,8 +57,8 @@ class NntController extends Api
             "request" => $_REQUEST
         ];
 
-        if (Service::PermissionEnabled() && !Config::IsDevopsRelease()) {
-            $output["permission"] = Service::PermissionId();
+        if (Devops::PermissionEnabled() && !Config::IsDevopsRelease()) {
+            $output["permission"] = Devops::PermissionId();
         }
 
         echo json_encode($output);

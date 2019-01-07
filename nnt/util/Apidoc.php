@@ -3,7 +3,7 @@
 namespace Nnt\Util;
 
 use Nnt\Controller\Api;
-use Nnt\Controller\Service;
+use Nnt\Controller\Devops;
 use Nnt\Model\Proto;
 
 class Doc
@@ -163,7 +163,7 @@ class Apidoc
         $entrys = self::LoadEntrys();
 
         // 转换名称
-        $domain = Service::GetDomain();
+        $domain = Devops::GetDomain();
 
         $params = [
             'domain' => $domain,

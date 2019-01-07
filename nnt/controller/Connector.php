@@ -6,13 +6,13 @@ use Phalcon\Http\Request\File;
 
 class Connector
 {
-    static $METHOD_GET = 0;
-    static $METHOD_POST = 0;
+    const METHOD_GET = 0;
+    const METHOD_POST = 1;
 
     public function __construct($url = '')
     {
         $this->url = $url;
-        $this->method = self::$METHOD_GET;
+        $this->method = self::METHOD_GET;
     }
 
     function arg($k, $v)
@@ -68,7 +68,7 @@ class Connector
      */
     function file($k, $f)
     {
-        $this->method = self::$METHOD_POST;
+        $this->method = self::METHOD_POST;
         $this->arg($k, curl_file_create($f->getTempName(), $f->getType(), $f->getName()));
     }
 
@@ -86,7 +86,7 @@ class Connector
             }
 
             if ($data) {
-                $this->method = self::$METHOD_POST;
+                $this->method = self::METHOD_POST;
                 $this->args($data);
             }
         }
@@ -116,6 +116,9 @@ class Connector
     // 用户
     private $_ua;
 
+    // 是否完整获取返回数据
+    public $full = false;
+
     function send(): string
     {
         $url = $this->url;
@@ -124,17 +127,17 @@ class Connector
         if ($this->devops) {
             // 添加permission的信息
             if (Devops::PermissionEnabled()) {
-                $this->_args[KEY_PERMISSIONID] = Devops::PermissionId();
+                $this->_args[Devops::KEY_PERMISSIONID] = Devops::PermissionId();
             }
 
             // 添加跳过的标记
             if (!Config::IsDevopsRelease()) {
-                $this->_args[KEY_SKIPPERMISSION] = 1;
+                $this->_args[Devops::KEY_SKIPPERMISSION] = 1;
             }
         }
 
         // 处理get
-        if ($this->method == self::$METHOD_GET) {
+        if ($this->method == self::METHOD_GET) {
             if ($this->_args) {
                 if (strpos($url, '?') === false)
                     $url .= '/?';
@@ -146,11 +149,11 @@ class Connector
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HEADER, $this->full ? 1 : 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         // 处理post
-        if ($this->method == self::$METHOD_POST) {
+        if ($this->method == self::METHOD_POST) {
             curl_setopt($ch, CURLOPT_POST, 1);
             if ($this->json) {
                 $str = json_encode($this->_args);
@@ -182,11 +185,29 @@ class Connector
         // 解决curl卡顿的问题
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
-        $msg = curl_exec($ch);
+        $this->_response = curl_exec($ch);
+
+        if ($this->full) {
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $this->respheaders = array_filter(explode("\r\n", substr($this->_response, 0, $header_size)));
+            $this->body = substr($this->_response, $header_size);
+        } else {
+            $this->body = $this->_response;
+        }
 
         // 发送结束自动关闭
         curl_close($ch);
 
-        return $msg;
+        return $this->body;
     }
+
+    // 返回的内容
+    private $_response;
+
+    // 返回的消息主体
+    public $body;
+
+    // 返回的头
+    public $respheaders;
+
 }
