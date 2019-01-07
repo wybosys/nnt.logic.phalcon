@@ -460,7 +460,6 @@ class Proto
         $posts = $request->getPost();
         $gets = $request->getQuery();
         $files = $request->getUploadedFiles();
-        $json = $request->getJsonRawBody();
 
         // 合并到同一个集合
         $ret = array_merge($gets, $posts);
@@ -470,8 +469,19 @@ class Proto
             $ret[$file->getKey()] = $file;
         }
 
+        // 如果是json
+        $json = $request->getJsonRawBody();
         if ($json) {
             foreach ($json as $k => $v) {
+                $ret[$k] = $v;
+            }
+        }
+
+        // 如果是xml
+        $ct = $request->getHeader('content-type');
+        if (strpos($ct, 'xml') !== false) {
+            $xml = Kernel::toXmlObj($request->getRawBody());
+            foreach ($xml as $k => $v) {
                 $ret[$k] = $v;
             }
         }

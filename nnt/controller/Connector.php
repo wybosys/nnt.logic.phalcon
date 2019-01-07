@@ -2,6 +2,7 @@
 
 namespace Nnt\Controller;
 
+use Nnt\Model\Kernel;
 use Phalcon\Http\Request\File;
 
 class Connector
@@ -95,6 +96,9 @@ class Connector
     // 是否是json请求
     public $json;
 
+    // 是否时xml请求
+    public $xml;
+
     // 是否时devops请求
     public $devops;
 
@@ -122,6 +126,10 @@ class Connector
     function send(): string
     {
         $url = $this->url;
+
+        // 如果特殊定义了输入格式
+        if ($this->json || $this->xml)
+            $this->method = self::METHOD_POST;
 
         // 如果时devops请求
         if ($this->devops) {
@@ -159,6 +167,13 @@ class Connector
                 $str = json_encode($this->_args);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
                 $this->_headers['Content-Type'] = 'application/json; charset=utf-8';
+                $this->_headers['Content-Length'] = (string)strlen($str);
+            } else if ($this->xml) {
+                $str = Kernel::toXml($this->_args, [
+                    'root' => 'xml'
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+                $this->_headers['Content-Type'] = 'application/xml; charset=utf-8';
                 $this->_headers['Content-Length'] = (string)strlen($str);
             } else {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_args);

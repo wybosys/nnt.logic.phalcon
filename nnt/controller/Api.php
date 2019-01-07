@@ -3,6 +3,7 @@
 namespace Nnt\Controller;
 
 use Nnt\Model\Code;
+use Nnt\Model\Kernel;
 use Nnt\Model\Proto;
 use Phalcon\Mvc\Controller;
 
@@ -469,11 +470,27 @@ class Api extends Controller
     private $_submited;
 
     // 提交完整的输出
-    function submit($object)
+    // opt: { json?: true, xml, plain}
+    function submit($object, $opt = null)
     {
-        $str = json_encode($object);
+        $str = '';
+        if ($opt) {
+            if (isset($opt['json']) && $opt['json']) {
+                $str = Kernel::toJson($object);
+            } else if (isset($opt['xml']) && $opt['xml']) {
+                $str = Kernel::toXml($object, [
+                    "root" => "xml"
+                ]);
+            } else if (isset($opt['plain']) && $opt['plain']) {
+                $str = $object;
+            }
+        } else {
+            $str = json_encode($object);
+        }
+
         $this->log(Code::OK, $str);
         $this->_submited = true;
+
         echo $str;
     }
 
