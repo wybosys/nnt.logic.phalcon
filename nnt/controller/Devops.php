@@ -32,7 +32,9 @@ class Devops
 
         $cfg = json_decode(file_get_contents($file));
         $pid = $cfg->id;
-        apcu_store(KEY_PERMISSIONID, $pid, 60);
+
+        // register.py 会让老的pid继续使用5s
+        apcu_store(KEY_PERMISSIONID, $pid, 5);
 
         return $pid;
     }
