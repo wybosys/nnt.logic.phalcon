@@ -304,7 +304,7 @@ class Api extends Controller
                 ]);
                 return;
             }
-        } else if (Service::PermissionEnabled()) {
+        } else if (Devops::PermissionEnabled()) {
             // 对不需要登录的接口进行权限验证
             // local时不判断
             // devops时设置了skip不判断
@@ -314,7 +314,7 @@ class Api extends Controller
                     break;
 
                 // devops.json 中的设置
-                $cfg = Service::DevopsConfig();
+                $cfg = Devops::GetConfig();
 
                 // 全局打开客户端访问
                 if (isset($cfg->client) && $cfg->client)
@@ -347,7 +347,7 @@ class Api extends Controller
                     return;
                 }
                 $permid = $params[KEY_PERMISSIONID];
-                if (!Service::PermissionLocate($permid)) {
+                if (!Devops::PermissionLocate($permid)) {
                     $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,

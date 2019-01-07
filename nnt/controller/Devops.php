@@ -39,4 +39,32 @@ class Devops
         return $pid;
     }
 
+    /**
+     * 判断许可链中是否存在该许可ID
+     */
+    static function PermissionLocate(string $permissionId)
+    {
+        $db = new \Redis();
+        $db->connect('localhost', 26379);
+        $db->select(REDIS_PERMISSIONIDS);
+        return $db->get($permissionId);
+    }
+
+    private static $_DEVOPSCONFIG = null;
+
+    static function GetConfig()
+    {
+        if (self::$_DEVOPSCONFIG == null) {
+            $cfgph = APP_DIR . '/devops.json';
+            self::$_DEVOPSCONFIG = json_decode(file_get_contents($cfgph));
+        }
+        return self::$_DEVOPSCONFIG;
+    }
+
+    static function GetDomain()
+    {
+        $path = self::GetConfig()->path;
+        $domain = substr($path, 16);
+        return $domain;
+    }
 }

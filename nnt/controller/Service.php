@@ -3,7 +3,6 @@
 namespace Nnt\Controller;
 
 use Nnt\Model\Code;
-use Phalcon\Http\Request\File;
 
 /*
 if (!defined('SERVICE_HOST')) {
@@ -117,28 +116,6 @@ class Service
     }
 
     /**
-     * 判断许可链中是否存在该许可ID
-     */
-    static function PermissionLocate(string $permissionId)
-    {
-        $db = new \Redis();
-        $db->connect('localhost', 26379);
-        $db->select(REDIS_PERMISSIONIDS);
-        return $db->get($permissionId);
-    }
-
-    private static $_DEVOPSCONFIG = null;
-
-    static function DevopsConfig()
-    {
-        if (self::$_DEVOPSCONFIG == null) {
-            $cfgph = APP_DIR . '/devops.json';
-            self::$_DEVOPSCONFIG = json_decode(file_get_contents($cfgph));
-        }
-        return self::$_DEVOPSCONFIG;
-    }
-
-    /**
      * 是否允许客户端进行访问
      */
     static function AllowClient($cfg, $clientip): bool
@@ -166,13 +143,6 @@ class Service
     {
         list($subnet, $mask) = explode('/', $cidr);
         return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
-    }
-
-    static function GetDomain()
-    {
-        $path = self::DevopsConfig()->path;
-        $domain = substr($path, 16);
-        return $domain;
     }
 }
 
