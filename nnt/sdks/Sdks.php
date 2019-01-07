@@ -3,6 +3,7 @@
 namespace Nnt\Sdks;
 
 use App\Controller\Application;
+use Nnt\Controller\Api;
 use Nnt\Controller\Service;
 use Nnt\Model\Proto;
 
@@ -40,7 +41,8 @@ class Sdks
             "channel" => $m->channel,
             "gameid" => Application::$shared->config("app")["gameid"],
             "uid" => $m->uid,
-            "addition" => $m->addition ? json_encode($m->addition) : ''
+            "addition" => $m->addition ? json_encode($m->addition) : '',
+            "clientip" => Api::$shared->clientIp()
         ]);
 
         $m->orderid = $ret->orderid;
