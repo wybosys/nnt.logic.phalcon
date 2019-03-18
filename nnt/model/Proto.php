@@ -446,8 +446,9 @@ class Proto
                 }
                 return $arr;
             case 'json':
-            case 'object':
                 return json_encode($val);
+            case 'object':
+                return $val;
             case 'enum':
                 return $val;
             default:
