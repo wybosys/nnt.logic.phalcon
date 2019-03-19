@@ -514,7 +514,7 @@ class Api extends Controller
 
         // 保护为空的情况
         if (!$this->_clientip) {
-            $this->_clientip = 'unknown';
+            $this->_clientip = $this->request->getClientAddress();
         }
 
         // clientip 会返回多个
