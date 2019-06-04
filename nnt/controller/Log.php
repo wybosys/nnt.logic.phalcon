@@ -2,7 +2,7 @@
 
 namespace Nnt\Controller;
 
-use Nnt\Model\Kernel;
+use Nnt\Core\Kernel;
 use Phalcon\Logger\Adapter\File;
 use Phalcon\Logger\AdapterInterface;
 use Phalcon\Logger\FormatterInterface;

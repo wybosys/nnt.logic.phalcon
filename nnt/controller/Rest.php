@@ -4,7 +4,7 @@ namespace Nnt\Controller;
 
 use Nnt\Model\Code;
 use Nnt\Model\HttpContentType;
-use Nnt\Model\Kernel;
+use Nnt\Core\Kernel;
 use Nnt\Model\Logic;
 use Nnt\Model\HttpMethod;
 use Nnt\Model\ResponseData;

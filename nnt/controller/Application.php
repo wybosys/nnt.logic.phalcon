@@ -2,7 +2,7 @@
 
 namespace Nnt\Controller;
 
-use Nnt\Model\Kernel;
+use Nnt\Core\Kernel;
 use Phalcon\DiInterface;
 
 class Application extends \Phalcon\Mvc\Application
