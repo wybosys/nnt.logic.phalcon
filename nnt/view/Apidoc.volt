@@ -1,10 +1,10 @@
-{{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/zepto.min.js", false) }}
-{{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/vue.min.js", false) }}
-{{ stylesheet_link("https://www.91yigame.com/devops/cdn/provider/file/bootstrap.min.css", false) }}
-{{ stylesheet_link("https://www.91yigame.com/devops/cdn/provider/file/bootstrap-vue.min.css", false) }}
-{{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/polyfill.min.js", false) }}
-{{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/bootstrap-vue.min.js", false) }}
-{{ javascriptInclude("https://www.91yigame.com/devops/cdn/provider/file/vue-json-tree-view.min.js", false) }}
+{{ javascriptInclude("//www.91yigame.com/devops/cdn/provider/file/zepto.min.js", false) }}
+{{ javascriptInclude("//www.91yigame.com/devops/cdn/provider/file/vue.min.js", false) }}
+{{ stylesheet_link("//www.91yigame.com/devops/cdn/provider/file/bootstrap.min.css", false) }}
+{{ stylesheet_link("//www.91yigame.com/devops/cdn/provider/file/bootstrap-vue.min.css", false) }}
+{{ javascriptInclude("//www.91yigame.com/devops/cdn/provider/file/polyfill.min.js", false) }}
+{{ javascriptInclude("//www.91yigame.com/devops/cdn/provider/file/bootstrap-vue.min.js", false) }}
+{{ javascriptInclude("//www.91yigame.com/devops/cdn/provider/file/vue-json-tree-view.min.js", false) }}
 
 <!-- @formatter:off -->
 <div id="app" class="container-fluid">

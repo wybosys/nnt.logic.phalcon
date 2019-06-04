@@ -12,16 +12,19 @@ class Doc
      * 收集所有的action=>parameters数据
      * @return string[]
      */
-    static public function ActionsInfo($entrys)
+    static public function ActionsInfo($entrys): array
     {
         $ret = [];
         foreach ($entrys["routers"] as $router) {
-            $ret = array_merge($ret, self::RouterAction($router, $entrys));
+            $r = self::RouterAction($router, $entrys);
+            foreach ($r as $e) {
+                $ret[] = $e;
+            }
         }
         return $ret;
     }
 
-    static public function RouterAction(string $router, $entrys)
+    static public function RouterAction(string $router, $entrys): array
     {
         $name = $router;
         $controller = ucfirst($router) . 'Controller';
@@ -44,7 +47,7 @@ class Doc
         return $ret;
     }
 
-    static public function ParametersInfo(string $model)
+    static public function ParametersInfo(string $model): array
     {
         $decl = Proto::DeclarationOf($model, true, true, true);
         if (!$decl)

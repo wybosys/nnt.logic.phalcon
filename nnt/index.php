@@ -1,7 +1,7 @@
 <?php
 
-use Phalcon\Loader;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
+use Phalcon\Loader;
 use Phalcon\Session\Factory as SesFactory;
 
 // 本模块的路径
@@ -19,6 +19,7 @@ $loader->registerNamespaces([
     'Nnt' => MODULE_DIR,
     'Nnt\Model' => MODULE_DIR . 'model',
     'Nnt\Controller' => MODULE_DIR . 'controller',
+    'Nnt\Core' => MODULE_DIR . 'core',
     'Nnt\Util' => MODULE_DIR . 'util',
     'Nnt\Sdks' => APP_DIR . 'nnt/sdks',
     // 第三方库

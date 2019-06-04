@@ -164,9 +164,9 @@ class Api extends Controller
     static $shared;
 
     /**
-     * @var ActionInfo[]
+     * @var ActionInfo
      */
-    private $_actions = [];
+    private $_action;
 
     function initialize()
     {
@@ -174,21 +174,30 @@ class Api extends Controller
         header('Access-Control-Allow-Origin:*');
 
         $actnm = $this->router->getActionName();
+        $ctlrnm = $this->router->getControllerName();
 
         // 把简化的action恢复成框架需要的actionAction
         if ($actnm) {
-            $reflect = Proto::Annotations($this);
-            $methods = $reflect->getMethodsAnnotations();
-            if ($methods) {
-                if (array_key_exists($actnm, $methods)) {
-                    $method = $methods[$actnm];
-                    if ($method->has('Action')) {
-                        $act = $method->get('Action');
-                        $ai = new ActionInfo($actnm, $act);
-                        if ($ai->isvalid())
-                            $this->_actions[$actnm . 'Action'] = $ai;
+            // 从缓存中查找
+            $aikey = "@$ctlrnm::$$actnm";
+            $ai = apcu_fetch($aikey);
+            if (!$ai) {
+                $reflect = Proto::Annotations($this);
+                $methods = $reflect->getMethodsAnnotations();
+                if ($methods) {
+                    if (array_key_exists($actnm, $methods)) {
+                        $method = $methods[$actnm];
+                        if ($method->has('Action')) {
+                            $act = $method->get('Action');
+                            $ai = new ActionInfo($actnm, $act);
+                            if ($ai->isvalid())
+                                $this->_action = $ai;
+                            apcu_store($aikey, $ai, Config::Use(5, 5, 60 * 5));
+                        }
                     }
                 }
+            } else {
+                $this->_action = $ai;
             }
         }
 
@@ -252,7 +261,7 @@ class Api extends Controller
      */
     function __call($name, $arguments)
     {
-        if (!isset($this->_actions[$name])) {
+        if (!$this->_action) {
             $this->log(Code::ACTION_NOT_FOUND);
             echo json_encode([
                 'code' => Code::ACTION_NOT_FOUND,
@@ -262,7 +271,7 @@ class Api extends Controller
         }
 
         // 动作信息
-        $info = $this->_actions[$name];
+        $info = $this->_action;
 
         // 收集参数
         $params = $this->requestParams();

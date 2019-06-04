@@ -9,28 +9,29 @@ use Phalcon\Http\Request\File;
 class ClazzDeclaration
 {
     /**
-     *
      * @var boolean
      */
     public $hidden;
 
     /**
-     *
      * @var boolean
      */
     public $enum;
 
     /**
-     *
      * @var boolean
      */
     public $const;
 
     /**
-     *
      * @var string
      */
     public $super;
+
+    /**
+     * @var boolean
+     */
+    public $noauth;
 
     /**
      * @var MemberDeclaration[]
@@ -383,7 +384,7 @@ class Proto
             case 'double':
                 return (double)$val;
             case 'boolean':
-                return $val != "false";
+                return $val !== "false";
             case 'file':
                 return $val instanceof File ? $val : null;
             case 'object':
@@ -394,7 +395,7 @@ class Proto
                 $ret = [];
                 $valtyp = $styp0;
                 foreach (explode(',', $val) as $each) {
-                    array_push($ret, self::GetValue($each, $valtyp, null, null));
+                    $ret[] = self::GetValue($each, $valtyp, null, null);
                 }
                 return $ret;
             case 'map':
@@ -433,7 +434,7 @@ class Proto
                 if ($val) {
                     foreach ($val as $e) {
                         $obj = self::OutputValue($e, $styp0);
-                        array_push($arr, $obj);
+                        $arr[] = $obj;
                     }
                 }
                 return $arr;
@@ -502,11 +503,15 @@ class Proto
             return;
         $mdl = $annClass->get('Model');
         $ops = $mdl->getArgument(0);
-        $decl->super = $mdl->getArgument(1);
-
-        $decl->hidden = in_array('hidden', $ops);
-        $decl->enum = in_array('enum', $ops) || in_array('enumm', $ops);
-        $decl->const = in_array('const', $ops) || in_array('constant', $ops);
+        if (is_array($ops)) {
+            $decl->noauth = in_array('noauth', $ops);
+            $decl->hidden = in_array('hidden', $ops);
+            $decl->enum = in_array('enum', $ops) || in_array('enumm', $ops);
+            $decl->const = in_array('const', $ops) || in_array('constant', $ops);
+            $decl->super = $mdl->getArgument(1);
+        } else {
+            $decl->super = $ops;
+        }
     }
 
     static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
@@ -664,7 +669,7 @@ class Proto
                     $vt = "boolean";
                     break;
                 default:
-                    $vt = $fp->valtyp;
+                    $vt = self::GetClassName($fp->valtyp);
                     break;
             }
             $typ .= $vt;
@@ -683,7 +688,7 @@ class Proto
         } else if ($fp->json || $fp->object) {
             $typ = "Object";
         } else {
-            $typ = $fp->valtyp;
+            $typ = self::GetClassName($fp->valtyp);
         }
         return $typ;
     }
