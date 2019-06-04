@@ -512,6 +512,9 @@ class Proto
         } else {
             $decl->super = $ops;
         }
+
+        if ($decl->super)
+            $decl->super = self::GetClassName($decl->super);
     }
 
     static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)

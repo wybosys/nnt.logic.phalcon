@@ -4,6 +4,7 @@ namespace Nnt\Util;
 
 use Nnt\Controller\Api;
 use Nnt\Controller\Devops;
+use Nnt\Model\Code;
 use Nnt\Model\Proto;
 
 class Doc
@@ -283,6 +284,9 @@ class Apidoc
         // 数据填模板
         $dust = new \Dust\Dust();
         $tpl = $dust->compileFile($apis);
+        if (!$tpl) {
+            throw new \Exception("$apis 模板读取失败", Code::THIRD_FAILED);
+        }
         $result = $dust->renderTemplate($tpl, $params);
 
         // 构造response

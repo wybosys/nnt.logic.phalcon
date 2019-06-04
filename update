@@ -1,0 +1,149 @@
+#!/usr/bin/env php
+<?php
+
+const MODULE_BLACKS = [
+    '/\./',
+    '/\.\./',
+    '/\.(.+)$/',
+    '/3rd/'
+];
+
+function IsBlack($path)
+{
+    foreach (MODULE_BLACKS as $b) {
+        if (preg_match($b, $path)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function ListModules()
+{
+    $iter = opendir('./');
+    while (($each = readdir($iter)) != false) {
+        if (!is_dir($each))
+            continue;
+        if (IsBlack($each))
+            continue;
+        $ret[] = $each;
+    }
+    return $ret;
+}
+
+// 遍历根文件夹，获取业务模块列表
+$MODULES = ListModules();
+
+// 构造自动加载类
+spl_autoload_register(function ($name) {
+    $cmps = explode('\\', $name);
+    for ($i = 0, $l = count($cmps) - 1; $i < $l; ++$i) {
+        $cmps[$i] = strtolower($cmps[$i]);
+    }
+    $path = implode(DIRECTORY_SEPARATOR, $cmps);
+    include_once '.' . DIRECTORY_SEPARATOR . $path . '.php';
+    return true;
+});
+
+// 处理 app.php 获得配置信息
+function GetConfig()
+{
+    return include "./app.php";
+}
+
+$CONFIG = GetConfig();
+
+// 更新每个模块的Index文件
+function UpdateIndex($module)
+{
+    // 不自动更新框架的入口
+    if ($module == 'nnt')
+        return;
+
+    // 读取目标模块手动设置的Application对象
+    $cnt = file_get_contents("./$module/index.php");
+    preg_match('/\$app = new (.+)\(/', $cnt, $result);
+    $appclazz = $result[1]; // 手动定制的入口app类型
+
+    // 构造模板
+    $cnt = '<?php
+    
+use Phalcon\Loader;
+use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
+    
+define(\'MODULE_DIR\', __DIR__ . \'/\');
+define(\'APP_DIR\', dirname(__DIR__) . \'/\');
+   
+$loader = new Loader();
+$loader->registerNamespaces([
+';
+
+    // 插入模块ns
+    global $MODULES;
+    foreach ($MODULES as $each) {
+        $Each = ucfirst($each);
+        $dir[] = "    '$Each' => APP_DIR . '$each'";
+        if ($each == 'nnt') {
+            $dir[] = "    '$Each\Core' => APP_DIR . '$each\Core'";
+            $dir[] = "    '$Each\Store' => APP_DIR . '$each\Store'";
+            $dir[] = "    '$Each\Sdks' => APP_DIR . '$each\Sdks'";
+        }
+        $dir[] = "    '$Each\Db' => APP_DIR . '$each\db'";
+        $dir[] = "    '$Each\Model' => APP_DIR . '$each\model'";
+        $dir[] = "    '$Each\Controller' => APP_DIR . '$each\controller'";
+    }
+    $cnt .= implode(",\n", $dir) . "\n]);";
+
+    $cnt .= '
+    
+$loader->registerDirs([
+    MODULE_DIR . \'controller\',
+    MODULE_DIR . \'model\'
+]);
+
+$loader->register();
+
+$di = new \Nnt\Controller\Factory();
+    ';
+
+    // 输出配置
+    $cfg[] = '
+$di->setShared(\'config\', function () {
+    return include \'config/config.php\';
+});';
+    global $CONFIG;
+    foreach ($CONFIG as $k => $v) {
+        switch ($k) {
+            case 'database':
+                {
+                    $cfg[] = '
+$di->setShared(\'db\', function () {
+    return DbFactory::load($this->getConfig()->database);
+});';
+                }
+                break;
+            case 'redis':
+                {
+                    $cfg[] = '
+$di->setShared(\'redis\', function () {
+    return new \Nnt\Store\KvRedis($this->getConfig()->redis);
+});';
+                }
+                break;
+        }
+    }
+    $cnt .= implode("\n", $cfg);
+
+    // 输出app
+    $cnt .= "
+    
+\$app = new $appclazz(\$di);
+\$app->run();
+";
+
+    file_put_contents("./$module/index.php", $cnt);
+}
+
+foreach ($MODULES as $mod) {
+    UpdateIndex($mod);
+}
