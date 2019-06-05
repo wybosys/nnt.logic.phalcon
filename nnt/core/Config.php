@@ -1,6 +1,6 @@
 <?php
 
-namespace Nnt\Controller;
+namespace Nnt\Core;
 
 class Config extends \Phalcon\Config
 {
@@ -18,7 +18,8 @@ class Config extends \Phalcon\Config
         return getenv('DEVOPS') == null;
     }
 
-    static function IsDevops(): bool  {
+    static function IsDevops(): bool
+    {
         return getenv('DEVOPS') != null;
     }
 
@@ -32,4 +33,6 @@ class Config extends \Phalcon\Config
         return getenv('DEVOPS_RELEASE') == null && getenv('DEVOPS') != null;
     }
 
+    // model含有最大fields的个数
+    const MODEL_FIELDS_MAX = 100;
 }

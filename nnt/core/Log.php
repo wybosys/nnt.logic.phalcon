@@ -1,14 +1,10 @@
 <?php
 
-namespace Nnt\Controller;
+namespace Nnt\Core;
 
-use Nnt\Core\Kernel;
 use Phalcon\Logger\Adapter\File;
 use Phalcon\Logger\AdapterInterface;
 use Phalcon\Logger\FormatterInterface;
-
-define('LOG_DIR', APP_DIR . '/logs/');
-Kernel::EnsureDir(LOG_DIR);
 
 class Log
 {
@@ -52,11 +48,11 @@ class Log
 
     static function error(\Error $err)
     {
-        self::$_SHARED_log->error(json_encode([
-            "c" => $err->getCode(),
-            "f" => $err->getFile(),
-            "l" => $err->getLine(),
-            "m" => $err->getMessage()
+        self::$_SHARED->_log->error(json_encode([
+            'c' => $err->getCode(),
+            'f' => $err->getFile(),
+            'l' => $err->getLine(),
+            'm' => $err->getMessage()
         ]));
     }
 
@@ -88,10 +84,10 @@ class Log
     static function exception(\Exception $exc)
     {
         self::$_SHARED->_log->emergency(json_encode([
-            "c" => $exc->getCode(),
-            "f" => $exc->getFile(),
-            "l" => $exc->getLine(),
-            "m" => $exc->getMessage()
+            'c' => $exc->getCode(),
+            'f' => $exc->getFile(),
+            'l' => $exc->getLine(),
+            'm' => $exc->getMessage()
         ]));
     }
 

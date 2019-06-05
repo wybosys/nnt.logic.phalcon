@@ -1,9 +1,9 @@
 <?php
 
 use Nnt\Controller\Api;
-use Nnt\Controller\Service;
-use Nnt\Model\Code;
 use Nnt\Controller\Rest;
+use Nnt\Controller\Service;
+use Nnt\Core\Code;
 
 @include_once MODULE_DIR . "/logic/framework-phalcon-api.php";
 

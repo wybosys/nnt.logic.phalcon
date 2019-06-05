@@ -1,8 +1,7 @@
 <?php
 
-namespace Nnt\Controller;
+namespace Nnt\Core;
 
-use Nnt\Model\Kernel;
 use Phalcon\Http\Request\File;
 
 class Connector

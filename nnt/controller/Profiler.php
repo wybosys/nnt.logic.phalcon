@@ -2,6 +2,8 @@
 
 namespace Nnt\Controller;
 
+use Nnt\Core\Config;
+
 // 性能测试
 class Profiler
 {

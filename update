@@ -5,7 +5,11 @@ const MODULE_BLACKS = [
     '/\./',
     '/\.\./',
     '/\.(.+)$/',
-    '/3rd/'
+    '/3rd/',
+    '/tmp/',
+    '/logs/',
+    '/run/',
+    '/doc/'
 ];
 
 function IsBlack($path)
@@ -67,13 +71,13 @@ function UpdateIndex($module)
 
     // 构造模板
     $cnt = '<?php
-    
+
 use Phalcon\Loader;
 use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
-    
+
 define(\'MODULE_DIR\', __DIR__ . \'/\');
 define(\'APP_DIR\', dirname(__DIR__) . \'/\');
-   
+
 $loader = new Loader();
 $loader->registerNamespaces([
 ';
@@ -84,18 +88,18 @@ $loader->registerNamespaces([
         $Each = ucfirst($each);
         $dir[] = "    '$Each' => APP_DIR . '$each'";
         if ($each == 'nnt') {
-            $dir[] = "    '$Each\Core' => APP_DIR . '$each\core'";
-            $dir[] = "    '$Each\Store' => APP_DIR . '$each\store'";
-            $dir[] = "    '$Each\Sdks' => APP_DIR . '$each\sdks'";
+            $dir[] = "    '$Each\Core' => APP_DIR . '$each/core'";
+            $dir[] = "    '$Each\Store' => APP_DIR . '$each/store'";
+            $dir[] = "    '$Each\Sdks' => APP_DIR . '$each/sdks'";
         }
-        $dir[] = "    '$Each\Db' => APP_DIR . '$each\db'";
-        $dir[] = "    '$Each\Model' => APP_DIR . '$each\model'";
-        $dir[] = "    '$Each\Controller' => APP_DIR . '$each\controller'";
+        $dir[] = "    '$Each\Db' => APP_DIR . '$each/db'";
+        $dir[] = "    '$Each\Model' => APP_DIR . '$each/model'";
+        $dir[] = "    '$Each\Controller' => APP_DIR . '$each/controller'";
     }
     $cnt .= implode(",\n", $dir) . "\n]);";
 
     $cnt .= '
-    
+
 $loader->registerDirs([
     MODULE_DIR . \'controller\',
     MODULE_DIR . \'model\'
@@ -136,7 +140,7 @@ $di->setShared(\'redis\', function () {
 
     // 输出app
     $cnt .= "
-    
+
 \$app = new $appclazz(\$di);
 \$app->run();
 ";

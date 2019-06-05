@@ -1,6 +1,6 @@
 <?php
 
-namespace Nnt\Model;
+namespace Nnt\Core;
 
 /**
  * @Model([enum])
@@ -37,7 +37,8 @@ class Code
     const CONFIG_ERROR = -973; // 配置错误
     const PRIVILEGE_ERROR = -972; // 权限错误
     const LIMIT = -971; // 受到限制
-    
+    const PAGED_OVERFLOW = -970; // 超出分页数据的处理能力
+
     const IM_CHECK_FAILED = -899; // IM检查输入的参数失败
     const IM_NO_RELEATION = -898; // IM检查双方不存在关系
 

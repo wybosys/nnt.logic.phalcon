@@ -20,6 +20,14 @@ class Application extends \Phalcon\Mvc\Application
         }
 
         Application::$shared = $this;
+
+        // 创建通用的基础文件夹
+        define('TMP_DIR', APP_DIR . '/tmp/');
+        Kernel::EnsureDir(TMP_DIR);
+        define('RUN_DIR', APP_DIR . '/run/');
+        Kernel::EnsureDir(RUN_DIR);
+        define('LOG_DIR', APP_DIR . '/logs/');
+        Kernel::EnsureDir(LOG_DIR);
     }
 
     /**
@@ -48,9 +56,14 @@ class Application extends \Phalcon\Mvc\Application
         echo $this->handle()->getContent();
     }
 
-    function config($name)
+    function config($name, $def = null)
     {
-        return $this->di->getShared('config')[$name];
+        try {
+            return $this->di->getShared('config')[$name];
+        } catch (\Exception $err) {
+            // pass
+        }
+        return $def;
     }
 
     // 统一检查是否登录
@@ -59,8 +72,3 @@ class Application extends \Phalcon\Mvc\Application
         // pass
     }
 }
-
-define('TMP_DIR', APP_DIR . '/tmp/');
-Kernel::EnsureDir(TMP_DIR);
-define('RUN_DIR', APP_DIR . '/run/');
-Kernel::EnsureDir(RUN_DIR);

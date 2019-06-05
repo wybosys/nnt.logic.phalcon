@@ -16,12 +16,12 @@ $loader->registerNamespaces([
 
     // 基础库
     'Nnt' => MODULE_DIR,
-    'Nnt\Model' => MODULE_DIR . 'model',
-    'Nnt\Controller' => MODULE_DIR . 'controller',
     'Nnt\Core' => MODULE_DIR . 'core',
+    'Nnt\Model' => MODULE_DIR . 'model',
     'Nnt\Store' => MODULE_DIR . 'store',
+    'Nnt\Controller' => MODULE_DIR . 'controller',
     'Nnt\Util' => MODULE_DIR . 'util',
-    'Nnt\Sdks' => APP_DIR . 'nnt/sdks',
+    'Nnt\Sdks' => MODULE_DIR . 'sdks',
 
     // 第三方库
     'Dust' => APP_DIR . '3rd/dust'
@@ -29,7 +29,7 @@ $loader->registerNamespaces([
 
 $loader->registerDirs([
     MODULE_DIR . 'controller',
-    MODULE_DIR . "model"
+    MODULE_DIR . 'model'
 ]);
 
 $loader->register();

@@ -1,10 +1,9 @@
 <?php
 
-namespace Nnt\Controller;
+namespace Nnt\Store;
 
 class Cache
 {
-
     function __construct()
     {
         $this->_db = new \Redis();

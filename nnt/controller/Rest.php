@@ -2,17 +2,18 @@
 
 namespace Nnt\Controller;
 
-use Nnt\Model\Code;
-use Nnt\Model\HttpContentType;
+use Nnt\Core\Code;
+use Nnt\Core\Connector;
 use Nnt\Core\Kernel;
-use Nnt\Model\Logic;
+use Nnt\Model\HttpContentType;
 use Nnt\Model\HttpMethod;
+use Nnt\Model\Logic;
 use Nnt\Model\ResponseData;
 use Phalcon\Http\Request\File;
 
 class Rest extends Session
 {
-    static function Fetch(Logic &$m)
+    static function Fetch(Logic $m)
     {
         $connect = Api::$shared->instanceConnector();
         $connect->url = $m->requestUrl();
@@ -40,7 +41,7 @@ class Rest extends Session
         self::ProcessResponse($m, $connect->body, $connect->respheaders);
     }
 
-    static function Get(Logic &$m)
+    static function Get(Logic $m)
     {
         return self::ImplGet("\Nnt\Controller\Rest", $m);
     }

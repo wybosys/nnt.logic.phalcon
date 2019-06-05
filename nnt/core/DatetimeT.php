@@ -8,4 +8,9 @@ class DatetimeT
     {
         return date('Y-m-d H:i:s', time());
     }
+
+    static function Now(): int
+    {
+        return time();
+    }
 }

@@ -2,11 +2,17 @@
 
 namespace Nnt\Model;
 
-use Nnt\Controller\Config;
+use Nnt\Controller\Application;
+use Nnt\Core\ArrayT;
+use Nnt\Core\Code;
+use Nnt\Core\Config;
+use Nnt\Core\Kernel;
+use Nnt\Core\MapT;
+use Nnt\Store\Filter;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
 
-class ClazzDeclaration
+class ModelDeclaration
 {
     /**
      * @var boolean
@@ -37,13 +43,13 @@ class ClazzDeclaration
      * @var MemberDeclaration[]
      * Map<string, MemberDeclaration>
      */
-    public $members;
+    public $members = [];
 
     /**
      * @var PropDeclaration[]
      * Map<string, PropDeclaration>
      */
-    public $props;
+    public $props = [];
 }
 
 class MemberDeclaration
@@ -165,6 +171,11 @@ class PropDeclaration
     public $multimap;
 
     /**
+     * @var boolean
+     */
+    public $filter;
+
+    /**
      *
      * @var boolean
      */
@@ -221,53 +232,31 @@ class PropDeclaration
 
 class Proto
 {
-
     /**
-     * @param string|object $className
-     * @return \Phalcon\Annotations\Reflection
-     */
-    static function Annotations($model)
-    {
-        $reader = new Apcu([
-            "lifetime" => Config::Use(5, 5, 60 * 5),
-            "prefix" => "_proto_"
-        ]);
-        try {
-            $anno = $reader->get($model);
-        } catch (\Throwable $ex) {
-            throw new \Exception("$model 获取Annotaions失败");
-        }
-        return $anno;
-    }
-
-    /**
-     *
-     * @param $request \Phalcon\Http\Request|\Phalcon\Http\RequestInterface
-     * @param $model object
-     * @return integer Code中定义的错误码
+     * 检查输入参数是否满足模型定义
      */
     static function Check($params, $model)
     {
+        // 获取模型描述
+        $decl = self::DeclarationOf($model);
+
         // 填充，如果遇到不符合的，返回错误
-        $reflect = self::Annotations($model);
-        $props = $reflect->getPropertiesAnnotations();
-        if ($props) {
-            foreach ($props as $name => $prop) {
-                if (!$prop->has('Api'))
+        if ($decl->props) {
+            foreach ($decl->props as $name => $prop) {
+                if (!$prop->input) {
                     continue;
-                $api = $prop->get('Api');
-                if ($api) {
-                    $ops = $api->getArgument(2);
-                    if (array_search('input', $ops) === false)
+                }
+                if (!isset($params[$name])) {
+                    if ($prop->optional) {
                         continue;
-                    if (!isset($params[$name])) {
-                        if (array_search('optional', $ops) !== false)
-                            continue;
-                        return Code::PARAMETER_NOT_MATCH;
                     }
-                    // 根据设置，提取输入数据
-                    $typs = $api->getArgument(1);
-                    $model->{$name} = self::GetValue($params[$name], isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
+                    return Code::PARAMETER_NOT_MATCH;
+                }
+
+                $model->{$name} = self::GetValue($params[$name], $prop);
+
+                if (!$prop->optional && $model->{$name} === null) {
+                    return Code::PARAMETER_NOT_MATCH;
                 }
             }
         }
@@ -280,181 +269,332 @@ class Proto
      */
     static function Decode($model, $params)
     {
-        $reflect = self::Annotations($model);
-        $props = $reflect->getPropertiesAnnotations();
-        if ($props) {
+        $decl = self::DeclarationOf($model);
+
+        if ($decl->props) {
             if (is_array($params)) {
-                foreach ($props as $name => $prop) {
-                    if (!$prop->has('Api'))
+                foreach ($decl->props as $name => $prop) {
+                    if (!isset($params[$name])) {
                         continue;
-                    $api = $prop->get('Api');
-                    if ($api) {
-                        if (!isset($params[$name]))
-                            continue;
-                        // 根据设置，提取输入数据
-                        $typs = $api->getArgument(1);
-                        $model->{$name} = self::GetValue($params[$name], isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
                     }
+                    // 根据设置，提取输入数据
+                    $model->{$name} = self::GetValue($params[$name], $prop);
                 }
             } else {
-                foreach ($props as $name => $prop) {
-                    if (!$prop->has('Api'))
+                foreach ($decl->props as $name => $prop) {
+                    if (!isset($params->{$name})) {
                         continue;
-                    $api = $prop->get('Api');
-                    if ($api) {
-                        if (!isset($params->{$name}))
-                            continue;
-                        // 根据设置，提取输入数据
-                        $typs = $api->getArgument(1);
-                        $model->{$name} = self::GetValue($params->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
                     }
+                    // 根据设置，提取输入数据
+                    $model->{$name} = self::GetValue($params->{$name}, $prop);
                 }
             }
         }
+
         return $model;
     }
 
     /**
      * 输出模型的数据到基本对象
-     * @return array
      */
-    static function Output($model)
+    static function Output($model): array
     {
         $ret = [];
         if ($model == null)
             return $ret;
-        $reflect = self::Annotations($model);
-        $props = $reflect->getPropertiesAnnotations();
-        if ($props) {
-            foreach ($props as $name => $prop) {
-                if (!$prop->has('Api'))
+
+        $decl = self::DeclarationOf($model);
+
+        if ($decl->props) {
+            foreach ($decl->props as $name => $prop) {
+                if (!$prop->output) {
                     continue;
-                $api = $prop->get('Api');
-                if ($api) {
-                    $ops = $api->getArgument(2);
-                    if (!in_array('output', $ops))
-                        continue;
-                    $typs = $api->getArgument(1);
-                    $ret[$name] = self::OutputValue($model->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
                 }
+                $ret[$name] = self::OutputValue($model->{$name}, $prop);
             }
         }
+
         return $ret;
     }
 
     /**
      * 获取模型的输入参数
-     * @return array
      */
-    static function Input($model)
+    static function Input($model): array
     {
         $ret = [];
         if ($model == null)
             return $ret;
-        $reflect = self::Annotations($model);
-        $props = $reflect->getPropertiesAnnotations();
-        if ($props) {
-            foreach ($props as $name => $prop) {
-                if (!$prop->has('Api'))
+
+        $decl = self::DeclarationOf($model);
+
+        if ($decl->props) {
+            foreach ($decl->props as $name => $prop) {
+                if (!$prop->input) {
                     continue;
-                $api = $prop->get('Api');
-                if ($api) {
-                    $ops = $api->getArgument(2);
-                    if (!in_array('input', $ops))
-                        continue;
-                    $typs = $api->getArgument(1);
-                    $ret[$name] = self::OutputValue($model->{$name}, isset($typs[0]) ? $typs[0] : NULL, isset($typs[1]) ? $typs[1] : NULL, isset($typs[2]) ? $typs[2] : NULL);
                 }
+                $ret[$name] = self::OutputValue($model->{$name}, $prop);
             }
         }
+
         return $ret;
     }
 
-    /**
-     * @param $ann \Phalcon\Annotations\Annotation
-     */
-    static function GetValue($val, $typ, $styp0, $styp1)
+    protected static function GetValue($val, PropDeclaration $prop)
     {
-        // 定义为[type, subtype, subtype]
-        switch ($typ) {
-            case 'string':
-                return (string)$val;
-            case 'integer':
-                return (int)$val;
-            case 'double':
-                return (double)$val;
-            case 'boolean':
-                return $val !== "false";
-            case 'file':
-                return $val instanceof File ? $val : null;
-            case 'object':
-                return json_decode($val, true);
-            case 'enum':
-                return (int)$val;
-            case 'array':
-                $ret = [];
-                $valtyp = $styp0;
-                foreach (explode(',', $val) as $each) {
-                    $ret[] = self::GetValue($each, $valtyp, null, null);
-                }
-                return $ret;
-            case 'map':
-                $ret = [];
-                $keytyp = $styp0;
-                $valtyp = $styp1;
-                $obj = json_decode($val, true);
-                foreach ($obj as $k => $v) {
-                    $k = self::GetValue($k, $keytyp, null, null);
-                    $v = self::GetValue($v, $valtyp, null, null);
-                    $ret[$k] = $v;
-                }
-                return $ret;
-            default:
-                // 传入了对象
-                $tgt = new $typ();
-                $obj = json_decode($val, true);
-                self::Decode($tgt, $obj);
-                return $tgt;
+        if ($prop->string) {
+            return (string)$val;
         }
+
+        if ($prop->integer || $prop->enum) {
+            return (int)$val;
+        }
+
+        if ($prop->double) {
+            return (double)$val;
+        }
+
+        if ($prop->boolean) {
+            return $val !== "false";
+        }
+
+        if ($prop->file) {
+            return $val instanceof File ? $val : null;
+        }
+
+        if ($prop->object) {
+            return json_decode($val, true);
+        }
+
+        if ($prop->enum) {
+            return (int)$val;
+        }
+
+        if ($prop->array) {
+            if (!is_array($val)) {
+                $val = explode(',', $val);
+            }
+
+            switch ($prop->valtyp) {
+                case 'string':
+                    {
+                        $ret = ArrayT::Convert($val, function ($e) {
+                            return Kernel::ToString($e);
+                        });
+                    }
+                    break;
+                case 'integer':
+                case 'enum':
+                    {
+                        $ret = ArrayT::Convert($val, function ($e) {
+                            return Kernel::ToInt($e);
+                        });
+                    }
+                    break;
+                case 'double':
+                    {
+                        $ret = ArrayT::Convert($val, function ($e) {
+                            return Kernel::ToDouble($e);
+                        });
+                    }
+                    break;
+                case 'boolean':
+                    {
+                        $ret = ArrayT::Convert($val, function ($e) {
+                            return Kernel::ToBoolean($e);
+                        });
+                    }
+                    break;
+                default:
+                    {
+                        $val = Kernel::toJsonObj($val);
+                        $ret = ArrayT::Convert($val, function ($e) use ($prop) {
+                            $t = new $prop->valtyp();
+                            self::Decode($t, $e);
+                            return $t;
+                        });
+                    }
+                    break;
+            }
+            return $ret;
+        }
+
+        if ($prop->map) {
+            switch ($prop->valtyp) {
+                case 'string':
+                    {
+                        $ret = MapT::Convert($val, function ($e) {
+                            return Kernel::ToString($e);
+                        });
+                    }
+                    break;
+                case 'integer':
+                case 'enum':
+                    {
+                        $ret = MapT::Convert($val, function ($e) {
+                            return Kernel::ToInt($e);
+                        });
+                    }
+                    break;
+                case 'double':
+                    {
+                        $ret = MapT::Convert($val, function ($e) {
+                            return Kernel::ToDouble($e);
+                        });
+                    }
+                    break;
+                case 'boolean':
+                    {
+                        $ret = MapT::Convert($val, function ($e) {
+                            return Kernel::ToBoolean($e);
+                        });
+                    }
+                    break;
+                default:
+                    {
+                        $ret = MapT::Convert($val, function ($e) use ($prop) {
+                            $t = new $prop->valtyp();
+                            self::Decode($t, $e);
+                            return $t;
+                        });
+                    }
+                    break;
+            }
+
+            return $ret;
+        }
+
+        if ($prop->filter) {
+            return Filter::ParseString($val);
+        }
+
+        $tgt = new $prop->valtyp;
+        $obj = json_decode($val, true);
+        self::Decode($tgt, $obj);
+        return $tgt;
     }
 
-    protected static function OutputValue($val, $typ, $styp0 = NULL, $styp1 = NULL)
+    protected static function OutputValue($val, PropDeclaration $prop)
     {
-        switch ($typ) {
-            case 'string':
-                return (string)$val;
-            case 'integer':
-                return (int)$val;
-            case 'double':
-                return (double)$val;
-            case 'boolean':
-                return $val ? true : false;
-            case 'array':
-                $arr = [];
-                if ($val) {
-                    foreach ($val as $e) {
-                        $obj = self::OutputValue($e, $styp0);
-                        $arr[] = $obj;
-                    }
-                }
-                return $arr;
-            case 'map':
-                $arr = [];
-                foreach ($val as $k => $v) {
-                    $k = self::OutputValue($k, $styp0);
-                    $v = self::OutputValue($v, $styp1);
-                    $arr[$k] = $v;
-                }
-                return $arr;
-            case 'json':
-                return json_encode($val);
-            case 'object':
-                return $val;
-            case 'enum':
-                return $val;
-            default:
-                return self::Output($val);
+        if ($prop->string) {
+            return (string)$val;
         }
+
+        if ($prop->integer || $prop->enum) {
+            return (int)$val;
+        }
+
+        if ($prop->double) {
+            return (double)$val;
+        }
+
+        if ($prop->boolean) {
+            return $val ? true : false;
+        }
+
+        if ($prop->array) {
+            $arr = [];
+            if ($val) {
+                switch ($prop->valtyp) {
+                    case 'string':
+                        {
+                            $arr = ArrayT::Convert($val, function ($e) {
+                                return Kernel::ToString($e);
+                            });
+                        }
+                        break;
+                    case 'integer':
+                    case 'enum':
+                        {
+                            $arr = ArrayT::Convert($val, function ($e) {
+                                return Kernel::ToInt($e);
+                            });
+                        }
+                        break;
+                    case 'double':
+                        {
+                            $arr = ArrayT::Convert($val, function ($e) {
+                                return Kernel::ToDouble($e);
+                            });
+                        }
+                        break;
+                    case 'boolean':
+                        {
+                            $arr = ArrayT::Convert($val, function ($e) {
+                                return Kernel::ToBoolean($e);
+                            });
+                        }
+                        break;
+                    default:
+                        {
+                            $arr = ArrayT::Convert($val, function ($e) {
+                                return self::Output($e);
+                            });
+                        }
+                        break;
+                }
+            }
+            return $arr;
+        }
+
+        if ($prop->map) {
+            $arr = [];
+            if ($val) {
+                switch ($prop->valtyp) {
+                    case 'string':
+                        {
+                            $arr = MapT::Convert($val, function ($e) {
+                                return Kernel::ToString($e);
+                            });
+                        }
+                        break;
+                    case 'integer':
+                    case 'enum':
+                        {
+                            $arr = MapT::Convert($val, function ($e) {
+                                return Kernel::ToInt($e);
+                            });
+                        }
+                        break;
+                    case 'double':
+                        {
+                            $arr = MapT::Convert($val, function ($e) {
+                                return Kernel::ToDouble($e);
+                            });
+                        }
+                        break;
+                    case 'boolean':
+                        {
+                            $arr = MapT::Convert($val, function ($e) {
+                                return Kernel::ToBoolean($e);
+                            });
+                        }
+                        break;
+                    default:
+                        {
+                            $arr = MapT::Convert($val, function ($e) {
+                                return self::Output($e);
+                            });
+                        }
+                        break;
+                }
+            }
+            return $arr;
+        }
+
+        if ($prop->json) {
+            return json_encode($val);
+        }
+
+        if ($prop->object) {
+            return $val;
+        }
+
+        if ($prop->filter) {
+            return (string)$val;
+        }
+
+        return self::Output($val);
     }
 
     static function CollectParameters(\Phalcon\Http\Request $request)
@@ -494,7 +634,7 @@ class Proto
         return $ret;
     }
 
-    static function LoadClassDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    static function LoadClassDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ModelDeclaration $decl)
     {
         $annClass = $reflect->getClassAnnotations();
         if (!$annClass)
@@ -512,14 +652,10 @@ class Proto
         } else {
             $decl->super = $ops;
         }
-
-        if ($decl->super)
-            $decl->super = self::GetClassName($decl->super);
     }
 
-    static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    static function LoadMembersDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ModelDeclaration $decl)
     {
-        $decl->members = [];
         $annMethods = $reflect->getMethodsAnnotations();
         if (!$annMethods)
             return;
@@ -553,12 +689,14 @@ class Proto
         }
     }
 
-    static function LoadPropsDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ClazzDeclaration $decl)
+    static function LoadPropsDeclarationOf(\Phalcon\Annotations\Reflection $reflect, ModelDeclaration $decl)
     {
-        $decl->props = [];
         $annProps = $reflect->getPropertiesAnnotations();
         if (!$annProps)
             return;
+
+        $super = $decl->super ? self::DeclarationOf($decl->super) : null;
+
         foreach ($annProps as $name => $prop) {
             if (!$prop->has('Api'))
                 continue;
@@ -570,11 +708,18 @@ class Proto
 
             $mem = new PropDeclaration();
             $mem->name = $name;
-            $mem->index = (int)$idx;
             $mem->input = in_array('input', $ops);
             $mem->output = in_array('output', $ops);
             $mem->optional = in_array('optional', $ops);
             $mem->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
+            $mem->index = (int)$idx;
+
+            if ($super) {
+                // 判断是否当前属性位于父类中
+                if (isset($super->props[$name])) {
+                    $mem->index *= Config::MODEL_FIELDS_MAX;
+                }
+            }
 
             switch ($typs[0]) {
                 case 'string':
@@ -591,6 +736,9 @@ class Proto
                     break;
                 case 'file':
                     $mem->file = true;
+                    break;
+                case 'filter':
+                    $mem->filter = true;
                     break;
                 case 'array':
                     $mem->array = true;
@@ -619,26 +767,42 @@ class Proto
     /**
      * 获得model的参数描述
      */
-    static function DeclarationOf($model, $includeClass = true, $includeMembers = true, $includeProps = true): ClazzDeclaration
+    static function DeclarationOf($obj): ModelDeclaration
     {
-        $anns = self::Annotations($model);
-        if (!$anns)
-            return null;
-
-        $ret = new ClazzDeclaration();
-
-        if ($includeClass) {
-            self::LoadClassDeclarationOf($anns, $ret);
+        $clazz = $obj;
+        if (is_object($obj)) {
+            $clazz = get_class($obj);
         }
 
-        if ($includeMembers) {
-            self::LoadMembersDeclarationOf($anns, $ret);
+        // 判断之前有没有解析
+        $ver = Application::$shared->config('version', '0.0.0');
+        $ck = "::nnt::model::proto::$ver::$clazz";
+        $ret = apcu_fetch($ck);
+        if ($ret)
+            return $ret;
+
+        // 生成新的
+        $ttl = Config::Use(5, 5, 60 * 5);
+
+        $reader = new Apcu([
+            'lifetime' => $ttl,
+            'prefix' => "::nnt::proto::$ver"
+        ]);
+
+        try {
+            $ann = $reader->get($clazz);
+        } catch (\Throwable $ex) {
+            throw new \Exception("$clazz 获取Annotaions失败");
         }
 
-        if ($includeProps) {
-            self::LoadPropsDeclarationOf($anns, $ret);
-        }
+        $ret = new ModelDeclaration();
 
+        // 读取描述详细信息
+        self::LoadClassDeclarationOf($ann, $ret);
+        self::LoadMembersDeclarationOf($ann, $ret);
+        self::LoadPropsDeclarationOf($ann, $ret);
+
+        apcu_store($ck, $ret, $ttl);
         return $ret;
     }
 
@@ -688,6 +852,8 @@ class Proto
                 $typ = "any";
             else
                 $typ = "string";
+        } else if ($fp->filter) {
+            $typ = 'string';
         } else if ($fp->json || $fp->object) {
             $typ = "Object";
         } else {
@@ -778,6 +944,8 @@ class Proto
             $deco = "@" . $ns . "enumerate(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         } else if ($fp->file) {
             $deco = "@" . $ns . "file(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->filter) {
+            $deco = "@" . $ns . "filter(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         } else if ($fp->json) {
             $deco = "@" . $ns . "json(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         } else {
@@ -811,6 +979,8 @@ class Proto
             $deco = "@Api(" . $fp->index . ", [enum, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
         } else if ($fp->file) {
             $deco = "@Api(" . $fp->index . ", [file], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+        } else if ($fp->filter) {
+            $deco = "@Api(" . $fp->index . ", [filter], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
         } else if ($fp->json) {
             $deco = "@Api(" . $fp->index . ", [json], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
         } else {
@@ -848,7 +1018,7 @@ spl_autoload_register(function ($classname) {
         }
         $target .= '/' . $ps[$l - 1] . ".php";
         if (!is_file($target)) {
-            echo "没有找到类文件 $target\n";
+            echo "没有找到类文件 $target";
             return false;
         }
     }

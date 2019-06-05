@@ -3,8 +3,8 @@
 namespace Nnt\Util;
 
 use Nnt\Controller\Api;
-use Nnt\Controller\Devops;
-use Nnt\Model\Code;
+use Nnt\Core\Code;
+use Nnt\Core\Devops;
 use Nnt\Model\Proto;
 
 class Doc
@@ -214,12 +214,21 @@ class Apidoc
             else {
                 $clazz = [
                     'name' => $clazzName,
-                    'super' => $decl->super ? $decl->super : "ApiModel",
+                    'super' => $decl->super ? Proto::GetClassName($decl->super) : "ApiModel",
                     'fields' => []
                 ];
+
+                $super = $decl->super ? Proto::DeclarationOf($decl->super) : null;
+
                 foreach ($decl->props as $name => $prop) {
-                    if (!$prop->input && !$prop->output)
+                    if (!$prop->input && !$prop->output) {
                         continue;
+                    }
+
+                    // 如果是父类的属性
+                    if ($super && isset($super->props[$name])) {
+                        continue;
+                    }
 
                     $typ = Proto::FpToTypeDef($prop);
                     if ($opts->php) {

@@ -2,7 +2,9 @@
 
 namespace Nnt\Controller;
 
-use Nnt\Model\Code;
+use Nnt\Core\Code;
+use Nnt\Core\Connector;
+use Nnt\Core\Devops;
 
 /*
 if (!defined('SERVICE_HOST')) {
@@ -94,7 +96,7 @@ class Service
                 $msg = $ret->message;
             else
                 $msg = 'API FAILED';
-            $msg = Devops::GetDomain() . ": " . $msg;
+            $msg = Devops::GetDomain() . "=>$idr: $msg";
             throw new \Exception($msg, $ret->code);
         }
         return $ret->data;

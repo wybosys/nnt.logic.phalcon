@@ -4,23 +4,74 @@ namespace Nnt\Core;
 
 class Kernel
 {
-    public static function UUID(): string
-    {
-        return str_replace("-", "", uuid_create());
-    }
-
-    static function toJsonObj(string $str, $def = null)
+    static function ToString($obj, $def = ''): string
     {
         try {
-            return json_decode($str);
+            return (string)$obj;
         } catch (\Throwable $ex) {
             // pass
         }
         return $def;
     }
 
-    static function toJson($obj, $def = "")
+    static function ToInt($obj, $def = 0): int
     {
+        try {
+            return (int)$obj;
+        } catch (\Throwable $ex) {
+            // pass
+        }
+        return $def;
+    }
+
+    static function ToDouble($obj, $def = 0): float
+    {
+        try {
+            return (float)$obj;
+        } catch (\Throwable $ex) {
+            // pass
+        }
+        return $def;
+    }
+
+    static function ToBoolean($obj, $def = false): bool
+    {
+        if ($obj === 'true')
+            return true;
+        if ($obj === 'false')
+            return false;
+        try {
+            return (bool)$obj;
+        } catch (\Throwable $ex) {
+            // pass
+        }
+        return $def;
+    }
+
+    static function UUID(): string
+    {
+        return str_replace("-", "", uuid_create());
+    }
+
+    static function toJsonObj($str, $def = null, $obj = false)
+    {
+        if (!is_string($str))
+            return $str;
+
+        try {
+            return json_decode($str, $obj);
+        } catch (\Throwable $ex) {
+            // pass
+        }
+
+        return $def;
+    }
+
+    static function toJson($obj, $def = ""): string
+    {
+        if (is_string($obj))
+            return $obj;
+
         try {
             return json_encode($obj);
         } catch (\Throwable $ex) {
@@ -33,7 +84,7 @@ class Kernel
     {
         if (is_dir($path))
             return;
-        if (!@mkdir($path)) {
+        if (!mkdir($path) && !is_dir($path)) {
             echo "创建 $path 失败 ";
             die;
         }

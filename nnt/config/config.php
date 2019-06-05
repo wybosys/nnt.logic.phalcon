@@ -6,7 +6,7 @@ defined('APP_DIR') || define('APP_DIR', dirname(dirname(__DIR__)) . '/');
 
 if (!defined('APP_MODE') || APP_MODE != 'app') {
     // cli等形式访问
-    include_once APP_DIR . "nnt/controller/Config.php";
+    include_once APP_DIR . "nnt/core/Config.php";
 }
 
 // 加载根目录中的配置

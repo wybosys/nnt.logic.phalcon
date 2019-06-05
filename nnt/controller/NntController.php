@@ -1,8 +1,8 @@
 <?php
 
 use Nnt\Controller\Api;
-use Nnt\Controller\Config;
-use Nnt\Controller\Devops;
+use Nnt\Core\Config;
+use Nnt\Core\Devops;
 use Nnt\Util\Apidoc;
 
 class ExportApis

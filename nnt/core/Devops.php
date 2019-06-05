@@ -1,6 +1,6 @@
 <?php
 
-namespace Nnt\Controller;
+namespace Nnt\Core;
 
 use Nnt\Model\Code;
 

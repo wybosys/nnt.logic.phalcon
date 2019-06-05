@@ -1,6 +1,6 @@
 <?php
 
-use \Nnt\Controller\Config;
+use Nnt\Core\Config;
 
 $cfg = [];
 
@@ -28,5 +28,7 @@ $cfg['logic'] = [
 $cfg['webproxy'] = [
     "HOST" => 'webproxy'
 ];
+
+$cfg['version'] = '0.0.1';
 
 return $cfg;
