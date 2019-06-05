@@ -21,13 +21,21 @@ class State
 }
 
 // 和Filter中定义的OPERATORS保持一一对应
-const MYSQL_OPERATORS = ['>', '>=', '=', '!=', '<', '<='];
+const MYSQL_OPERATORS = ['>', '>=', '=', '!=', '<', '<=', 'like'];
 
 class RMysql
 {
     static function ConvertOperator(string $cmp): string
     {
         return MYSQL_OPERATORS[array_search($cmp, OPERATORS)];
+    }
+
+    static function ConvertValue(string $cmp, $val)
+    {
+        if ($cmp === 'search') {
+            return "%$val%";
+        }
+        return $val;
     }
 
     /**
@@ -56,13 +64,14 @@ class RMysql
 
             if ($f->operator !== null && $f->value !== null) {
                 $oper = self::ConvertOperator($f->operator);
+                $val = self::ConvertValue($f->operator, $f->value);
                 if ($state->and) {
                     $q->andWhere("$state->key $oper :$state->key:", [
-                        $state->key => $f->value
+                        $state->key => $val
                     ]);
                 } else {
                     $q->orWhere("$state->key $oper :$state->key:", [
-                        $state->key => $f->value
+                        $state->key => $val
                     ]);
                 }
             }

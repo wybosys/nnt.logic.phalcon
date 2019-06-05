@@ -13,7 +13,7 @@ use Nnt\Core\Kernel;
  */
 
 const KEYWORDS = ['and', 'or'];
-const OPERATORS = ['gt', 'gte', 'eq', 'not', 'lt', 'lte'];
+const OPERATORS = ['gt', 'gte', 'eq', 'not', 'lt', 'lte', 'search'];
 
 class Filter
 {
