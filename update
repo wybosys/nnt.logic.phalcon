@@ -84,9 +84,9 @@ $loader->registerNamespaces([
         $Each = ucfirst($each);
         $dir[] = "    '$Each' => APP_DIR . '$each'";
         if ($each == 'nnt') {
-            $dir[] = "    '$Each\Core' => APP_DIR . '$each\Core'";
-            $dir[] = "    '$Each\Store' => APP_DIR . '$each\Store'";
-            $dir[] = "    '$Each\Sdks' => APP_DIR . '$each\Sdks'";
+            $dir[] = "    '$Each\Core' => APP_DIR . '$each\core'";
+            $dir[] = "    '$Each\Store' => APP_DIR . '$each\store'";
+            $dir[] = "    '$Each\Sdks' => APP_DIR . '$each\sdks'";
         }
         $dir[] = "    '$Each\Db' => APP_DIR . '$each\db'";
         $dir[] = "    '$Each\Model' => APP_DIR . '$each\model'";
