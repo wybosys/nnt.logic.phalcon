@@ -704,7 +704,11 @@ class Proto
             $api = $prop->get('Api');
             $idx = $api->getArgument(0);
             $typs = $api->getArgument(1);
+
             $ops = $api->getArgument(2);
+            if (!is_array($ops)) {
+                continue;
+            }
 
             $mem = new PropDeclaration();
             $mem->name = $name;
@@ -754,8 +758,10 @@ class Proto
                     $mem->enum = true;
                     $mem->valtyp = $typs[1];
                     break;
-                default:
+                case 'object':
                     $mem->object = true;
+                    break;
+                default:
                     $mem->valtyp = $typs[0];
                     break;
             }
