@@ -303,22 +303,20 @@ class Proto
     /**
      * 输出模型的数据到基本对象
      */
-    static function Output($model, $def = [])
+    static function Output($model)
     {
+        $ret = [];
         if ($model == null)
-            return $def;
+            return $ret;
 
         $decl = self::DeclarationOf($model);
 
-        $ret = [];
         if ($decl->props) {
             foreach ($decl->props as $name => $prop) {
                 if (!$prop->output) {
                     continue;
                 }
-                $val = self::OutputValue($model->{$name}, $prop);
-                if ($val !== null)
-                    $ret[$name] = $val;
+                $ret[$name] = self::OutputValue($model->{$name}, $prop);
             }
         }
 
@@ -603,7 +601,10 @@ class Proto
         }
 
         if ($prop->type) {
-            return self::Output($val, null);
+            if (!($val instanceof $prop->valtyp)) {
+                throw new \Exception("$prop->name 不是 $prop->valtyp 类型", Code::FAILED);
+            }
+            return self::Output($val);
         }
 
         return self::Output($val);
@@ -776,13 +777,15 @@ class Proto
                 case 'type':
                     $mem->type = true;
                     $mem->valtyp = $typs[0];
-                    $decl = self::DeclarationOf($mem->valtyp);
-                    if ($decl)
-                        throw new \Exception("$mem->valtyp 获取Annotaions失败", Code::FAILED);
+                    self::DeclarationOf($mem->valtyp);
                     break;
                 default:
                     $mem->valtyp = $typs[0];
-                    $decl = self::DeclarationOf($mem->valtyp);
+                    try {
+                        $decl = self::DeclarationOf($mem->valtyp);
+                    } catch (\Throwable $ex) {
+                        // pass
+                    };
                     $mem->type = $decl != null;
                     break;
             }
@@ -820,8 +823,7 @@ class Proto
         try {
             $ann = $reader->get($clazz);
         } catch (\Throwable $ex) {
-            // throw new \Exception("$clazz 获取Annotaions失败");
-            return null;
+            throw new \Exception("$clazz 获取Annotaions失败");
         }
 
         $ret = new ModelDeclaration();
