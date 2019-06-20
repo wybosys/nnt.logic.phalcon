@@ -189,6 +189,11 @@ class PropDeclaration
     public $json;
 
     /**
+     * @var boolean
+     */
+    public $type;
+
+    /**
      *
      * @var string
      */
@@ -313,7 +318,7 @@ class Proto
                 }
                 $val = self::OutputValue($model->{$name}, $prop);
                 if ($val !== null)
-                	$ret[$name] = $val;
+                    $ret[$name] = $val;
             }
         }
 
@@ -596,12 +601,11 @@ class Proto
         if ($prop->filter) {
             return (string)$val;
         }
-        
-        $decl = self::DeclarationOf ($prop->valtyp);
-        if ($decl) {
-        	return self::Output ($val, null);
-		}
-		
+
+        if ($prop->type) {
+            return self::Output($val, null);
+        }
+
         return self::Output($val);
     }
 
@@ -769,8 +773,17 @@ class Proto
                 case 'object':
                     $mem->object = true;
                     break;
+                case 'type':
+                    $mem->type = true;
+                    $mem->valtyp = $typs[0];
+                    $decl = self::DeclarationOf($mem->valtyp);
+                    if ($decl)
+                        throw new \Exception("$mem->valtyp 获取Annotaions失败", Code::FAILED);
+                    break;
                 default:
                     $mem->valtyp = $typs[0];
+                    $decl = self::DeclarationOf($mem->valtyp);
+                    $mem->type = $decl != null;
                     break;
             }
 
@@ -780,7 +793,7 @@ class Proto
 
     /**
      * 获得model的参数描述
-	 * @return \Nnt\Model\ModelDeclaration
+     * @return \Nnt\Model\ModelDeclaration
      */
     static function DeclarationOf($obj)
     {
@@ -808,7 +821,7 @@ class Proto
             $ann = $reader->get($clazz);
         } catch (\Throwable $ex) {
             // throw new \Exception("$clazz 获取Annotaions失败");
-			return null;
+            return null;
         }
 
         $ret = new ModelDeclaration();
