@@ -303,7 +303,7 @@ class Proto
     /**
      * 输出模型的数据到基本对象
      */
-    static function Output($model)
+    static function Output($model): array
     {
         $ret = [];
         if ($model == null)
@@ -796,9 +796,8 @@ class Proto
 
     /**
      * 获得model的参数描述
-     * @return \Nnt\Model\ModelDeclaration
      */
-    static function DeclarationOf($obj)
+    static function DeclarationOf($obj): ModelDeclaration
     {
         $clazz = $obj;
         if (is_object($obj)) {
