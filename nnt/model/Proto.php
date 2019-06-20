@@ -11,6 +11,7 @@ use Nnt\Core\MapT;
 use Nnt\Store\Filter;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
+use phpDocumentor\Reflection\Types\Null_;
 
 class ModelDeclaration
 {
@@ -297,20 +298,22 @@ class Proto
     /**
      * 输出模型的数据到基本对象
      */
-    static function Output($model): array
+    static function Output($model, $def = [])
     {
-        $ret = [];
         if ($model == null)
-            return $ret;
+            return $def;
 
         $decl = self::DeclarationOf($model);
 
+        $ret = [];
         if ($decl->props) {
             foreach ($decl->props as $name => $prop) {
                 if (!$prop->output) {
                     continue;
                 }
-                $ret[$name] = self::OutputValue($model->{$name}, $prop);
+                $val = self::OutputValue($model->{$name}, $prop);
+                if ($val !== null)
+                	$ret[$name] = $val;
             }
         }
 
@@ -593,7 +596,12 @@ class Proto
         if ($prop->filter) {
             return (string)$val;
         }
-
+        
+        $decl = self::DeclarationOf ($prop->valtyp);
+        if ($decl) {
+        	return self::Output ($val, null);
+		}
+		
         return self::Output($val);
     }
 
@@ -772,8 +780,9 @@ class Proto
 
     /**
      * 获得model的参数描述
+	 * @return \Nnt\Model\ModelDeclaration
      */
-    static function DeclarationOf($obj): ModelDeclaration
+    static function DeclarationOf($obj)
     {
         $clazz = $obj;
         if (is_object($obj)) {
@@ -798,7 +807,8 @@ class Proto
         try {
             $ann = $reader->get($clazz);
         } catch (\Throwable $ex) {
-            throw new \Exception("$clazz 获取Annotaions失败");
+            // throw new \Exception("$clazz 获取Annotaions失败");
+			return null;
         }
 
         $ret = new ModelDeclaration();
