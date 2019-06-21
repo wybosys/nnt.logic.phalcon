@@ -11,7 +11,6 @@ use Nnt\Core\MapT;
 use Nnt\Store\Filter;
 use Phalcon\Annotations\Adapter\Apcu;
 use Phalcon\Http\Request\File;
-use phpDocumentor\Reflection\Types\Null_;
 
 class ModelDeclaration
 {
