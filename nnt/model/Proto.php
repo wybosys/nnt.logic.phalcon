@@ -601,7 +601,13 @@ class Proto
 
         if ($prop->type) {
             if (!($val instanceof $prop->valtyp)) {
-                throw new \Exception("$prop->name 不是 $prop->valtyp 类型", Code::FAILED);
+                if (is_object($val)) {
+                    // 如果设置的是对象，则代表业务代码中赋值了一个错误的数据类型
+                    throw new \Exception("$prop->name 不是 $prop->valtyp 类型", Code::FAILED);
+                } else {
+                    // 常见的，model设置为数据库对象，但数据库findfirst返回的是false，所以可以直接返回null代表没有查找到对象
+                    return null;
+                }
             }
             return self::Output($val);
         }
