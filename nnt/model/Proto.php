@@ -782,11 +782,10 @@ class Proto
                 default:
                     $mem->valtyp = $typs[0];
                     try {
-                        $decl = self::DeclarationOf($mem->valtyp);
+                        $mem->type = self::DeclarationOf($mem->valtyp) != null;
                     } catch (\Throwable $ex) {
                         // pass
                     };
-                    $mem->type = $decl != null;
                     break;
             }
 
