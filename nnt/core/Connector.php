@@ -158,6 +158,7 @@ class Connector
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, $this->full ? 1 : 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
         // 处理post
         if ($this->method == self::METHOD_POST) {
@@ -180,10 +181,11 @@ class Connector
             }
         }
 
-        if (!$this->_ua || $this->_ua == 'unknown')
+        if (!$this->_ua || $this->_ua == 'unknown') {
             curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux) AppleWebKit/600.1.4 (KHTML, like Gecko) NetType/WIFI');
-        else
+        } else {
             curl_setopt($ch, CURLOPT_USERAGENT, $this->_ua);
+        }
 
         if ($this->_headers) {
             $reqheaders = [];
@@ -193,8 +195,9 @@ class Connector
             curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
         }
 
-        if ($this->_proxy)
+        if ($this->_proxy) {
             curl_setopt($ch, CURLOPT_PROXY, $this->_proxy);
+        }
 
         // 解决curl卡顿的问题
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
