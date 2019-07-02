@@ -13,6 +13,6 @@ class Application extends \Nnt\Controller\Application
 
     function signature($params): bool
     {
-        return true;
+        var_dump($params);die;
     }
 }
