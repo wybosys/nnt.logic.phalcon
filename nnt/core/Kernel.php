@@ -205,7 +205,7 @@ class Array2xml
     private $newTab = "\t";
     private $numericTagPrefix = 'key';
     private $skipNumeric = TRUE;
-    private $_tabulation = TRUE;            //TODO
+    private $_tabulation = TRUE;
     private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
     private $rawKeys = array();
     private $emptyElementSyntax = 1;
