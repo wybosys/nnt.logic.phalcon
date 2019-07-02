@@ -474,4 +474,16 @@ class Api extends Controller
 
         return $r;
     }
+
+    // 去除参数表中的约定参数
+    static function FilterInputParams($params)
+    {
+        $r = [];
+        foreach ($params as $k => $v) {
+            if ($k[0] == '_' || $k == 'action')
+                continue;
+            $r[$k] = $v;
+        }
+        return $r;
+    }
 }

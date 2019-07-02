@@ -2,6 +2,7 @@
 
 namespace Test\Controller;
 
+use Nnt\Controller\Api;
 use Test\Model\User;
 
 class Application extends \Nnt\Controller\Application
@@ -13,6 +14,8 @@ class Application extends \Nnt\Controller\Application
 
     function signature($params): bool
     {
-        var_dump($params);die;
+        $inputs = Api::FilterInputParams($params);
+        var_dump($inputs);
+        die;
     }
 }
