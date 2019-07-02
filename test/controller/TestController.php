@@ -5,8 +5,6 @@ use Nnt\Controller\Rest;
 use Nnt\Controller\Service;
 use Nnt\Core\Code;
 
-@include_once MODULE_DIR . "/logic/framework-phalcon-api.php";
-
 class TestController extends Api
 {
     /**
@@ -29,7 +27,7 @@ class TestController extends Api
     function echo(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
-        $mdl->status = Code::EXCEPTION;
+        $mdl->status = random_int(0, 1000);
     }
 
     /**
