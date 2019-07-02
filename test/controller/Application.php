@@ -10,4 +10,9 @@ class Application extends \Nnt\Controller\Application
     {
         $this->di->setShared('user', new User());
     }
+
+    function signature($params): bool
+    {
+        return true;
+    }
 }
