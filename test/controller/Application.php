@@ -3,6 +3,7 @@
 namespace Test\Controller;
 
 use Nnt\Controller\Api;
+use Nnt\Core\UrlT;
 use Test\Model\User;
 
 class Application extends \Nnt\Controller\Application
@@ -15,7 +16,8 @@ class Application extends \Nnt\Controller\Application
     function signature($params): bool
     {
         $inputs = Api::FilterInputParams($params);
-        var_dump($inputs);
-        die;
+        $sign1 = @$params['_sign'];
+        $sign2 = md5(UrlT::Encode($inputs) . '12345');
+        return $sign1 == $sign2;
     }
 }
