@@ -182,21 +182,41 @@ class Api extends Controller
                     return;
                 }
 
-                // 使用permission规则
-                if (!isset($params[Devops::KEY_PERMISSIONID])) {
+                // 如果传递了permission则使用permission规则
+                if (isset($params[Devops::KEY_PERMISSIONID])) {
+                    // 检查是否满足去中心化的服务端ID登记
+                    $permid = $params[Devops::KEY_PERMISSIONID];
+                    if (!Devops::PermissionLocate($permid)) {
+                        $this->log(Code::PERMISSION_FAILED);
+                        echo json_encode([
+                            'code' => Code::PERMISSION_FAILED,
+                            'error' => '授权信息错误'
+                        ]);
+                        return;
+                    }
+                } else if ($info->signature) {
+                    // 是否满足签名提供的额外安全保障
+                    try {
+                        if (!Application::$shared->signature($params)) {
+                            echo json_encode([
+                                'code' => Code::SIGNATURE_ERROR,
+                                'error' => '签名校验失败'
+                            ]);
+                            return;
+                        }
+                    } catch (\Throwable $err) {
+                        echo json_encode([
+                            'code' => Code::SIGNATURE_ERROR,
+                            'error' => $err
+                        ]);
+                        return;
+                    }
+                } else {
+                    // 都不满足
                     $this->log(Code::PERMISSION_FAILED);
                     echo json_encode([
                         'code' => Code::PERMISSION_FAILED,
                         'error' => '丢失授权信息'
-                    ]);
-                    return;
-                }
-                $permid = $params[Devops::KEY_PERMISSIONID];
-                if (!Devops::PermissionLocate($permid)) {
-                    $this->log(Code::PERMISSION_FAILED);
-                    echo json_encode([
-                        'code' => Code::PERMISSION_FAILED,
-                        'error' => '授权信息错误'
                     ]);
                     return;
                 }

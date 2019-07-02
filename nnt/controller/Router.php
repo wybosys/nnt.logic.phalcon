@@ -44,6 +44,11 @@ class ActionDeclaration
     public $expose = false;
 
     /**
+     * @var bool 是否支持签名验证
+     */
+    public $signature = false;
+
+    /**
      * @var bool 是否使用缓存
      */
     public $cache = false;
@@ -88,6 +93,8 @@ function LoadActionAnnotation(ActionDeclaration $decl, \Phalcon\Annotations\Anno
                 $decl->export = false;
             } else if ($e == 'expose') {
                 $decl->expose = true;
+            } else if ($e == 'signature') {
+                $decl->signature = true;
             } else if (strpos($e, 'cache') !== false) {
                 if (preg_match('/cache_(\d+)/', $e, $res) === false)
                     throw new \Exception("缓存配置错误");

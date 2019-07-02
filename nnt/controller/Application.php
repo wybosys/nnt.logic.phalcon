@@ -71,4 +71,10 @@ class Application extends \Phalcon\Mvc\Application
     {
         // pass
     }
+
+    // 统一检查是否符合签名规则
+    function signature($params): bool
+    {
+        return false;
+    }
 }
