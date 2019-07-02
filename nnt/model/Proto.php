@@ -55,55 +55,36 @@ class ModelDeclaration
 class MemberDeclaration
 {
     /**
-     *
      * @var string
      */
     public $name;
 
     /**
-     *
      * @var string
      */
     public $model;
 
     /**
-     *
-     * @var boolean
-     */
-    public $optional;
-
-    /**
-     *
-     * @var boolean
-     */
-    public $input;
-
-    /**
-     *
-     * @var boolean
-     */
-    public $output;
-
-    /**
-     *
      * @var boolean
      */
     public $noauth;
 
     /**
-     *
      * @var boolean
      */
     public $noexport;
 
     /**
-     *
      * @var boolean
      */
     public $expose;
 
     /**
-     *
+     * @var boolean
+     */
+    public $signature;
+
+    /**
      * @var string
      */
     public $comment = '';
@@ -694,12 +675,11 @@ class Proto
             if (is_string($ops)) {
                 $mem->comment = $ops;
             } else {
-                $mem->input = in_array('input', $ops);
-                $mem->output = in_array('output', $ops);
                 $mem->optional = in_array('optional', $ops);
                 $mem->noauth = in_array('noauth', $ops);
                 $mem->noexport = in_array('noexport', $ops);
                 $mem->expose = in_array('expose', $ops);
+                $mem->signature = in_array('signature', $ops);
                 $mem->comment = $action->getArgument(2);
             }
 
