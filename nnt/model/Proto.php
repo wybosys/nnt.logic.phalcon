@@ -332,6 +332,10 @@ class Proto
             return (string)$val;
         }
 
+        if ($prop->json) {
+            return Kernel::toJson($val);
+        }
+
         if ($prop->integer || $prop->enum) {
             return (int)$val;
         }
@@ -466,6 +470,10 @@ class Proto
             return (string)$val;
         }
 
+        if ($prop->json) {
+            return Kernel::toJson($val);
+        }
+
         if ($prop->integer || $prop->enum) {
             return (int)$val;
         }
@@ -566,10 +574,6 @@ class Proto
                 }
             }
             return $arr;
-        }
-
-        if ($prop->json) {
-            return json_encode($val);
         }
 
         if ($prop->object) {
@@ -727,6 +731,9 @@ class Proto
                 case 'string':
                     $mem->string = true;
                     break;
+                case 'json':
+                    $mem->json = true;
+                    break;
                 case 'integer':
                     $mem->integer = true;
                     break;
@@ -830,6 +837,8 @@ class Proto
     {
         if ($fp->string) {
             $typ = "string";
+        } else if ($fp->json) {
+            $typ = "IndexedObject";
         } else if ($fp->integer) {
             $typ = "number";
         } else if ($fp->double) {
@@ -942,6 +951,8 @@ class Proto
         $deco = null;
         if ($fp->string)
             $deco = "@" . $ns . "string(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+        else if ($fp->json)
+            $deco = "@" . $ns . "json(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         else if ($fp->integer)
             $deco = "@" . $ns . "integer(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
         else if ($fp->double)
