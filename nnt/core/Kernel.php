@@ -55,6 +55,9 @@ class Kernel
 
     static function toJsonObj($str, $def = null, $obj = false)
     {
+        if ($str == null)
+            return $def;
+
         if (!is_string($str))
             return $str;
 
@@ -69,6 +72,9 @@ class Kernel
 
     static function toJson($obj, $def = ""): string
     {
+        if ($obj == null)
+            return $def;
+
         if (is_string($obj))
             return $obj;
 
