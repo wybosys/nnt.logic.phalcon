@@ -410,13 +410,18 @@ class Api extends Controller
     {
         if (is_string($codeOrMsg)) {
             $typ = \Phalcon\Logger::INFO;
-            $code = \Nnt\Model\Code::OK;
-            $data = $codeOrMsg;
+            $data = [
+                "m" => $codeOrMsg,
+                "c" => Code::OK
+            ];
         } else {
             $code = $codeOrMsg;
             if (is_string($msg)) {
                 $typ = \Phalcon\Logger::INFO;
-                $data = $msg;
+                $data = [
+                    "m" => $msg,
+                    "c" => Code::OK
+                ];
             } else if ($msg instanceof \Exception) {
                 $typ = \Phalcon\Logger::CRITICAL;
                 $data = [
@@ -441,11 +446,8 @@ class Api extends Controller
             }
         }
 
-        $data = [
-            'client' => $this->clientIp(),
-            'code' => $code,
-            'msg' => $data
-        ];
+        // 请求的客户端ip
+        $data['cip'] = $this->clientIp();
 
         Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }
