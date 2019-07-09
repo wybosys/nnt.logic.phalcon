@@ -4,6 +4,7 @@ use Nnt\Controller\Api;
 use Nnt\Controller\Rest;
 use Nnt\Controller\Service;
 use Nnt\Core\Code;
+use Nnt\Core\Log;
 
 class TestController extends Api
 {
@@ -82,8 +83,10 @@ class TestController extends Api
     function mklog(\Test\Model\Log $mdl)
     {
         $this->log("mklog");
-        $this->log(\Nnt\Model\Code::OK, $mdl->msg);
-        \Nnt\Controller\Log::log($mdl->type, $mdl->msg);
+        $this->log(Code::OK, $mdl->msg);
+        if (!$mdl->type)
+            $mdl->type = 0;
+        Log::log($mdl->type, $mdl->msg);
     }
 
     /**
@@ -124,7 +127,7 @@ class TestController extends Api
         if (apcu_exists($mdl->input)) {
             $mdl->output = apcu_fetch($mdl->input);
         } else {
-            throw new \Exception("不存在", \Nnt\Model\Code::TARGET_NOT_FOUND);
+            throw new \Exception("不存在", Code::TARGET_NOT_FOUND);
         }
     }
 
