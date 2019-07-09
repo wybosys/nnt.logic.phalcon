@@ -450,6 +450,8 @@ class Api extends Controller
         // 请求的客户端ip
         $data['p'] = $this->clientIp();
         $data['t'] = DatetimeT::Now();
+        if ($project = getenv('PROJECT'))
+            $data['o'] = $project;
 
         Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }
