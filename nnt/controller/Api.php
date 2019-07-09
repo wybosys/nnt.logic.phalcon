@@ -5,6 +5,7 @@ namespace Nnt\Controller;
 use Nnt\Core\Code;
 use Nnt\Core\Config;
 use Nnt\Core\Connector;
+use Nnt\Core\DatetimeT;
 use Nnt\Core\Devops;
 use Nnt\Core\Kernel;
 use Nnt\Core\Log;
@@ -447,7 +448,8 @@ class Api extends Controller
         }
 
         // 请求的客户端ip
-        $data['cip'] = $this->clientIp();
+        $data['p'] = $this->clientIp();
+        $data['t'] = DatetimeT::Now();
 
         Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }
