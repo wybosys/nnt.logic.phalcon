@@ -8,17 +8,17 @@ define('APP_DIR', dirname(__DIR__) . '/');
 
 $loader = new Loader();
 $loader->registerNamespaces([
-    'Test' => APP_DIR . 'test',
-    'Test\Db' => APP_DIR . 'test/db',
-    'Test\Model' => APP_DIR . 'test/model',
-    'Test\Controller' => APP_DIR . 'test/controller',
     'Nnt' => APP_DIR . 'nnt',
     'Nnt\Core' => APP_DIR . 'nnt/core',
     'Nnt\Store' => APP_DIR . 'nnt/store',
     'Nnt\Sdks' => APP_DIR . 'nnt/sdks',
     'Nnt\Db' => APP_DIR . 'nnt/db',
     'Nnt\Model' => APP_DIR . 'nnt/model',
-    'Nnt\Controller' => APP_DIR . 'nnt/controller'
+    'Nnt\Controller' => APP_DIR . 'nnt/controller',
+    'Test' => APP_DIR . 'test',
+    'Test\Db' => APP_DIR . 'test/db',
+    'Test\Model' => APP_DIR . 'test/model',
+    'Test\Controller' => APP_DIR . 'test/controller'
 ]);
 
 $loader->registerDirs([
