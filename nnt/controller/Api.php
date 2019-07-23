@@ -364,6 +364,7 @@ class Api extends Controller
     {
         if ($this->_clientip)
             return $this->_clientip;
+
         // 先抓取docker-swarm特定的ip
         if ($this->request->hasHeader('http_x_forwarded_for')) {
             $this->_clientip = $this->request->getHeader('http_x_forwarded_for');
@@ -381,7 +382,7 @@ class Api extends Controller
         }
 
         // clientip 会返回多个
-        $this->_clientip = explode(',', $this->_clientip, 2)[0];
+        $this->_clientip = explode(',', $this->_clientip)[0];
         return $this->_clientip;
     }
 

@@ -333,7 +333,7 @@ class Proto
         }
 
         if ($prop->json) {
-            return Kernel::toJson($val);
+            return Kernel::toJsonObj($val);
         }
 
         if ($prop->integer || $prop->enum) {
@@ -353,7 +353,7 @@ class Proto
         }
 
         if ($prop->object) {
-            return json_decode($val, true);
+            return Kernel::toJsonObj($val, null, true);
         }
 
         if ($prop->enum) {

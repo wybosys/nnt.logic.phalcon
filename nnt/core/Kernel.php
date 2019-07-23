@@ -53,7 +53,7 @@ class Kernel
         return str_replace("-", "", uuid_create());
     }
 
-    static function toJsonObj($str, $def = null, $obj = false)
+    static function toJsonObj($str, $def = null, $arr = false)
     {
         if ($str == null)
             return $def;
@@ -62,7 +62,7 @@ class Kernel
             return $str;
 
         try {
-            return json_decode($str, $obj);
+            return json_decode($str, $arr);
         } catch (\Throwable $ex) {
             // pass
         }
