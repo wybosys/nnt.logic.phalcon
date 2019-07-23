@@ -9,6 +9,12 @@ class Connector
     const METHOD_GET = 0;
     const METHOD_POST = 1;
 
+    // http验证
+    const OPTION_AUTH = '::nnt::connector::auth'; // value = ['Method', 'Content'] 如果只传了 'Content' 则默认 Method 为 Basic
+
+    // 代理服务器
+    const OPTION_PROXY = '::nnt::connector::proxy';
+
     public function __construct($url = '')
     {
         $this->url = $url;
@@ -25,8 +31,36 @@ class Connector
      */
     function args($args)
     {
-        if ($args)
-            $this->_args = array_merge($this->_args, $args);
+        if (!$args) {
+            return;
+        }
+
+        // 设置了授权信息
+        if (isset($args[self::OPTION_AUTH])) {
+            $v = $args[self::OPTION_AUTH];
+            unset($args[self::OPTION_AUTH]);
+
+            if (is_string($v)) {
+                // 如果是basic格式，需要对值进行base64编码
+                $this->auth = 'Basic';
+                $this->userpwd = base64_encode($v);
+            } else {
+                $this->auth = $v[0];
+                $this->userpwd = $v[1];
+                if ($this->auth === 'Basic') {
+                    $this->userpwd = base64_encode($v[1]);
+                }
+                // 其他格式暂不处理
+            }
+        }
+
+        // 设置了代理
+        if (isset($args[self::OPTION_PROXY])) {
+            $this->proxy($args[self::OPTION_PROXY]);
+            unset($args[self::OPTION_PROXY]);
+        }
+
+        $this->_args = array_merge($this->_args, $args);
     }
 
     /**
@@ -42,8 +76,12 @@ class Connector
      */
     function headers($headers)
     {
-        if ($headers)
-            $this->_headers = array_merge($this->_headers, $headers);
+        if (!$headers) {
+            return;
+        }
+
+        // 合并头
+        $this->_headers = array_merge($this->_headers, $headers);
     }
 
     /**
@@ -91,6 +129,12 @@ class Connector
             }
         }
     }
+
+    // auth方法
+    public $auth;
+
+    // auth内容
+    public $userpwd;
 
     // 是否是json请求
     public $json;
@@ -187,16 +231,29 @@ class Connector
             curl_setopt($ch, CURLOPT_USERAGENT, $this->_ua);
         }
 
+        // 收集请求头
+        $reqheaders = [];
+
+        // 设置验证等信息
+        if ($this->auth) {
+            $reqheaders[] = "Authorization: $this->auth $this->userpwd";
+        }
+
+        // 处理自定义头
         if ($this->_headers) {
-            $reqheaders = [];
             foreach ($this->_headers as $k => $v) {
                 $reqheaders[] = $k . ': ' . $v;
             }
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
         }
 
+        // 设置请求代理
         if ($this->_proxy) {
             curl_setopt($ch, CURLOPT_PROXY, $this->_proxy);
+        }
+
+        // 设置请求头
+        if ($reqheaders) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
         }
 
         // 解决curl卡顿的问题

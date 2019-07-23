@@ -17,6 +17,13 @@ class Service
     /**
      * 直接访问URL
      * @proxy 传递在app.php中配置的代理配置名称
+     * @param string $url 请求的地址
+     * @param array $args 输入参数，支持使用Connector预定义的Key做到同时传递配置
+     * @param bool $get GET/POST
+     * @param bool $json 是否是JSONrpc请求
+     * @param array $headers 头信息
+     * @param string $proxy 代理信息
+     * @return string 原始数据
      */
     static function DirectGet(string $url, array $args, $get = true, $json = false, array $headers = null, string $proxy = null)
     {
@@ -104,6 +111,10 @@ class Service
 
     /**
      * 服务间调用
+     * @param string $idr 服务的标记
+     * @param array $args 数据
+     * @param array $files 文件
+     * @return mixed
      */
     static function Get(string $idr, array $args, array $files = null)
     {

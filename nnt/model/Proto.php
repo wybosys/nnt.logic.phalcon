@@ -678,7 +678,7 @@ class Proto
             $ops = $action->getArgument(1);
             if (is_string($ops)) {
                 $mem->comment = $ops;
-            } else {
+            } else if (is_array($ops)) {
                 $mem->optional = in_array('optional', $ops);
                 $mem->noauth = in_array('noauth', $ops);
                 $mem->noexport = in_array('noexport', $ops);

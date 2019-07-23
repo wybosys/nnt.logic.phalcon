@@ -3,6 +3,7 @@
 namespace Nnt\Controller;
 
 use Nnt\Core\Config;
+use Nnt\Model\Proto;
 use Nnt\Store\Cache;
 use Phalcon\Annotations\Adapter\Apcu;
 
@@ -81,23 +82,34 @@ class ActionDeclaration
 
 function LoadActionAnnotation(ActionDeclaration $decl, \Phalcon\Annotations\Annotation $ann)
 {
+    // 获得动作使用的类对象
     $decl->model = $ann->getArgument(0);
+    // 根据模型的定义设置动作属性
+    if ($decl->model) {
+        $cls = Proto::DeclarationOf($decl->model);
+        $decl->needauth = !$cls->noauth;
+    }
+
+    // 处理动作属性
     $tmp = $ann->getArgument(1);
     if (is_string($tmp)) {
         $decl->comment = $tmp;
     } else if (is_array($tmp)) {
         foreach ($tmp as $e) {
-            if ($e == 'noauth') {
+            if ($e === 'noauth') {
                 $decl->needauth = false;
-            } else if ($e == 'noexport') {
+            } else if ($e === 'auth') {
+                $decl->needauth = true;
+            } else if ($e === 'noexport') {
                 $decl->export = false;
-            } else if ($e == 'expose') {
+            } else if ($e === 'expose') {
                 $decl->expose = true;
-            } else if ($e == 'signature') {
+            } else if ($e === 'signature') {
                 $decl->signature = true;
             } else if (strpos($e, 'cache') !== false) {
-                if (preg_match('/cache_(\d+)/', $e, $res) === false)
+                if (preg_match('/cache_(\d+)/', $e, $res) === false) {
                     throw new \Exception("缓存配置错误");
+                }
                 $decl->cache = true;
                 $decl->ttl = (int)$res[1];
             }
@@ -132,8 +144,9 @@ function LoadActionAnnotation(ActionDeclaration $decl, \Phalcon\Annotations\Anno
     }
 
     // 如果打开了cache，但是当前全局不支持cache，自动关闭
-    if ($decl->cache && !Cache::IsEnabled())
+    if ($decl->cache && !Cache::IsEnabled()) {
         $decl->cache = false;
+    }
 }
 
 class Router
@@ -166,6 +179,7 @@ class Router
             throw new \Exception("$clazz 获取Annotaions失败");
         }
 
+        // 获取动作函数的标注
         $methods = $ann->getMethodsAnnotations();
         if ($methods) {
             if (array_key_exists($actnm, $methods)) {
