@@ -17,7 +17,7 @@ class Echoo
     public $output;
 
     /**
-     * @Api(3, [enum, \Nnt\Model\Code], [output], "状态")
+     * @Api(3, [enum, \Nnt\Core\Code], [output], "状态")
      */
     public $status;
 }

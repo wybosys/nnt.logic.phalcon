@@ -2,8 +2,6 @@
 
 namespace Nnt\Core;
 
-use Nnt\Model\Code;
-
 class Devops
 {
     const KEY_PERMISSIONTIME = "_permission_time";
