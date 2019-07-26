@@ -4,6 +4,10 @@ namespace Nnt\Core;
 
 class Kernel
 {
+    // php单线程的特性，可以提供获得最近一次错误信息的功能
+    static $LastErrorCode = 0;
+    static $LastErrorMessage = '';
+
     static function ToString($obj, $def = ''): string
     {
         try {

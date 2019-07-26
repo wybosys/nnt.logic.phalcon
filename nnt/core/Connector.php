@@ -260,6 +260,10 @@ class Connector
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
         $this->_response = curl_exec($ch);
+        if ($this->_response === false) {
+            $this->errno = Kernel::$LastErrorCode = curl_errno($ch);
+            $this->errmsg = Kernel::$LastErrorMessage = curl_error($ch);
+        }
 
         if ($this->full) {
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -270,13 +274,17 @@ class Connector
         }
 
         // 发送结束自动关闭
-        curl_close($ch);
+        @curl_close($ch);
 
         return $this->body;
     }
 
     // 返回的内容
     private $_response;
+
+    // 如果请求错误，保存错误信息
+    public $errno = 0;
+    public $errmsg = '';
 
     // 返回的消息主体
     public $body;
