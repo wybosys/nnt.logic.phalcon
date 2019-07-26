@@ -249,6 +249,7 @@ class Connector
         // 设置请求代理
         if ($this->_proxy) {
             curl_setopt($ch, CURLOPT_PROXY, $this->_proxy);
+            curl_setopt($ch, CURLOPT_PROXYPORT, 80);
         }
 
         // 设置请求头
