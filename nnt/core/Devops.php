@@ -29,7 +29,11 @@ class Devops
         }
 
         $file = APP_DIR . '/run/permission.cfg';
-        if (!file_exists($file)) {
+        $retrys = 5;
+        while (!($has = file_exists($file)) && $retrys--) {
+            sleep(1);
+        }
+        if (!$has) {
             throw new \Exception("没有找到文件 $file", Code::PERMISSION_FAILED);
         }
 
