@@ -81,7 +81,6 @@ class Api extends Controller
                     'code' => Code::EXCEPTION,
                     'error' => $ex->getMessage()
                 ]);
-                throw $ex;
             } else {
                 $this->log($code, $ex->getMessage());
                 echo json_encode([
@@ -318,7 +317,6 @@ class Api extends Controller
                     'code' => Code::EXCEPTION,
                     'error' => $ex->getMessage()
                 ]);
-                throw $ex;
             } else {
                 $this->log($code, $ex->getMessage());
                 echo json_encode([
