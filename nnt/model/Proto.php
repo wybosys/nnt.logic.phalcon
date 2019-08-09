@@ -131,6 +131,11 @@ class PropDeclaration
     /**
      * @var boolean
      */
+    public $raw;
+
+    /**
+     * @var boolean
+     */
     public $enum;
 
     /**
@@ -345,7 +350,7 @@ class Proto
         }
 
         if ($prop->boolean) {
-            return $val !== "false";
+            return $val !== 'false';
         }
 
         if ($prop->file) {
@@ -358,6 +363,10 @@ class Proto
 
         if ($prop->enum) {
             return (int)$val;
+        }
+
+        if ($prop->raw) {
+            return $val;
         }
 
         if ($prop->array) {
@@ -484,6 +493,10 @@ class Proto
 
         if ($prop->boolean) {
             return $val ? true : false;
+        }
+
+        if ($prop->raw) {
+            return $val;
         }
 
         if ($prop->array) {
@@ -669,7 +682,7 @@ class Proto
             $action = $method->get('Action');
             $model = $action->getArgument(0);
             if ($model == null)
-                $model = "\Nnt\Model\Nil";
+                $model = '\Nnt\Model\Nil';
 
             $mem = new MemberDeclaration();
             $mem->name = $name;
@@ -717,7 +730,7 @@ class Proto
             $mem->input = in_array('input', $ops);
             $mem->output = in_array('output', $ops);
             $mem->optional = in_array('optional', $ops);
-            $mem->comment = $api->getArgument(3) ? $api->getArgument(3) : "";
+            $mem->comment = $api->getArgument(3) ? $api->getArgument(3) : '';
             $mem->index = (int)$idx;
 
             if ($super) {
@@ -748,6 +761,9 @@ class Proto
                     break;
                 case 'filter':
                     $mem->filter = true;
+                    break;
+                case 'raw':
+                    $mem->raw = true;
                     break;
                 case 'array':
                     $mem->array = true;
@@ -836,56 +852,58 @@ class Proto
     static function FpToTypeDef(PropDeclaration $fp): string
     {
         if ($fp->string) {
-            $typ = "string";
+            $typ = 'string';
         } else if ($fp->json) {
-            $typ = "IndexedObject";
+            $typ = 'IndexedObject';
         } else if ($fp->integer) {
-            $typ = "number";
+            $typ = 'number';
         } else if ($fp->double) {
-            $typ = "number";
+            $typ = 'number';
         } else if ($fp->boolean) {
-            $typ = "boolean";
+            $typ = 'boolean';
         } else if ($fp->array) {
-            $typ = "Array<";
+            $typ = 'Array<';
             switch ($fp->valtyp) {
-                case "string":
-                    $vt = "string";
+                case 'string':
+                    $vt = 'string';
                     break;
-                case "double":
-                case "integer":
-                    $vt = "number";
+                case 'double':
+                case 'integer':
+                    $vt = 'number';
                     break;
-                case "boolean":
-                    $vt = "boolean";
+                case 'boolean':
+                    $vt = 'boolean';
                     break;
                 default:
                     $vt = self::GetClassName($fp->valtyp);
                     break;
             }
             $typ .= $vt;
-            $typ .= ">";
+            $typ .= '>';
         } else if ($fp->map) {
-            $typ = "Map<" . self::ValtypeDefToDef($fp->keytyp) . ", " . self::ValtypeDefToDef($fp->valtyp) . ">";
+            $typ = 'Map<' . self::ValtypeDefToDef($fp->keytyp) . ', ' . self::ValtypeDefToDef($fp->valtyp) . '>';
         } else if ($fp->multimap) {
-            $typ = "Multimap<" . self::ValtypeDefToDef($fp->keytyp) . ", " . self::ValtypeDefToDef($fp->valtyp) . ">";
+            $typ = 'Multimap<' . self::ValtypeDefToDef($fp->keytyp) . ', ' . self::ValtypeDefToDef($fp->valtyp) . '>';
         } else if ($fp->enum) {
             $typ = self::GetClassName($fp->valtyp);
         } else if ($fp->file) {
             if ($fp->input)
-                $typ = "any";
+                $typ = 'any';
             else
-                $typ = "string";
+                $typ = 'string';
         } else if ($fp->filter) {
             $typ = 'string';
         } else if ($fp->json || $fp->object) {
-            $typ = "Object";
+            $typ = 'Object';
+        } else if ($fp->raw) {
+            $typ = 'any';
         } else {
             $typ = self::GetClassName($fp->valtyp);
         }
         return $typ;
     }
 
-    static function FpToOptionsDef(PropDeclaration $fp, $ns = ""): string
+    static function FpToOptionsDef(PropDeclaration $fp, $ns = ''): string
     {
         $r = [];
         if ($fp->input)
@@ -894,10 +912,10 @@ class Proto
             $r[] = $ns . 'output';
         if ($fp->optional)
             $r[] = $ns . 'optional';
-        return "[" . implode(', ', $r) . "]";
+        return '[' . implode(', ', $r) . ']';
     }
 
-    static function FpToValtypeDef(PropDeclaration $fp, $ns = ""): string
+    static function FpToValtypeDef(PropDeclaration $fp, $ns = ''): string
     {
         $t = [];
         if ($fp->keytyp) {
@@ -912,13 +930,13 @@ class Proto
     static function ValtypeDefToDef($def): string
     {
         switch ($def) {
-            case "string":
-                return "string";
-            case "double":
-            case "integer":
-                return "number";
-            case "boolean":
-                return "boolean";
+            case 'string':
+                return 'string';
+            case 'double':
+            case 'integer':
+                return 'number';
+            case 'boolean':
+                return 'boolean';
         }
 
         return self::GetClassName($def);
@@ -927,15 +945,15 @@ class Proto
     static function ValtypeDefToDefType($def, $ns = ''): string
     {
         switch ($def) {
-            case "string":
-                return $ns . "string_t";
-            case "double":
-            case "integer":
-                return $ns . "number_t";
-            case "boolean":
-                return $ns . "boolean_t";
-            case "object":
-                return "Object";
+            case 'string':
+                return $ns . 'string_t';
+            case 'double':
+            case 'integer':
+                return $ns . 'number_t';
+            case 'boolean':
+                return $ns . 'boolean_t';
+            case 'object':
+                return 'Object';
         }
 
         return self::GetClassName($def);
@@ -943,38 +961,40 @@ class Proto
 
     static function FpToCommentDef(PropDeclaration $fp): string
     {
-        return $fp->comment ? (', "' . $fp->comment . '"') : "";
+        return $fp->comment ? (', "' . $fp->comment . '"') : '';
     }
 
-    static function FpToDecoDef(PropDeclaration $fp, $ns = ""): string
+    static function FpToDecoDef(PropDeclaration $fp, $ns = ''): string
     {
         $deco = null;
         if ($fp->string)
-            $deco = "@" . $ns . "string(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'string(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         else if ($fp->json)
-            $deco = "@" . $ns . "json(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'json(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         else if ($fp->integer)
-            $deco = "@" . $ns . "integer(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'integer(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         else if ($fp->double)
-            $deco = "@" . $ns . "double(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'double(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         else if ($fp->boolean)
-            $deco = "@" . $ns . "boolean(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'boolean(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         else if ($fp->array) {
-            $deco = "@" . $ns . "array(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'array(' . $fp->index . ', ' . self::FpToValtypeDef($fp, $ns) . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->map) {
-            $deco = "@" . $ns . "map(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'map(' . $fp->index . ', ' . self::FpToValtypeDef($fp, $ns) . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->multimap) {
-            $deco = "@" . $ns . "multimap(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'multimap(' . $fp->index . ', ' . self::FpToValtypeDef($fp, $ns) . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->enum) {
-            $deco = "@" . $ns . "enumerate(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'enumerate(' . $fp->index . ', ' . self::FpToValtypeDef($fp, $ns) . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->file) {
-            $deco = "@" . $ns . "file(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'file(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->filter) {
-            $deco = "@" . $ns . "filter(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'filter(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->json) {
-            $deco = "@" . $ns . "json(" . $fp->index . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'json(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
+        } else if ($fp->raw) {
+            $deco = '@' . $ns . 'raw(' . $fp->index . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         } else {
-            $deco = "@" . $ns . "type(" . $fp->index . ", " . self::FpToValtypeDef($fp, $ns) . ", " . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ")";
+            $deco = '@' . $ns . 'type(' . $fp->index . ', ' . self::FpToValtypeDef($fp, $ns) . ', ' . self::FpToOptionsDef($fp, $ns) . self::FpToCommentDef($fp) . ')';
         }
         return $deco;
     }
@@ -983,33 +1003,35 @@ class Proto
     {
         $deco = null;
         if ($fp->string) {
-            $deco = "@Api(" . $fp->index . ", [string], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
-            $deco .= "\n\t* @var string";
+            $deco = '@Api(' . $fp->index . ', [string], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
+            $deco .= '\n\t* @var string';
         } else if ($fp->integer) {
-            $deco = "@Api(" . $fp->index . ", [integer], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
-            $deco .= "\n\t* @var int";
+            $deco = '@Api(' . $fp->index . ', [integer], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
+            $deco .= '\n\t* @var int';
         } else if ($fp->double) {
-            $deco = "@Api(" . $fp->index . ", [double], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
-            $deco .= "\n\t* @var double";
+            $deco = '@Api(' . $fp->index . ', [double], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
+            $deco .= '\n\t* @var double';
         } else if ($fp->boolean) {
-            $deco = "@Api(" . $fp->index . ", [boolean], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
-            $deco .= "\n\t* @var boolean";
+            $deco = '@Api(' . $fp->index . ', [boolean], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
+            $deco .= '\n\t* @var boolean';
         } else if ($fp->array) {
-            $deco = "@Api(" . $fp->index . ", [array, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [array, ' . self::FpToValtypeDef($fp) . '], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->map) {
-            $deco = "@Api(" . $fp->index . ", [map, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [map, ' . self::FpToValtypeDef($fp) . '], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->multimap) {
-            $deco = "@Api(" . $fp->index . ", [multimap, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [multimap, ' . self::FpToValtypeDef($fp) . '], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->enum) {
-            $deco = "@Api(" . $fp->index . ", [enum, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [enum, ' . self::FpToValtypeDef($fp) . '], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->file) {
-            $deco = "@Api(" . $fp->index . ", [file], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [file], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->filter) {
-            $deco = "@Api(" . $fp->index . ", [filter], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [filter], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else if ($fp->json) {
-            $deco = "@Api(" . $fp->index . ", [json], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [json], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
+        } else if ($fp->raw) {
+            $deco = '@Api(' . $fp->index . ', [raw], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         } else {
-            $deco = "@Api(" . $fp->index . ", [type, " . self::FpToValtypeDef($fp) . "], " . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ")";
+            $deco = '@Api(' . $fp->index . ', [type, ' . self::FpToValtypeDef($fp) . '], ' . self::FpToOptionsDef($fp) . self::FpToCommentDef($fp) . ')';
         }
         return $deco;
     }
@@ -1033,7 +1055,7 @@ class Proto
 spl_autoload_register(function ($classname) {
     // 文件、路径均为小写
     $path = str_replace('\\', '/', strtolower($classname));
-    $target = APP_DIR . "/$path.php";
+    $target = APP_DIR . '/$path.php';
     if (!is_file($target)) {
         // 再尝试一次使用类名加载
         $ps = explode('\\', $classname);
@@ -1041,9 +1063,9 @@ spl_autoload_register(function ($classname) {
         for ($i = 0, $l = count($ps); $i < $l - 1; ++$i) {
             $target .= '/' . strtolower($ps[$i]);
         }
-        $target .= '/' . $ps[$l - 1] . ".php";
+        $target .= '/' . $ps[$l - 1] . '.php';
         if (!is_file($target)) {
-            echo "没有找到类文件 $target";
+            echo '没有找到类文件 $target';
             return false;
         }
     }
