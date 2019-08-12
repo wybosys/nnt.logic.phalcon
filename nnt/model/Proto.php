@@ -644,8 +644,23 @@ class Proto
             }
         }
 
-        // 去除phalcon默认的_url参数
-        unset($ret['_url']);
+        // 处理url隐含的参数
+        if (isset($ret['_url'])) {
+            $args = explode('/', $ret['_url']);
+            if ($args[0] == '') {
+                $args = array_splice($args, 1);
+            }
+            $l = count($args);
+            if ($l > 2 && ($l % 2) == 0) {
+                // 必须成对出现，并且使用/router/action的形式代表action
+                for ($i = 2; $i < $l; $i += 2) {
+                    $ret[$args[$i]] = $args[$i + 1];
+                }
+            }
+
+            // 去除phalcon默认的_url参数
+            unset($ret['_url']);
+        }
 
         return $ret;
     }
