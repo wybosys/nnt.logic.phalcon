@@ -324,6 +324,11 @@ class Api extends Controller
                     'error' => $ex->getMessage()
                 ]);
             }
+
+            if ($name == 'docAction') {
+                // 说明生成文档时出错，错误信息会被掩盖
+                die;
+            }
         }
     }
 
