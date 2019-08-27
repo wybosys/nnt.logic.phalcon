@@ -6,8 +6,12 @@ use Phalcon\Http\Request\File;
 
 class Connector
 {
-    const METHOD_GET = 0;
-    const METHOD_POST = 1;
+    // 请求形式
+    const METHOD_GET = 0x1000;
+    const METHOD_POST = 0x1000000;
+    const METHOD_POST_URLENCODED = self::METHOD_POST | 1;
+    const METHOD_POST_XML = self::METHOD_POST | 2;
+    const METHOD_POST_JSON = self::METHOD_POST | 3;
 
     // http验证
     const OPTION_AUTH = '::nnt::connector::auth'; // value = ['Method', 'Content'] 如果只传了 'Content' 则默认 Method 为 Basic
@@ -136,12 +140,6 @@ class Connector
     // auth内容
     public $userpwd;
 
-    // 是否是json请求
-    public $json;
-
-    // 是否时xml请求
-    public $xml;
-
     // 是否时devops请求
     public $devops;
 
@@ -169,10 +167,6 @@ class Connector
     function send(): string
     {
         $url = $this->url;
-
-        // 如果特殊定义了输入格式
-        if ($this->json || $this->xml)
-            $this->method = self::METHOD_POST;
 
         // 如果时devops请求
         if ($this->devops) {
@@ -205,27 +199,43 @@ class Connector
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
         // 处理post
-        if ($this->method == self::METHOD_POST) {
+        if ($this->method & self::METHOD_POST) {
             curl_setopt($ch, CURLOPT_POST, 1);
-            if ($this->json) {
-                $str = json_encode($this->_args);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                $this->_headers['Content-Type'] = 'application/json; charset=utf-8';
-                $this->_headers['Content-Length'] = (string)strlen($str);
-            } else if ($this->xml) {
-                $str = Kernel::toXml($this->_args, [
-                    'root' => 'xml'
-                ]);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                $this->_headers['Content-Type'] = 'application/xml; charset=utf-8';
-                $this->_headers['Content-Length'] = (string)strlen($str);
-            } else {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_args);
-                $this->_headers['Content-Type'] = 'multipart/form-data';
+            switch ($this->method) {
+                case self::METHOD_POST:
+                    {
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_args);
+                        $this->_headers['Content-Type'] = 'multipart/form-data';
+                    }
+                    break;
+                case self::METHOD_POST_URLENCODED:
+                    {
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($this->_args));
+                        $this->_headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    }
+                    break;
+                case self::METHOD_POST_JSON:
+                    {
+                        $str = json_encode($this->_args);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+                        $this->_headers['Content-Type'] = 'application/json; charset=utf-8';
+                        $this->_headers['Content-Length'] = (string)strlen($str);
+                    }
+                    break;
+                case self::METHOD_POST_XML:
+                    {
+                        $str = Kernel::toXml($this->_args, [
+                            'root' => 'xml'
+                        ]);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+                        $this->_headers['Content-Type'] = 'application/xml; charset=utf-8';
+                        $this->_headers['Content-Length'] = (string)strlen($str);
+                    }
+                    break;
             }
         }
 
-        if (!$this->_ua || $this->_ua == 'unknown') {
+        if (!$this->_ua || $this->_ua === 'unknown') {
             curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Linux) AppleWebKit/600.1.4 (KHTML, like Gecko) NetType/WIFI');
         } else {
             curl_setopt($ch, CURLOPT_USERAGENT, $this->_ua);

@@ -29,9 +29,13 @@ class Service
     {
         $connect = new Connector($url);
         $connect->args($args);
-        $connect->json = $json;
         $connect->headers($headers);
-        $connect->method = $get ? Connector::METHOD_GET : Connector::METHOD_POST;
+
+        if ($json) {
+            $connect->method = Connector::METHOD_POST_JSON;
+        } else if (!$get) {
+            $connect->method = Connector::METHOD_POST;
+        }
 
         // 配置代理
         if ($proxy) {
