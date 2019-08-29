@@ -75,7 +75,7 @@ class Kernel
         return $def;
     }
 
-    static function toJson($obj, $def = ""): string
+    static function toJson($obj, $def = "", $pure = false): string
     {
         if ($obj == null)
             return $def;
@@ -84,6 +84,8 @@ class Kernel
             return $obj;
 
         try {
+            if ($pure)
+                return json_encode($obj, 320);
             return json_encode($obj);
         } catch (\Throwable $ex) {
             // pass
