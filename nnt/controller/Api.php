@@ -351,7 +351,7 @@ class Api extends Controller
                 $str = $object;
             }
         } else {
-            $str = json_encode($object);
+            $str = Kernel::toJson($object);
         }
 
         $this->log(Code::OK, $str);
