@@ -49,6 +49,7 @@ class Code
     const SOCK_AUTH_TIMEOUT = -859; // 因为连接后长期没有登录，所以服务端主动断开了链接
     const SOCK_SERVER_CLOSED = -858; // 服务器关闭
 
+    const SECURITY_FAILED = -6; // 检测到安全问题
     const THIRD_FAILED = -5; // 第三方出错
     const MULTIDEVICE = -4; // 多端登陆
     const HFDENY = -3; // 高频调用被拒绝（之前的访问还没有结束) high frequency deny
