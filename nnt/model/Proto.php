@@ -338,7 +338,12 @@ class Proto
         }
 
         if ($prop->json) {
-            return Kernel::toJsonObj($val);
+            $r =  Kernel::toJsonObj($val);
+            if ($r == null) {
+                $val = urldecode($val);
+                $r = Kernel::toJsonObj($val);
+            }
+            return $r;
         }
 
         if ($prop->integer || $prop->enum) {

@@ -210,7 +210,8 @@ class Connector
                     break;
                 case self::METHOD_POST_URLENCODED:
                     {
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($this->_args));
+                        $c = http_build_query($this->_args);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $c);
                         $this->_headers['Content-Type'] = 'application/x-www-form-urlencoded';
                     }
                     break;

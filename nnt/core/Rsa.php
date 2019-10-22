@@ -10,6 +10,9 @@ class Rsa
         OPENSSL_NO_PADDING => 0
     ];
 
+    const SIGN_SHA1 = OPENSSL_ALGO_SHA1;
+    const SIGN_SHA256 = OPENSSL_ALGO_SHA256;
+
     const DEFAULT_PADDING = OPENSSL_PKCS1_PADDING;
     const DEFAULT_PADDING_LENGTH = self::PADDING_LENGTH[self::DEFAULT_PADDING];
 
@@ -30,7 +33,7 @@ class Rsa
 
     static function EncryptWithPubKey(string $source, string $packedkey, $len = 128)
     {
-        $pkey = openssl_get_publickey($packedkey);
+        $pkey = openssl_pkey_get_public($packedkey);
         if (!$pkey)
             return null;
         $output = '';
@@ -49,7 +52,7 @@ class Rsa
 
     static function DecryptWithPubKey(string $source, string $packedkey, $len = 128)
     {
-        $pkey = openssl_get_publickey($packedkey);
+        $pkey = openssl_pkey_get_public($packedkey);
         if (!$pkey)
             return null;
         $output = '';
@@ -66,7 +69,7 @@ class Rsa
 
     static function EncryptWithPrvKey(string $source, string $packedkey, $len = 128)
     {
-        $pkey = openssl_get_privatekey($packedkey);
+        $pkey = openssl_pkey_get_private($packedkey);
         if (!$pkey)
             return null;
         $output = '';
@@ -85,7 +88,7 @@ class Rsa
 
     static function DecryptWithPrvKey(string $source, string $packedkey, $len = 128)
     {
-        $pkey = openssl_get_privatekey($packedkey);
+        $pkey = openssl_pkey_get_private($packedkey);
         if (!$pkey)
             return null;
         $output = '';
@@ -100,12 +103,12 @@ class Rsa
         return $output;
     }
 
-    static function SignWithPrvKey(string $data, string $packedkey)
+    static function SignWithPrvKey(string $data, string $packedkey, $algo = self::SIGN_SHA1)
     {
-        $pkey = openssl_get_privatekey($packedkey);
+        $pkey = openssl_pkey_get_private($packedkey);
         if (!$pkey)
             return null;
-        openssl_sign($data, $res, $pkey);
+        openssl_sign($data, $res, $pkey, $algo);
         openssl_free_key($pkey);;
         return $res;
     }
