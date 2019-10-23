@@ -263,6 +263,10 @@ class Connector
             curl_setopt($ch, CURLOPT_PROXYPORT, 80);
         }
 
+        // 跳过https证书验证
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
         // 设置请求头
         if ($reqheaders) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
