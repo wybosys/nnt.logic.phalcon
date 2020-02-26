@@ -151,8 +151,10 @@ function LoadActionAnnotation(ActionDeclaration $decl, \Phalcon\Annotations\Anno
 
 class Router
 {
-
-    static function DeclarationOf(string $actnm, $obj): ActionDeclaration
+    /**
+     * @return ActionDeclaration
+     */
+    static function DeclarationOf(string $actnm, $obj)
     {
         $clazz = $obj;
         if (is_object($obj)) {
@@ -176,7 +178,8 @@ class Router
         try {
             $ann = $reader->get($clazz);
         } catch (\Throwable $ex) {
-            throw new \Exception("$clazz 获取Annotaions失败");
+            // throw new \Exception("$clazz 获取Annotaions失败");
+            return null;
         }
 
         // 获取动作函数的标注
@@ -197,8 +200,16 @@ class Router
         return $ret;
     }
 
-    static function IsValid(ActionDeclaration $decl): bool
+    /**
+     * @param ActionDeclaration $decl
+     * @return bool
+     */
+    static function IsValid($decl): bool
     {
+        if (!$decl) {
+            return false;
+        }
+
         $pass = false;
         $mit = false;
 
