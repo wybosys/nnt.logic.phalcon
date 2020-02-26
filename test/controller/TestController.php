@@ -138,4 +138,26 @@ class TestController extends Api
     {
         // pass
     }
+
+    /**
+     * @Action(\Test\Model\SendSms, [noauth], "发送验证短信")
+     */
+    function sendsms(\Test\Model\SendSms $m)
+    {
+        $cfg = \Nnt\Controller\Application::$shared->config('sms_netease');
+        $cnt = new \Nnt\Core\Connector('https://api.netease.im/sms/sendtemplate.action');
+        $cnt->args([
+            'templateid' => $cfg['tid'],
+            'mobiles' => "[$m->phone]",
+            'params' => "['$m->code']"
+        ]);
+        $cnt->method = \Nnt\Core\Connector::METHOD_POST_URLENCODED;
+        $cnt->headers([
+           'AppKey' => $cfg['key'],
+           'CurTime' => \Nnt\Core\DatetimeT::Now(),
+           'Nonce' => \Nnt\Core\Kernel::UUID()
+        ]);
+        $cnt->header('CheckSum', sha1($cfg['secret'] . $cnt->headerOf('Nonce') . $cnt->headerOf('CurTime')));
+        $m->result = $cnt->send();
+    }
 }
