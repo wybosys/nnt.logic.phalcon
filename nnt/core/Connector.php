@@ -232,14 +232,14 @@ class Connector
                     {
                         $c = http_build_query($this->_args);
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $c);
-                        $this->_headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                        $this->_headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8;';
                     }
                     break;
                 case self::METHOD_POST_JSON:
                     {
                         $str = json_encode($this->_args);
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                        $this->_headers['Content-Type'] = 'application/json; charset=utf-8';
+                        $this->_headers['Content-Type'] = 'application/json; charset=utf-8;';
                         $this->_headers['Content-Length'] = (string)strlen($str);
                     }
                     break;
@@ -249,7 +249,7 @@ class Connector
                             'root' => 'xml'
                         ]);
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
-                        $this->_headers['Content-Type'] = 'application/xml; charset=utf-8';
+                        $this->_headers['Content-Type'] = 'application/xml; charset=utf-8;';
                         $this->_headers['Content-Length'] = (string)strlen($str);
                     }
                     break;
