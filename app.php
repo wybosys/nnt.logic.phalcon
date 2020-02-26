@@ -31,4 +31,8 @@ $cfg['webproxy'] = [
 
 $cfg['version'] = '0.0.1';
 
+if (file_exists('app.dev.php')) {
+    require 'app.dev.php';
+}
+
 return $cfg;

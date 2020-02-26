@@ -5,3 +5,4 @@ tmp
 *.volt.php
 ~*
 run
+/app.dev.php
