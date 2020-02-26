@@ -25,12 +25,16 @@ class Connector
         $this->method = self::METHOD_GET;
     }
 
+    /**
+     * 设置一个参数
+     */
     function arg($k, $v)
     {
         $this->_args[$k] = $v;
     }
 
     /**
+     * 设置多个参数
      * @param array $args
      */
     function args($args)
@@ -67,7 +71,15 @@ class Connector
         $this->_args = array_merge($this->_args, $args);
     }
 
+    /*
+     * 读取一个参数
+     */
+    function argOf($k, $def = null) {
+        return isset($this->_args[$k]) ? $this->_args[$k] : $def;
+    }
+
     /**
+     * 设置一个头信息
      * @param string $k
      */
     function header($k, $v)
@@ -76,6 +88,7 @@ class Connector
     }
 
     /**
+     * 设置一组头信息
      * @param array $headers
      */
     function headers($headers)
@@ -86,6 +99,13 @@ class Connector
 
         // 合并头
         $this->_headers = array_merge($this->_headers, $headers);
+    }
+
+    /**
+     * 读取设置的头信息
+     */
+    function headerOf($k, $def = null) {
+        return isset($this->_headers[$k]) ? $this->_headers[$k] : $def;
     }
 
     /**
