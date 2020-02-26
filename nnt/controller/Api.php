@@ -28,17 +28,21 @@ class Api extends Controller
     function initialize()
     {
         Api::$shared = $this;
-        header('Access-Control-Allow-Origin:*');
 
+        // 默认设置
+        header('Access-Control-Allow-Origin:*');
+        $this->response->setContentType('application/json');
+
+        // 查找请求动作的定义信息
         $actnm = $this->router->getActionName();
 
         // 把简化的action恢复成框架需要的actionAction
         $act = Router::DeclarationOf($actnm, $this);
-        if (Router::IsValid($act))
-            $this->_action = $act;
 
-        // 默认输出为json
-        $this->response->setContentType('application/json');
+        // 判断可用性并设置访问信息
+        if (Router::IsValid($act)) {
+            $this->_action = $act;
+        }
     }
 
     private $_params;
