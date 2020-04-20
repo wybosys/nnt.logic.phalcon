@@ -23,6 +23,20 @@ class TestController extends Api
     }
 
     /**
+     * @Action(\Test\Model\Echoo, [expose], "输出")
+     */
+    function echoopg(\Test\Model\Echoo $mdl)
+    {
+        $mdl->output = $mdl->input;
+
+        $rcd = new \Test\Db\Echoo();
+        $rcd->setConnectionService('pg');
+        $rcd->input = $mdl->input;
+        $rcd->output = $mdl->output;
+        $rcd->save();
+    }
+
+    /**
      * @Action(\Test\Model\Echoo, [noauth, signature], "输出")
      */
     function echo(\Test\Model\Echoo $mdl)

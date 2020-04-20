@@ -14,6 +14,16 @@ $cfg['database'] = [
     "charset" => "utf8"
 ];
 
+$cfg['pg'] = [
+    "adapter" => "Postgresql",
+    "host" => "localhost",
+    "username" => "postgres",
+    "port" => "5432",
+    "password" => "postgres",
+    "dbname" => "postgres",
+    "schema" => "test"
+];
+
 $cfg['redis'] = [
     "host" => "dbproxy",
     "prefix" => "test_",

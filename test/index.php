@@ -38,6 +38,10 @@ $di->setShared('db', function () {
     return DbFactory::load($this->getConfig()->database);
 });
 
+$di->setShared('pg', function () {
+    return DbFactory::load($this->getConfig()->pg);
+});
+
 $di->setShared('redis', function () {
     return new \Nnt\Store\KvRedis($this->getConfig()->redis);
 });
