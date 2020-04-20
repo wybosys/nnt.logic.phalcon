@@ -21,6 +21,7 @@ $cfg['pg'] = [
     "port" => "5432",
     "password" => "postgres",
     "dbname" => "postgres",
+    "persistent" => true,
     "schema" => "test"
 ];
 
