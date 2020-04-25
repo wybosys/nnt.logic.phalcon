@@ -42,7 +42,7 @@ class TestController extends Api
     function echo(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
-        $mdl->status = random_int(0, 1000);
+        $mdl->status = 0; //random_int(0, 1000);
     }
 
     /**
