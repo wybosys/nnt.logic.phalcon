@@ -3,7 +3,7 @@
 namespace Nnt\Controller;
 
 use Nnt\Core\Kernel;
-use Phalcon\DiInterface;
+use Phalcon\Di\DiInterface;
 
 class Application extends \Phalcon\Mvc\Application
 {
@@ -41,11 +41,12 @@ class Application extends \Phalcon\Mvc\Application
      * @param string $uri
      * @return bool|\Phalcon\Http\ResponseInterface
      */
-    function handle($uri = null)
+    function handle(string $uri)
     {
         $ret = parent::handle($uri);
-        if ($this->_profiler)
+        if ($this->_profiler) {
             Profiler::Stop();
+        }
         return $ret;
     }
 
@@ -53,7 +54,8 @@ class Application extends \Phalcon\Mvc\Application
 
     function run()
     {
-        echo $this->handle()->getContent();
+        // 约定使用index代表根目录
+        echo $this->handle('index')->getContent();
     }
 
     function config($name, $def = null)

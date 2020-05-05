@@ -291,8 +291,9 @@ class Proto
     static function Output($model): array
     {
         $ret = [];
-        if ($model == null)
+        if ($model == null) {
             return $ret;
+        }
 
         $decl = self::DeclarationOf($model);
 
@@ -314,8 +315,9 @@ class Proto
     static function Input($model): array
     {
         $ret = [];
-        if ($model == null)
+        if ($model == null) {
             return $ret;
+        }
 
         $decl = self::DeclarationOf($model);
 
@@ -338,7 +340,7 @@ class Proto
         }
 
         if ($prop->json) {
-            $r =  Kernel::toJsonObj($val);
+            $r = Kernel::toJsonObj($val);
             if ($r == null) {
                 $val = urldecode($val);
                 $r = Kernel::toJsonObj($val);
@@ -623,29 +625,40 @@ class Proto
         $posts = $request->getPost();
         $gets = $request->getQuery();
         $files = $request->getUploadedFiles();
+        $ct = $request->getContentType();
 
         // 合并到同一个集合
         $ret = array_merge($gets, $posts);
         foreach ($files as $file) {
-            if (!$file->getKey())
+            if (!$file->getKey()) {
                 continue;
+            }
             $ret[$file->getKey()] = $file;
         }
 
         // 如果是json
-        $json = $request->getJsonRawBody();
-        if ($json) {
-            foreach ($json as $k => $v) {
-                $ret[$k] = $v;
+        if (strpos($ct, 'json') !== false) {
+            try {
+                $json = $request->getJsonRawBody();
+                if ($json) {
+                    foreach ($json as $k => $v) {
+                        $ret[$k] = $v;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // pass
             }
         }
 
         // 如果是xml
-        $ct = $request->getHeader('content-type');
         if (strpos($ct, 'xml') !== false) {
-            $xml = Kernel::toXmlObj($request->getRawBody());
-            foreach ($xml as $k => $v) {
-                $ret[$k] = $v;
+            try {
+                $xml = Kernel::toXmlObj($request->getRawBody());
+                foreach ($xml as $k => $v) {
+                    $ret[$k] = $v;
+                }
+            } catch (\Throwable $e) {
+                // pass
             }
         }
 

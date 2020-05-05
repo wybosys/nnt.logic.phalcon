@@ -2,53 +2,45 @@
 
 namespace Nnt\Core;
 
-use Phalcon\Logger\Adapter\File;
-use Phalcon\Logger\AdapterInterface;
-use Phalcon\Logger\FormatterInterface;
+use Phalcon\Logger;
+use Phalcon\Logger\Adapter\AbstractAdapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
+use Phalcon\Logger\Adapter\Noop;
 
 class Log
 {
     public function __construct()
     {
+        $this->_logger = new Logger('nnt');
+
         if (RedislogAdapter::IsValid()) {
-            $this->_log = new RedislogAdapter();
-            $this->_batch = true;
-        } else if (SeaslogAdapter::IsValid()) {
-            $this->_log = new SeaslogAdapter();
-            $this->_batch = true;
-        } else {
-            $this->_log = new DailyFile();
-            $this->_batch = true;
+            $t = new RedislogAdapter();
+            $this->_logger->addAdapter('redis', $t);
         }
 
-        if ($this->_batch)
-            $this->_log->begin();
-    }
+        if (SeaslogAdapter::IsValid()) {
+            $t = new SeaslogAdapter();
+            $this->_logger->addAdapter('seaslog', $t);
+        }
 
-    public function __destruct()
-    {
-        if ($this->_batch)
-            $this->_log->commit();
+
+        $t = new Noop();
+        $this->_logger->addAdapter('noop', $t);
     }
 
     /**
-     * @var AdapterInterface
+     * @var Logger
      */
-    private $_log;
+    private $_logger;
 
-    /*
-     * @var bool
-     */
-    private $_batch;
-
-    static function debug($message)
+    static function debug($msg)
     {
-        self::$_SHARED->_log->debug($message);
+        self::$_SHARED->_logger->debug($msg);
     }
 
     static function error(\Error $err)
     {
-        self::$_SHARED->_log->error(json_encode([
+        self::$_SHARED->_logger->error(json_encode([
             'c' => $err->getCode(),
             'f' => $err->getFile(),
             'l' => $err->getLine(),
@@ -56,34 +48,34 @@ class Log
         ]));
     }
 
-    static function info($message)
+    static function info(string $msg)
     {
-        self::$_SHARED->_log->info($message);
+        self::$_SHARED->_logger->info($msg);
     }
 
-    static function notice($message)
+    static function notice(string $msg)
     {
-        self::$_SHARED->_log->notice($message);
+        self::$_SHARED->_logger->notice($msg);
     }
 
-    static function warning($message)
+    static function warning(string $msg)
     {
-        self::$_SHARED->_log->warning($message);
+        self::$_SHARED->_logger->warning($msg);
     }
 
-    static function alert($message)
+    static function alert(string $msg)
     {
-        self::$_SHARED->_log->alert($message);
+        self::$_SHARED->_logger->alert($msg);
     }
 
-    static function emergency($message)
+    static function emergency(string $msg)
     {
-        self::$_SHARED->_log->emergency($message);
+        self::$_SHARED->_logger->emergency($msg);
     }
 
-    static function exception(\Exception $exc)
+    static function exception(\Throwable $exc)
     {
-        self::$_SHARED->_log->emergency(json_encode([
+        self::$_SHARED->_logger->emergency(json_encode([
             'c' => $exc->getCode(),
             'f' => $exc->getFile(),
             'l' => $exc->getLine(),
@@ -91,9 +83,9 @@ class Log
         ]));
     }
 
-    static function log(int $type, string $message)
+    static function log(int $type, string $msg)
     {
-        self::$_SHARED->_log->log($type, $message);
+        self::$_SHARED->_logger->log($type, $msg);
     }
 
     /**
@@ -102,23 +94,15 @@ class Log
     static $_SHARED;
 }
 
-class DailyFile extends File
+abstract class CustomAdapter extends AbstractAdapter
 {
-    static function IsValid()
+    function close(): bool
     {
         return true;
     }
-
-    public function __construct()
-    {
-        // 使用时期时间初始化
-        $dt = new \DateTime();
-        $name = 'phalcon_' . $dt->format('Y-m-d') . '.log';
-        parent::__construct(LOG_DIR . $name);
-    }
 }
 
-class SeaslogAdapter implements AdapterInterface
+class SeaslogAdapter extends CustomAdapter
 {
     public function __construct()
     {
@@ -128,31 +112,6 @@ class SeaslogAdapter implements AdapterInterface
     static function IsValid()
     {
         return extension_loaded("SeasLog");
-    }
-
-    private $_formatter;
-
-    function setFormatter(FormatterInterface $formatter)
-    {
-        $this->_formatter = $formatter;
-    }
-
-    function getFormatter(): FormatterInterface
-    {
-        return $this->_formatter;
-    }
-
-    private $_level = \Phalcon\Logger::SPECIAL;
-
-    function setLogLevel($level): AdapterInterface
-    {
-        $this->_level = $level;
-        return $this;
-    }
-
-    function getLogLevel(): int
-    {
-        return $this->_level;
     }
 
     private static function PLevel2SLevel(int $level): string
@@ -179,80 +138,20 @@ class SeaslogAdapter implements AdapterInterface
         }
     }
 
-    function log($type, $message = null, array $context = null): AdapterInterface
-    {
-        if ($type > $this->_level)
-            return $this;
-        $slevel = self::PLevel2SLevel($type);
-        \Seaslog::log($slevel, $message);
-        return $this;
-    }
-
-    function begin(): AdapterInterface
-    {
-        return $this;
-    }
-
     function commit(): AdapterInterface
     {
         \Seaslog::flushBuffer();
         return $this;
     }
 
-    function rollback(): AdapterInterface
+    function process(\Phalcon\Logger\Item $item): void
     {
-        return $this;
-    }
-
-    function close()
-    {
-        return true;
-    }
-
-    function debug($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::debug($message);
-        return $this;
-    }
-
-    function error($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::error($message);
-        return $this;
-    }
-
-    function info($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::info($message);
-        return $this;
-    }
-
-    function notice($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::notice($message);
-        return $this;
-    }
-
-    function warning($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::warning($message);
-        return $this;
-    }
-
-    function alert($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::alert($message);
-        return $this;
-    }
-
-    function emergency($message, array $context = null): AdapterInterface
-    {
-        \Seaslog::emergency($message);
-        return $this;
+        $slevel = self::PLevel2SLevel($item->getType());
+        \Seaslog::log($slevel, $item->getMessage());
     }
 }
 
-class RedislogAdapter implements AdapterInterface
+class RedislogAdapter extends CustomAdapter
 {
     public function __construct()
     {
@@ -266,113 +165,16 @@ class RedislogAdapter implements AdapterInterface
         return !Config::IsLocal();
     }
 
-    private $_formatter;
-
-    function setFormatter(FormatterInterface $formatter)
-    {
-        $this->_formatter = $formatter;
-    }
-
-    function getFormatter(): FormatterInterface
-    {
-        return $this->_formatter;
-    }
-
-    private $_level = \Phalcon\Logger::SPECIAL;
-
-    function setLogLevel($level): AdapterInterface
-    {
-        $this->_level = $level;
-        return $this;
-    }
-
-    function getLogLevel(): int
-    {
-        return $this->_level;
-    }
-
     /**
      * @var \Redis
      */
     private $_db;
     private $_key;
 
-    function log($type, $message = null, array $context = null): AdapterInterface
+    function process(\Phalcon\Logger\Item $item): void
     {
-        if ($type > $this->_level)
-            return $this;
-        $this->_db->select($type);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function begin(): AdapterInterface
-    {
-        return $this;
-    }
-
-    function commit(): AdapterInterface
-    {
-        return $this;
-    }
-
-    function rollback(): AdapterInterface
-    {
-        return $this;
-    }
-
-    function close()
-    {
-        return true;
-    }
-
-    function debug($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::DEBUG);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function error($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::ERROR);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function info($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::INFO);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function notice($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::NOTICE);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function warning($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::WARNING);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function alert($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::ALERT);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
-    }
-
-    function emergency($message, array $context = null): AdapterInterface
-    {
-        $this->_db->select(\Phalcon\Logger::EMERGENCY);
-        $this->_db->lPush($this->_key, $message);
-        return $this;
+        $this->_db->select($item->getType());
+        $this->_db->lPush($this->_key, $item->getMessage());
     }
 }
 

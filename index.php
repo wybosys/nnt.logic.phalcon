@@ -28,16 +28,22 @@ if (isset($_GET['_url'])) {
         // 加载模块
         require $REDIRECT_MODULE;
     })();
-} else if (isset($_GET['action']) || isset($_POST['action'])) {
-    if (isset($_GET['action']))
+
+    return;
+}
+
+// 通过action传递
+if (isset($_GET['action']) || isset($_POST['action'])) {
+    if (isset($_GET['action'])) {
         $action = $_GET['action'];
-    else
+    } else {
         $action = $_POST['action'];
+    }
 
     // 按照logic的规则来路由
     $phs = explode('.', $action);
 
-    if (in_array($phs[0], $INNER_MODULES)) {
+    if (in_array($phs[0], $INNER_MODULES, true)) {
         $MODULE_NAME = 'nnt';
     } else {
         $MODULE_NAME = $phs[0];
@@ -58,10 +64,10 @@ if (isset($_GET['_url'])) {
         // 加载模块
         require $REDIRECT_MODULE;
     })();
-} else {
-    // 所有规则都不满足
-    echo "NntLogicPhalcon WebRoot";
-    http_response_code(404);
+
     return;
 }
 
+// 所有规则都不满足
+echo "NntLogicPhalcon WebRoot";
+http_response_code(404);
