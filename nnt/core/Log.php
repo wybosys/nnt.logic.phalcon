@@ -5,7 +5,6 @@ namespace Nnt\Core;
 use Phalcon\Logger;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
-use Phalcon\Logger\Adapter\Noop;
 
 class Log
 {
@@ -22,9 +21,6 @@ class Log
             $t = new SeaslogAdapter();
             $this->_logger->addAdapter('seaslog', $t);
         }
-
-        $t = new Noop();
-        $this->_logger->addAdapter('noop', $t);
     }
 
     /**
