@@ -23,7 +23,6 @@ class Log
             $this->_logger->addAdapter('seaslog', $t);
         }
 
-
         $t = new Noop();
         $this->_logger->addAdapter('noop', $t);
     }
