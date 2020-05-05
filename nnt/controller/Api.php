@@ -49,8 +49,9 @@ class Api extends Controller
 
     function requestParams()
     {
-        if ($this->_params)
+        if ($this->_params) {
             return $this->_params;
+        }
         $this->_params = Proto::CollectParameters($this->request);
         return $this->_params;
     }
@@ -159,21 +160,25 @@ class Api extends Controller
             // devops时设置了skip不判断
             // 访问的是apidoc不判断
             while (1) {
-                if (Config::IsLocal())
+                if (Config::IsLocal()) {
                     break;
+                }
 
                 // devops.json 中的设置
                 $cfg = Devops::GetConfig();
 
                 // 全局打开客户端访问
-                if (isset($cfg->client) && $cfg->client)
+                if (isset($cfg->client) && $cfg->client) {
                     break;
+                }
 
-                if ($name == 'docAction')
+                if ($name == 'docAction') {
                     break;
+                }
 
-                if (isset($params[Devops::KEY_SKIPPERMISSION]) && $params[Devops::KEY_SKIPPERMISSION] && Config::IsDevopsDevelop())
+                if (isset($params[Devops::KEY_SKIPPERMISSION]) && $params[Devops::KEY_SKIPPERMISSION] && Config::IsDevopsDevelop()) {
                     break;
+                }
 
                 // 判断代码
                 $clientip = $this->clientIp();
@@ -458,8 +463,9 @@ class Api extends Controller
         // 请求的客户端ip
         $data['p'] = $this->clientIp();
         $data['t'] = DatetimeT::Now();
-        if ($project = getenv('PROJECT'))
+        if ($project = getenv('PROJECT')) {
             $data['o'] = $project;
+        }
 
         Log::log($typ, json_encode($data, JSON_UNESCAPED_UNICODE));
     }

@@ -4,25 +4,29 @@ use Nnt\Core\Config;
 
 $cfg = [];
 
-$cfg['database'] = [
-    "adapter" => "Mysql",
-    "host" => "localhost",
-    "username" => "root",
-    "port" => "3306",
-    "password" => "root",
-    "dbname" => "test",
-    "charset" => "utf8"
+$cfg['mysql'] = [
+    "adapter" => "mysql",
+    "options" => [
+        "host" => "localhost",
+        "username" => "root",
+        "port" => "3306",
+        "password" => "root",
+        "dbname" => "nnt-logic",
+        "charset" => "utf8"
+    ]
 ];
 
 $cfg['pg'] = [
-    "adapter" => "Postgresql",
-    "host" => "localhost",
-    "username" => "postgres",
-    "port" => "5432",
-    "password" => "postgres",
-    "dbname" => "postgres",
-    "persistent" => true,
-    "schema" => "test"
+    "adapter" => "postgresql",
+    "options" => [
+        "host" => "localhost",
+        "username" => "postgres",
+        "port" => "5432",
+        "password" => "postgres",
+        "dbname" => "nnt.logic",
+        "persistent" => true,
+        "schema" => "nnt.logic"
+    ]
 ];
 
 $cfg['redis'] = [

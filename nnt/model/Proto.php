@@ -848,8 +848,9 @@ class Proto
         $ver = Application::$shared->config('version', '0.0.0');
         $ck = "::nnt::model::proto::$ver::$clazz";
         $ret = apcu_fetch($ck);
-        if ($ret)
+        if ($ret) {
             return $ret;
+        }
 
         // 生成新的
         $ttl = Config::Use(5, 5, 60 * 5);

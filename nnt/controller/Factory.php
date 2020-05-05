@@ -2,9 +2,10 @@
 
 namespace Nnt\Controller;
 
+use Phalcon\Db\Adapter\PdoFactory;
 use Phalcon\Di\FactoryDefault;
-use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
+use Phalcon\Mvc\View;
 
 class Factory extends FactoryDefault
 {
@@ -34,6 +35,10 @@ class Factory extends FactoryDefault
                 ]);
             }
             return $router;
+        });
+
+        $this->setShared('dbo', function () {
+            return new PdoFactory();
         });
     }
 }

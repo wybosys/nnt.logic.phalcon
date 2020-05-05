@@ -9,14 +9,14 @@ use Nnt\Core\Log;
 class TestController extends Api
 {
     /**
-     * @Action(\Test\Model\Echoo, [expose, devopsdevelop], "输出")
+     * @Action(\Test\Model\Echoo, [expose, local], "输出")
      */
-    function echoo(\Test\Model\Echoo $mdl)
+    function echomysql(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
 
         $rcd = new \Test\Db\Echoo();
-        $rcd->setSource("test1");
+        // $rcd->setSource("test1");
         $rcd->input = $mdl->input;
         $rcd->output = $mdl->output;
         $rcd->save();
@@ -25,7 +25,7 @@ class TestController extends Api
     /**
      * @Action(\Test\Model\Echoo, [expose], "输出")
      */
-    function echoopg(\Test\Model\Echoo $mdl)
+    function echopg(\Test\Model\Echoo $mdl)
     {
         $mdl->output = $mdl->input;
 

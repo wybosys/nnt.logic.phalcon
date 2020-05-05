@@ -28,13 +28,8 @@ class Echoo extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("test");
+        $this->setSchema("nnt-logic");
         $this->setSource("echoo");
-    }
-
-    public function setSource($src)
-    {
-        parent::setSource($src);
     }
 
     /**
@@ -43,7 +38,7 @@ class Echoo extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Echoo[]|Echoo|\Phalcon\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null)
+    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }

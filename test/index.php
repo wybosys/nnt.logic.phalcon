@@ -1,7 +1,6 @@
 <?php
 
 use Phalcon\Loader;
-use Phalcon\Db\Adapter\Pdo\Factory as DbFactory;
 
 define('MODULE_DIR', __DIR__ . '/');
 define('APP_DIR', dirname(__DIR__) . '/');
@@ -29,17 +28,17 @@ $loader->registerDirs([
 $loader->register();
 
 $di = new \Nnt\Controller\Factory();
-    
+
 $di->setShared('config', function () {
     return include 'config/config.php';
 });
 
-$di->setShared('db', function () {
-    return DbFactory::load($this->getConfig()->database);
+$di->setShared('db', function () use ($di) {
+    return $di->getShared('dbo')->load($this->getConfig()->mysql);
 });
 
-$di->setShared('pg', function () {
-    return DbFactory::load($this->getConfig()->pg);
+$di->setShared('pg', function () use ($di) {
+    return $di->getShared('dbo')->load($this->getConfig()->pg);
 });
 
 $di->setShared('redis', function () {
